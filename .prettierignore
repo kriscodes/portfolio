@@ -1,0 +1,8 @@
+node_modules/
+.next/
+out/
+dist/
+pnpm-lock.yaml
+.openai/
+.sites-runtime/
+**/next-env.d.ts

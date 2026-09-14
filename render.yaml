@@ -1,0 +1,29 @@
+# Deploy from the repository root. See docs/DEPLOYMENT-RENDER.md.
+services:
+  - type: web
+    name: kristian-salmeron-web
+    runtime: static
+    buildCommand: npx --yes pnpm@11.22.0 install --frozen-lockfile --prod=false && npx --yes pnpm@11.22.0 --filter @kristian/web build
+    staticPublishPath: apps/web/out
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.2
+      - key: SKIP_INSTALL_DEPS
+        value: 'true'
+
+  - type: web
+    name: kristian-salmeron-api
+    runtime: node
+    plan: free
+    buildCommand: npx --yes pnpm@11.22.0 install --frozen-lockfile --prod=false && npx --yes pnpm@11.22.0 --filter @kristian/api... build
+    startCommand: node apps/api/dist/server.js
+    healthCheckPath: /api/v1/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.2
+      - key: NODE_ENV
+        value: production
+      - key: SKIP_INSTALL_DEPS
+        value: 'true'
