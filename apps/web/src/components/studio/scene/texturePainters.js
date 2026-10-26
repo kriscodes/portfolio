@@ -285,8 +285,8 @@ export function paintKristianVoyageMap(ctx, width, height, state) {
   var controls = Math.max(60, Math.min(225, Number(state.controlsHeight) || 90));
   var mapTop = 83,
     mapBottom = H - controls;
-  var typeScale = Math.min(1.6, Math.max(1, Math.sqrt(controls / 78)));
-  var compact = controls > 135;
+  var typeScale = Math.min(1.6, Math.max(1, Number(state.typeScale) || Math.sqrt(controls / 78)));
+  var compact = controls > 135 || state.compact === true;
   var d3 = { geoMercator, geoPath: createGeoPath };
   var land = state.land || voyageCoast;
   var start = [-118.46103, 33.96175];

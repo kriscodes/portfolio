@@ -144,3 +144,14 @@ export function saveStudioState(snapshot: StudioSnapshot): void {
     window.history.pushState(null, '', window.location.pathname + window.location.search + hash);
   }
 }
+
+/** Theme changes in the 2D studio leave the current reading position and URL alone. */
+export function saveStudioTheme(theme: 'day' | 'night'): void {
+  const snapshot = readStudioState();
+  snapshot.modelContent.theme = theme;
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(snapshot));
+  } catch {
+    /* Storage is optional. */
+  }
+}

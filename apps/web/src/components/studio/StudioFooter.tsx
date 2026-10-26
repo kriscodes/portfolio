@@ -1,4 +1,4 @@
-export default function StudioFooter() {
+export default function StudioFooter({ onFlatView }: { onFlatView?: () => void }) {
   return (
     <>
       <footer className="kd-footer">
@@ -25,6 +25,11 @@ export default function StudioFooter() {
             </button>
           </div>
           <span className="kd-footer-address">kristiansalmeron.com</span>
+          {onFlatView && (
+            <button type="button" className="kd-flat-switch" onClick={onFlatView}>
+              2D view ↗
+            </button>
+          )}
         </div>
         <span className="kd-mode-status kd-sr" aria-live="polite">
           After Hours

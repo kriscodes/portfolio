@@ -1,8 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createStudioController, type StudioController } from './controller';
 import type { StudioSceneAPI } from './scene/types';
 import type { StudioModelState } from './state';
@@ -12,6 +11,8 @@ import LifeControls from './LifeControls';
 import AboutTerminal from './AboutTerminal';
 import SignNavigation from './SignNavigation';
 import StudioFooter from './StudioFooter';
+import StudioFallback from './StudioFallback';
+import { readStudioState, saveStudioTheme } from './state';
 import '@fontsource/ibm-plex-sans/latin-400.css';
 import '@fontsource/ibm-plex-sans/latin-500.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
@@ -22,7 +23,77 @@ import './studio.css';
 
 const StudioCanvas = dynamic(() => import('./StudioCanvas'), { ssr: false });
 
+class StudioBoundary extends Component<
+  { children: ReactNode; onUnavailable: (error: Error) => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: Error) {
+    this.props.onUnavailable(error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 export default function CornerStudio() {
+  const [flat, setFlat] = useState(false);
+  const [reason, setReason] = useState<'graphics' | 'chosen'>('graphics');
+  const [theme, setTheme] = useState<'day' | 'night'>('night');
+  useEffect(() => {
+    setTheme(readStudioState().modelContent.theme);
+    if (new URLSearchParams(window.location.search).get('view') === '2d') {
+      setReason('chosen');
+      setFlat(true);
+    }
+  }, []);
+  const unavailable = useCallback(() => {
+    setReason('graphics');
+    setFlat(true);
+  }, []);
+  const selectView = (nextFlat: boolean) => {
+    const url = new URL(window.location.href);
+    if (nextFlat) url.searchParams.set('view', '2d');
+    else url.searchParams.delete('view');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    setReason('chosen');
+    setFlat(nextFlat);
+  };
+  if (flat)
+    return (
+      <StudioFallback
+        theme={theme}
+        reason={reason}
+        onThemeChange={(next) => {
+          setTheme(next);
+          saveStudioTheme(next);
+        }}
+        onTry3D={() => selectView(false)}
+      />
+    );
+  return (
+    <StudioBoundary onUnavailable={unavailable}>
+      <InteractiveStudio
+        onUnavailable={unavailable}
+        onThemeChange={setTheme}
+        onFlatView={() => selectView(true)}
+      />
+    </StudioBoundary>
+  );
+}
+
+function InteractiveStudio({
+  onUnavailable,
+  onThemeChange,
+  onFlatView,
+}: {
+  onUnavailable: (error?: Error) => void;
+  onThemeChange: (theme: 'day' | 'night') => void;
+  onFlatView: () => void;
+}) {
   const root = useRef<HTMLDivElement>(null);
   const controller = useRef<StudioController | null>(null);
   const [connection, setConnection] = useState<{
@@ -31,17 +102,27 @@ export default function CornerStudio() {
   } | null>(null);
   const [theme, setTheme] = useState<'day' | 'night'>('night');
   const [ready, setReady] = useState(false);
-  const [failed, setFailed] = useState(false);
-
-  const stateChanged = useCallback((state: StudioModelState) => setTheme(state.theme), []);
+  const stateChanged = useCallback(
+    (state: StudioModelState) => {
+      setTheme(state.theme);
+      onThemeChange(state.theme);
+    },
+    [onThemeChange],
+  );
   const sceneReady = useCallback((scene: StudioSceneAPI | null) => {
     controller.current?.attachScene(scene);
     if (scene) setReady(true);
   }, []);
-  const sceneFailed = useCallback((error: Error) => {
-    console.error('Studio scene unavailable', error);
-    setFailed(true);
-  }, []);
+  const sceneFailed = onUnavailable;
+
+  useEffect(() => {
+    if (ready) return;
+    const timeout = window.setTimeout(
+      () => onUnavailable(new Error('The 3D view did not finish opening.')),
+      15_000,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [ready, onUnavailable]);
 
   useEffect(() => {
     if (!root.current) return;
@@ -59,7 +140,6 @@ export default function CornerStudio() {
     <div
       ref={root}
       id="ks-daynight"
-      className={failed ? 'kd-no-scene' : ''}
       data-mode={theme}
       data-view="overview"
       aria-label="Kristian’s corner studio portfolio"
@@ -74,7 +154,7 @@ export default function CornerStudio() {
             role="img"
             aria-label="A corner studio with an indoor sailing display, plants and camera equipment. A white Silverado sits in the parking lot beside distant neon storefronts. Choose Work, Life or About, or drag to look around."
           >
-            {connection && !failed && (
+            {connection && (
               <StudioCanvas
                 sceneElement={connection.element}
                 callbacks={connection.controller.callbacks}
@@ -83,23 +163,10 @@ export default function CornerStudio() {
               />
             )}
           </div>
-          {!ready && !failed && (
+          {!ready && (
             <p className="kd-scene-loading" role="status">
               Opening the studio…
             </p>
-          )}
-          {failed && (
-            <section className="kd-scene-alternative" aria-label="Explore the portfolio">
-              <p>
-                The studio couldn’t open on this device. You can explore the same work and
-                background here.
-              </p>
-              <nav aria-label="Portfolio pages">
-                <Link href="/work/">Selected work</Link>
-                <Link href="/about/">About Kristian</Link>
-                <Link href="/contact/">Get in touch</Link>
-              </nav>
-            </section>
           )}
           <ProjectMonitor />
           <LifeControls />
@@ -107,7 +174,7 @@ export default function CornerStudio() {
           <SignNavigation />
         </div>
       </div>
-      <StudioFooter />
+      <StudioFooter onFlatView={onFlatView} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { beforeEach, test } from 'node:test';
-import { readStudioState, saveStudioState } from './state';
+import { readStudioState, saveStudioState, saveStudioTheme } from './state';
 
 let url: URL;
 let memory: Map<string, string>;
@@ -114,4 +114,27 @@ test('navigation remains available when browser storage is blocked', () => {
   snapshot.modelContent.project = 'careiq';
   assert.doesNotThrow(() => saveStudioState(snapshot));
   assert.equal(url.hash, '#work/careiq');
+});
+
+test('2D theme changes preserve shared pages and preferences without creating navigation', () => {
+  memory.set(
+    'kristian-corner-studio:v1',
+    JSON.stringify({
+      modelContent: { project: 'careiq', aboutPages: { story: 1 } },
+      privateContent: { angle: 12 },
+    }),
+  );
+  url = new URL('https://kristiansalmeron.com/?view=2d#about/experience/3');
+  saveStudioTheme('day');
+  const snapshot = readStudioState();
+  assert.equal(snapshot.modelContent.theme, 'day');
+  assert.equal(snapshot.modelContent.aboutPages.experience, 2);
+  assert.equal(snapshot.modelContent.aboutPages.story, 1);
+  assert.equal(snapshot.modelContent.project, 'careiq');
+  assert.equal(snapshot.privateContent.angle, 12);
+  assert.equal(url.search, '?view=2d');
+  assert.equal(url.hash, '#about/experience/3');
+  assert.deepEqual(pushes, []);
+  storageBlocked = true;
+  assert.doesNotThrow(() => saveStudioTheme('night'));
 });

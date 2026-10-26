@@ -40,6 +40,14 @@ The homepage has a server-rendered title and descriptive summary for assistive t
 
 These routes remain useful with JavaScript disabled or if a visitor cannot use WebGL. No API login is required to read them. The pre-studio visual design is recorded in `DESIGN-AND-CONTENT.md` and `UX-REVIEW.md` as historical design documentation.
 
+### The 2D studio and missing routes
+
+Visitors whose browser cannot open the 3D scene automatically receive a complete 2D portfolio. A scene error boundary and a 15-second startup timeout replace failed or stalled startup with this view. The 3D footer also offers **2D view**, and `/?view=2d` opens it directly. **Try the 3D view** remounts the scene and preserves the selected theme.
+
+The 2D experience uses a local SVG studio illustration, React interfaces, and a Canvas 2D sailing map. It keeps After Hours and Open Desk, the full CareIQ and Neon Drift demonstrations in native modal dialogs, case-study links, the animated Catalina crossing with pause/reverse, outdoors photography, and the paged About tabs. Shared project and About hashes work in both views. Modal Escape, focus return, browser history, reduced-motion behavior, and hidden-tab suspension are part of the implementation.
+
+Unknown addresses use a matching, WebGL-independent 404 street-corner design with a neon route-status billboard, theme control, a studio return link, and Work, About, and Contact street signs. Static hosting must serve the exported `404.html` with HTTP status 404 rather than redirecting missing paths to the homepage.
+
 ### Sharing a studio view
 
 The homepage hash identifies the current camera destination and screen selection. Browser Back and Forward can move through those views. Theme and screen preferences are remembered locally; a shared URL chooses the destination independently of the visitor's saved camera position.

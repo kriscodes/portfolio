@@ -1,5 +1,17 @@
 # Validation
 
+## 2D studio and 404 — 2026-10-25
+
+- **Production export:** the frontend build and TypeScript checks passed. No new runtime packages were added.
+- **Automated checks:** all eight frontend tests and the API integration test passed. New coverage verifies that changing the 2D theme preserves saved screen selections and the current URL without adding history entries, including when storage is blocked. Formatting passed.
+- **Actual Chrome fallback:** a Chrome session with graphics disabled automatically opened the complete 2D portfolio from the ordinary homepage. Both themes, CareIQ patient browsing/search, a nested appointment dialog, Neon Drift controls, modal Back/Escape, focus return, browser history, and direct project-link reloads were exercised.
+- **Responsive layout:** inspected at 390px and 320px, with no page-level horizontal overflow. Checked About tabs, voyage controls, map-label legibility, and the header. Small primary controls provide at least 44px height.
+- **3D regression:** the production export still rendered the original studio in a WebGL-capable browser. The footer switched to 2D; changing the theme there and returning to 3D preserved the selection.
+- **404:** inspected in both themes at desktop, 390px, and 320px. Work, About, Contact, studio return, browser Back, and remembered theme behavior were exercised. The design uses SVG and HTML and requires no WebGL.
+- **Review:** loading failure/retry, async preview cancellation/disposal, observers, animation cleanup, and shared-link restoration received an additional source review with no material issues found.
+
+This is browser and viewport coverage, not a physical-device or formal accessibility/performance audit. Public deployment evidence is recorded after the release is live.
+
 ## Corner Studio — 2026-10-25
 
 The checks below cover the production export, browser behavior, and the first Corner Studio deployment.

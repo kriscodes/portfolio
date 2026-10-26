@@ -1,0 +1,548 @@
+body:has(.studio-lost) {
+  background: #07151c;
+}
+body:has(.studio-lost)::after,
+body:has(.studio-lost) > .site-header,
+body:has(.studio-lost) > .site-footer {
+  display: none;
+}
+.studio-lost {
+  --lost-bg: #07151c;
+  --lost-paper: #e6f2ed;
+  --lost-muted: #9ab3b6;
+  --lost-accent: #6ce4c6;
+  --lost-pink: #ea8aab;
+  --lost-line: #294047;
+  --lost-panel: #0e252d;
+  --lost-road: #10242b;
+  --lost-window: #486b6d;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 30px clamp(24px, 5vw, 88px) 0;
+  color: var(--lost-paper);
+  background: radial-gradient(ellipse at 74% 47%, #16323a66 0, transparent 51%), var(--lost-bg);
+  font:
+    400 16px/1.6 'IBM Plex Sans',
+    sans-serif;
+  transition:
+    color 350ms ease,
+    background-color 350ms ease;
+  color-scheme: dark;
+}
+.studio-lost[data-mode='day'] {
+  --lost-bg: #f3efe3;
+  --lost-paper: #173c38;
+  --lost-muted: #576c66;
+  --lost-accent: #167d6c;
+  --lost-pink: #a84467;
+  --lost-line: #c9d0bf;
+  --lost-panel: #e4e8da;
+  --lost-road: #d3dccf;
+  --lost-window: #78aaa1;
+  background: radial-gradient(ellipse at 74% 47%, #dde6cb88 0, transparent 51%), var(--lost-bg);
+  color-scheme: light;
+}
+.studio-lost a,
+.studio-lost button {
+  -webkit-tap-highlight-color: transparent;
+}
+.studio-lost a:focus-visible,
+.studio-lost button:focus-visible {
+  outline: 2px solid var(--lost-pink);
+  outline-offset: 6px;
+}
+.lost-header,
+.lost-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.lost-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 128px;
+  border: 1px solid var(--lost-accent);
+  padding: 7px 17px 7px 11px;
+  transform: rotate(-2deg);
+  color: var(--lost-paper);
+  background: var(--lost-panel);
+  font:
+    500 20px/0.9 'Rajdhani',
+    sans-serif;
+  letter-spacing: 0.045em;
+  box-shadow: 3px 3px 0 var(--lost-line);
+}
+.lost-brand span {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.lost-brand strong {
+  font-weight: 500;
+}
+.lost-brand i {
+  position: absolute;
+  top: 8px;
+  right: 7px;
+  width: 3px;
+  height: 3px;
+  background: var(--lost-accent);
+  border-radius: 50%;
+}
+.lost-theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 0 10px 10px;
+  border: 0;
+  color: var(--lost-paper);
+  background: none;
+  font:
+    400 11px 'IBM Plex Mono',
+    monospace;
+}
+.lost-theme > svg {
+  width: 15px;
+  height: 15px;
+  color: var(--lost-accent);
+}
+.lost-switch {
+  width: 32px;
+  height: 18px;
+  padding: 3px;
+  border: 1px solid var(--lost-line);
+  border-radius: 20px;
+}
+.lost-switch i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lost-accent);
+  transform: translateX(13px);
+  transition: transform 300ms ease;
+}
+.studio-lost[data-mode='day'] .lost-switch i {
+  transform: translateX(0);
+}
+.lost-main {
+  width: 100%;
+  max-width: 1440px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.26fr);
+  align-items: center;
+  gap: clamp(12px, 3vw, 48px);
+  flex: 1;
+  margin: 0 auto;
+  padding: 58px 0 68px;
+}
+.lost-copy {
+  position: relative;
+  z-index: 1;
+}
+.lost-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 24px;
+  color: var(--lost-accent);
+  font:
+    400 10px/1.4 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 0.12em;
+}
+.lost-eyebrow > span {
+  width: 6px;
+  height: 6px;
+  background: var(--lost-accent);
+  box-shadow: 0 0 12px #6ce4c644;
+}
+.lost-copy h1 {
+  margin: 0;
+  color: var(--lost-paper);
+  font:
+    500 clamp(64px, 6.6vw, 102px) / 0.91 'Rajdhani',
+    sans-serif;
+  letter-spacing: -0.045em;
+}
+.lost-copy h1 em {
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: normal;
+  color: var(--lost-accent);
+}
+.lost-description {
+  max-width: 360px;
+  margin: 26px 0 29px;
+  color: var(--lost-muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+.lost-home {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 22px;
+  border: 1px solid var(--lost-accent);
+  background: var(--lost-accent);
+  color: var(--lost-bg);
+  padding: 12px 21px;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+.lost-home svg {
+  width: 17px;
+  height: 17px;
+}
+.lost-home:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 24px #6ce4c620;
+}
+.lost-street {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+.lost-street-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.lost-grid-line {
+  stroke: var(--lost-line);
+  opacity: 0.35;
+}
+.lost-building {
+  fill: var(--lost-panel);
+  stroke: var(--lost-line);
+}
+.lost-building-top {
+  fill: var(--lost-bg);
+  stroke: var(--lost-line);
+}
+.lost-building-edge {
+  fill: var(--lost-panel);
+  stroke: var(--lost-line);
+}
+.lost-building-window {
+  fill: var(--lost-window);
+  opacity: 0.25;
+}
+.lost-road {
+  fill: var(--lost-road);
+}
+.lost-road-edge {
+  stroke: var(--lost-line);
+  stroke-width: 1.5;
+}
+.lost-road-lane {
+  stroke: var(--lost-muted);
+  stroke-width: 2;
+  stroke-dasharray: 14 15;
+  opacity: 0.5;
+}
+.lost-road-reflection {
+  color: var(--lost-accent);
+  fill: url(#lost-road-light);
+  opacity: 0.14;
+}
+.lost-reflection-start {
+  stop-color: var(--lost-accent);
+}
+.lost-crosswalk {
+  stroke: var(--lost-paper);
+  stroke-width: 7;
+  opacity: 0.16;
+}
+.lost-billboard-pole {
+  stroke: var(--lost-line);
+  fill: var(--lost-panel);
+  stroke-width: 5;
+}
+.lost-billboard {
+  fill: var(--lost-bg);
+  stroke: var(--lost-pink);
+  stroke-width: 2;
+}
+.lost-billboard-side {
+  fill: var(--lost-panel);
+  stroke: var(--lost-line);
+}
+.lost-billboard-inner {
+  stroke: var(--lost-pink);
+  opacity: 0.35;
+}
+.lost-billboard-label {
+  fill: var(--lost-muted);
+  font:
+    400 7px 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 0.5px;
+}
+.lost-four-oh-four {
+  fill: var(--lost-pink);
+  font:
+    500 146px/0.8 'Rajdhani',
+    sans-serif;
+  letter-spacing: 5px;
+  filter: drop-shadow(0 0 16px #ea8aab22);
+}
+.lost-billboard-divider {
+  stroke: var(--lost-line);
+}
+.lost-billboard-status {
+  fill: var(--lost-pink);
+  animation: lost-signal 4s ease-in-out infinite;
+}
+.lost-sign-post {
+  stroke: var(--lost-muted);
+  stroke-width: 5;
+}
+.lost-bollard {
+  stroke: var(--lost-line);
+  stroke-width: 6;
+}
+.lost-bollard-light {
+  stroke: var(--lost-pink);
+  stroke-width: 6;
+}
+.lost-corner-mark {
+  stroke: var(--lost-line);
+}
+.lost-map-point {
+  fill: var(--lost-accent);
+}
+.lost-map-label {
+  fill: var(--lost-muted);
+  font:
+    400 7px 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 0.5px;
+}
+.lost-street-signs {
+  position: absolute;
+  top: 47%;
+  left: 16%;
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lost-sign {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 19px;
+  color: var(--lost-bg);
+  font:
+    500 clamp(16px, 1.9vw, 26px) / 1 'Rajdhani',
+    sans-serif;
+  letter-spacing: 0.01em;
+  transition: transform 180ms ease;
+}
+.lost-sign::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--lost-accent);
+  clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%);
+}
+.lost-sign > span,
+.lost-sign > svg {
+  position: relative;
+  z-index: 1;
+}
+.lost-sign > span {
+  white-space: nowrap;
+}
+.lost-sign small {
+  font:
+    400 8px 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 0.05em;
+}
+.lost-sign svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+.lost-sign:hover {
+  transform: translateX(6px);
+}
+.lost-sign-about {
+  width: 100%;
+  margin-left: -12px;
+}
+.lost-sign-about::before {
+  background: var(--lost-paper);
+  clip-path: polygon(10% 0, 100% 0, 100% 100%, 10% 100%, 0 50%);
+}
+.lost-sign-about:hover {
+  transform: translateX(-6px);
+}
+.lost-sign-contact {
+  width: 105%;
+}
+.lost-sign-contact::before {
+  background: var(--lost-pink);
+}
+.lost-footer {
+  max-width: 1440px;
+  width: 100%;
+  margin: auto auto 0;
+  padding: 22px 0 24px;
+  border-top: 1px solid var(--lost-line);
+  color: var(--lost-muted);
+  font:
+    400 9px/1.7 'IBM Plex Mono',
+    monospace;
+  letter-spacing: 0.08em;
+}
+.lost-footer span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.lost-footer svg {
+  width: 13px;
+  height: 13px;
+  color: var(--lost-accent);
+}
+@keyframes lost-signal {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (min-width: 1550px) {
+  .lost-main {
+    padding: 75px 0 90px;
+  }
+}
+@media (max-width: 900px) {
+  .studio-lost {
+    padding-inline: 28px;
+  }
+  .lost-main {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.13fr);
+    gap: 0;
+    padding: 70px 0;
+  }
+  .lost-copy h1 {
+    font-size: clamp(56px, 8vw, 76px);
+  }
+  .lost-description {
+    max-width: 300px;
+    font-size: 14px;
+  }
+  .lost-street {
+    width: 117%;
+    margin-left: -5%;
+  }
+  .lost-sign {
+    min-height: 44px;
+    font-size: 20px;
+    padding: 5px 15px;
+  }
+  .lost-sign small {
+    font-size: 7px;
+  }
+  .lost-footer {
+    font-size: 8px;
+  }
+}
+@media (max-width: 640px) {
+  .studio-lost {
+    padding: 22px 24px 0;
+  }
+  .lost-brand {
+    width: 116px;
+    font-size: 18px;
+  }
+  .lost-brand span {
+    font-size: 12px;
+  }
+  .lost-theme {
+    gap: 7px;
+    font-size: 10px;
+  }
+  .lost-theme > svg {
+    width: 13px;
+    height: 13px;
+  }
+  .lost-main {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 66px 0 18px;
+    gap: 16px;
+  }
+  .lost-eyebrow {
+    margin-bottom: 21px;
+    font-size: 9px;
+  }
+  .lost-copy h1 {
+    font-size: clamp(64px, 15vw, 90px);
+  }
+  .lost-description {
+    max-width: 350px;
+    margin: 23px 0 25px;
+  }
+  .lost-street {
+    width: 115%;
+    max-width: 560px;
+    margin: 0 0 0 -9%;
+  }
+  .lost-sign {
+    min-height: 44px;
+    font-size: clamp(17px, 5.1vw, 24px);
+  }
+  .lost-street-signs {
+    top: 39%;
+    gap: 4px;
+  }
+  .lost-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+    padding-block: 18px;
+  }
+}
+@media (max-width: 360px) {
+  .studio-lost {
+    padding-inline: 20px;
+  }
+  .lost-theme > svg {
+    display: none;
+  }
+  .lost-theme {
+    font-size: 9px;
+  }
+  .lost-sign {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+  .lost-sign small {
+    font-size: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-lost *,
+  .studio-lost *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
