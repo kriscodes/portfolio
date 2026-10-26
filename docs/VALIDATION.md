@@ -2,7 +2,7 @@
 
 ## Corner Studio — 2026-10-25
 
-The checks below cover the production export and browser behavior before deployment. Deployment and live custom-domain verification are still pending.
+The checks below cover the production export, browser behavior, and the first Corner Studio deployment.
 
 - **Production build:** the full workspace build passed for Next.js, the Express API, and shared contracts. The frontend exported successfully for static hosting.
 - **Type checks:** passed across all workspace packages.
@@ -11,6 +11,9 @@ The checks below cover the production export and browser behavior before deploym
 - **Desktop browser:** exercised Work navigation, the Care IQ preview, Neon Drift under Experiments, monitor back navigation, Escape, and the theme switch. Checked About tabs and page controls, and Life's sailboat, Catalina map, pause, reverse, and outdoors controls.
 - **Narrow browser viewports:** checked the production export at 390px and 320px. Exercised Work, Life, and About navigation, tabs and paging, and theme switching.
 - **No-WebGL fallback:** passed in Chrome against the production export. Loading resolved to the fallback, unavailable camera and sign controls were hidden, and Selected work led through to the full Care IQ case study. Ordinary Work, About, Notes, Contact, and case-study URLs remain part of the static export.
+- **Static references:** all 230 local route and asset references resolved across 12 generated HTML files.
+- **First live release:** implementation commit `087cebbe03291e23e5109ee944c031d07f51321e` reached Render `live` through commit auto-deploy. Web deployment `dep-dbfachijnfac73eim590` completed at 2026-10-26 01:02:24 UTC; API deployment `dep-dbfachijnfac73eim5c0` completed at 01:02:30 UTC (October 25 in Pacific time).
+- **Public workload:** HTTPS homepage and Care IQ case study returned 200; www redirected to the apex; the bundled demo asset returned 200; an unknown route returned the custom 404; API health returned `status: ok`. The live domain rendered the 3D scene, switched themes, opened Care IQ inside the monitor, and navigated to Life and About.
 
 This is a scoped implementation and browser review. It does not claim physical-device coverage, a formal accessibility audit, a performance score, or measured Core Web Vitals. The entries below are historical checks for the earlier visual design and do not describe the new homepage.
 
