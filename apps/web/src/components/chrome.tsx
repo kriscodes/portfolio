@@ -5,13 +5,15 @@ import { useEffect, useState } from 'react';
 export function Navigation() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    document.body.classList.toggle('studio-page', path === '/');
+    return () => document.body.classList.remove('studio-page');
+  }, [path]);
+  if (path === '/') return null;
   return (
     <header className="site-header" id="top" tabIndex={-1}>
       <Link href="/" className="wordmark" onClick={() => setOpen(false)}>
-        <span className="brand-mark">
-          ks<span>✳</span>
-        </span>
-        <span>
+        <span className="reading-wordmark">
           KRISTIAN
           <br />
           SALMERON
@@ -52,10 +54,12 @@ export function Navigation() {
   );
 }
 export function Footer() {
+  const path = usePathname();
+  if (path === '/') return null;
   return (
     <footer className="site-footer">
       <Link className="footer-name" href="/">
-        Kristian Salmeron<span>✳</span>
+        Return to the studio<span aria-hidden>↗</span>
       </Link>
       <div className="footer-meta">
         <span>BUILT WITH INTENT. BEST VIEWED WITH CURIOSITY.</span>
@@ -123,7 +127,7 @@ export function PageIndex() {
   }, []);
   return (
     <nav className="index-strip page-index" aria-label="On this page">
-      <span className="index-caption">A FIELD GUIDE TO WHAT I BUILD & HOW I THINK</span>
+      <span className="index-caption">WORK, IDEAS & LIFE BEYOND THE SCREEN</span>
       <div>
         {homeSections.map((section) => (
           <a

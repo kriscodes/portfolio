@@ -2800,3 +2800,89 @@ a.work-list-item:hover h2 {
     gap: 18px;
   }
 }
+
+/* Corner Studio owns its homepage chrome; reading routes retain their existing layout. */
+body.studio-page,
+body:has(.studio-home) {
+  background: #0c1420;
+}
+body.studio-page::after,
+body:has(.studio-home)::after {
+  display: none;
+}
+.studio-home {
+  min-height: 100svh;
+  background: #0c1420;
+  color: #e7ede9;
+  outline: none;
+}
+.studio-page-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 26px;
+  padding: 22px 5%;
+  border-top: 1px solid #adc5c528;
+  background: #0c1420;
+  color: #bdcfcc;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  transition:
+    color 1.7s,
+    background-color 1.7s,
+    border-color 1.7s;
+}
+.studio-page-links > span {
+  color: #98adae;
+  margin-right: 10px;
+}
+.studio-page-links > a {
+  padding: 5px 0;
+  text-underline-offset: 5px;
+}
+.studio-page-links > a:hover {
+  text-decoration: underline;
+}
+.studio-page-links > a:focus-visible {
+  outline-color: #78f1d8;
+  outline-offset: 5px;
+}
+.studio-home:has([data-mode='day']) .studio-page-links {
+  background: #f1eee5;
+  color: #30382f;
+  border-color: #89947840;
+}
+.studio-home:has([data-mode='day']) .studio-page-links > span {
+  color: #606657;
+}
+.studio-home:has([data-mode='day']) .studio-page-links > a:focus-visible {
+  outline-color: #b96040;
+}
+.studio-script-note {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 30px 5%;
+  color: #bdcfcc;
+  font-size: 16px;
+}
+.reading-wordmark {
+  font-size: 14px;
+  letter-spacing: 1.2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-page-links {
+    transition: none;
+  }
+}
+@media (max-width: 480px) {
+  .studio-page-links {
+    gap: 10px 20px;
+  }
+  .studio-page-links > span {
+    width: 100%;
+    text-align: center;
+    margin-right: 0;
+  }
+}

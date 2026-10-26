@@ -65,19 +65,21 @@ export default function Work() {
           <div className="work-index">003 / YOU ARE HERE</div>
           <div>
             <span className="eyebrow">PERSONAL WEBSITE</span>
-            <h2>This field guide.</h2>
-            <p>A portfolio with a little more perspective.</p>
+            <h2>Corner Studio</h2>
+            <p>A place to explore the work and the person behind it.</p>
             <div className="tags">
               <span>Next.js</span>
               <span>React</span>
-              <span>Design system</span>
+              <span>Three.js</span>
+              <span>React Three Fiber</span>
             </div>
             <p className="muted">
-              Fast, readable pages. Deliberate interactions. A shared home for the frontend, API
-              foundation, and architecture notes.
+              A corner studio with two lighting themes, camera journeys, an interactive project
+              monitor, and a sailing display. The same work and background remain available as
+              readable, shareable pages.
             </p>
-            <Link className="text-link" href="/field-notes/leave-room-for-the-unknown">
-              Read the thinking behind it ↗
+            <Link className="text-link" href="/">
+              Explore the studio ↗
             </Link>
           </div>
         </div>

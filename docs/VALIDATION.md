@@ -1,4 +1,20 @@
-# Validation — design v1
+# Validation
+
+## Corner Studio — 2026-10-25
+
+The checks below cover the production export and browser behavior before deployment. Deployment and live custom-domain verification are still pending.
+
+- **Production build:** the full workspace build passed for Next.js, the Express API, and shared contracts. The frontend exported successfully for static hosting.
+- **Type checks:** passed across all workspace packages.
+- **Automated tests:** all six studio state tests and the existing API integration test passed. The root test command builds shared contracts before running package tests.
+- **Formatting:** the root Prettier check passed.
+- **Desktop browser:** exercised Work navigation, the Care IQ preview, Neon Drift under Experiments, monitor back navigation, Escape, and the theme switch. Checked About tabs and page controls, and Life's sailboat, Catalina map, pause, reverse, and outdoors controls.
+- **Narrow browser viewports:** checked the production export at 390px and 320px. Exercised Work, Life, and About navigation, tabs and paging, and theme switching.
+- **No-WebGL fallback:** passed in Chrome against the production export. Loading resolved to the fallback, unavailable camera and sign controls were hidden, and Selected work led through to the full Care IQ case study. Ordinary Work, About, Notes, Contact, and case-study URLs remain part of the static export.
+
+This is a scoped implementation and browser review. It does not claim physical-device coverage, a formal accessibility audit, a performance score, or measured Core Web Vitals. The entries below are historical checks for the earlier visual design and do not describe the new homepage.
+
+## Earlier design v1
 
 Checked on 2026-09-13.
 
@@ -17,7 +33,7 @@ This is a scoped implementation review, not a formal accessibility certification
 
 The hosted design preview contains the static frontend. The API is provided as a runnable monorepo foundation and is not deployed by the static-site publication.
 
-## Second pass — Wind Study and homepage flow
+### Second pass — Wind Study and homepage flow
 
 Checked on 2026-09-13 after the second-pass edits.
 
@@ -31,7 +47,7 @@ Checked on 2026-09-13 after the second-pass edits.
 - The Care IQ diagram shortcut reached `/work/care-iq/#request` and the “From identity to integrity” section. Returning home remounted the interaction normally.
 - No new runtime packages or external data services were added. No performance score or frame-rate benchmark is claimed.
 
-## Personal photography and professional evidence
+### Personal photography and professional evidence
 
 - Added three Instagram JPEG renditions, visually inspected before integration. Home uses the forest road and sailing photo; About uses those plus the aerial view. Assets are stored locally, with source-post links and accurate credit text.
 - Read the current resume linked in “Find Open Jobs” directly from Google Drive. Checked the Gen UI metric, user/application reach, One ClaimHub scope, Highmark delivery scope, and CrossComm mentoring wording against it and the direct-report clarification.

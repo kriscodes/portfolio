@@ -1,5 +1,7 @@
 # kristiansalmeron.com — Complete v1 design and content strategy
 
+Historical design record for the earlier editorial homepage. The current homepage is [Corner Studio](CORNER-STUDIO.md); case-study evidence and readable routes described here remain part of the portfolio.
+
 ## The idea
 
 **Good systems. Wild places.**

@@ -8,7 +8,7 @@
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build && node scripts/package-web.mjs",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter @kristian/api test",
+    "test": "pnpm --filter @kristian/contracts build && pnpm -r --if-present test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

@@ -24,10 +24,11 @@ export const projects: readonly Project[] = [
     technologies: ['Apryse', 'Progressive PDF delivery', 'Application architecture'],
   },
   {
-    slug: 'field-guide',
-    name: 'This field guide',
+    slug: 'corner-studio',
+    name: 'Corner Studio',
     status: 'design-v1',
-    summary: 'A personal engineering portfolio with an interactive architecture walkthrough.',
-    technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Express'],
+    summary:
+      'An interactive 3D portfolio studio with two themes, project demonstrations, and accessible case-study pages.',
+    technologies: ['Next.js', 'React', 'TypeScript', 'Three.js', 'React Three Fiber', 'Drei'],
   },
 ];

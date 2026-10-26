@@ -67,7 +67,7 @@ export const notes = [
       {
         heading: 'Keep enough room to notice.',
         paragraphs: [
-          'Hiking, sailing, and photography each reward paying attention. That is the quality I want this field guide to carry: a clear direction, curiosity about the conditions, and enough space to look again.',
+          'Hiking, sailing, and photography each reward paying attention. That is the quality I want this portfolio to carry: a clear direction, curiosity about the conditions, and enough space to look again.',
           'The next step should be informed by what the current one reveals.',
         ],
       },

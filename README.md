@@ -1,6 +1,6 @@
-# Kristian Salmeron — Field Guide
+# Kristian Salmeron — Corner Studio
 
-A complete visual v1 for kristiansalmeron.com, positioned for engineering leadership and architecture. The design is a sun-worn field journal: warm paper, evergreen ink, signal orange, tactile photographic prints, and architecture diagrams that explain real decisions.
+A portfolio for kristiansalmeron.com, with an interactive corner studio as its homepage. Explore software projects, experiments, background, and a life outdoors in After Hours or Open Desk. Readable Work, About, Contact, and case-study pages remain available alongside the scene.
 
 ## Deploy to Render
 
@@ -8,6 +8,7 @@ The complete source is in this repository. Deploy the frontend and API using the
 
 ## Start here
 
+- [Corner Studio implementation and interaction guide](docs/CORNER-STUDIO.md)
 - [Design and exact content strategy](docs/DESIGN-AND-CONTENT.md)
 - [Second-pass UX review](docs/UX-REVIEW.md)
 - [Architecture and API](docs/ARCHITECTURE.md)
@@ -56,6 +57,6 @@ The stack follows the inspected CareIQ workspace: pnpm, Next 16.3.3, React 19.2.
 
 ## Included
 
-Nine content routes plus a custom 404; responsive navigation and a sticky chapter index; an interactive Canvas Wind Study; request-path explorer; tradeoff ledger; land/sea/lens selector; keyboard-accessible photo dialog; working LinkedIn and Instagram destinations; copyable website address; per-page metadata; custom favicon; two starter essays; read-only API contracts; a meaningful API integration test; a resume-grounded Gen UI case study and leadership examples; three personal Instagram photographs.
+An interactive Three.js studio with React Three Fiber and Drei; After Hours and Open Desk themes; sign-driven camera navigation; an explorable project monitor; Life and About displays; nine content routes plus a custom 404; request-path explorer; tradeoff ledger; land/sea/lens selector; keyboard-accessible photo dialog; working LinkedIn and Instagram destinations; copyable website address; per-page metadata; custom favicon; two starter essays; read-only API contracts; a meaningful API integration test; a resume-grounded Gen UI case study and leadership examples; three personal Instagram photographs.
 
-This is a private review build. The personal photos and leadership evidence are now sourced from Kristian’s Instagram and resume. Confirm final editorial copy and employer-project disclosure before making the site public. No invented employment history, impact metrics, awards, email addresses, compliance claims, or customer data are included.
+Personal photos and leadership evidence are sourced from Kristian’s Instagram and resume. No invented employment history, impact metrics, awards, email addresses, compliance claims, or customer data are included. Historical design-review documents describe the earlier visual direction; see the Corner Studio guide for the current homepage.

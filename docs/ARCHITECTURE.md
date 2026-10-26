@@ -1,5 +1,7 @@
 # Architecture
 
+The interactive homepage is documented in [Corner Studio](CORNER-STUDIO.md). It adds a client-side Three.js / React Three Fiber / Drei scene to the static frontend. The existing reading routes, shared API contracts, and independent API service continue to use the boundaries below.
+
 ## CareIQ continuity
 
 This workspace mirrors the inspected CareIQ conventions: plain pnpm workspaces, `apps/web`, `apps/api`, shared `packages`, and `docs/decisions`. It does not introduce Turborepo. The API owns future persistence and migrations; shared packages never import applications.
@@ -34,7 +36,7 @@ The frontend is statically exported. It does not call the API for content requir
 
 The frontend uses explicit App Router pages, plus generated static params for the two notes. Each route supplies title and description metadata. A custom 404 handles unknown pages. Images live in `apps/web/public/images` and ship with the export. There are no remote font requests or runtime image-provider dependencies.
 
-Interactive islands live in `src/components/field-tools.tsx`: request-path state, native disclosure controls, interest selection, native dialog, and clipboard feedback. Navigation and the homepage chapter index are small client components. Page copy remains server-rendered.
+Interactive reading-page islands live in `src/components/field-tools.tsx`: request-path state, native disclosure controls, interest selection, native dialog, and clipboard feedback. Navigation is a small client component. Reading-page copy remains server-rendered. The current homepage lives in `src/components/studio/`, with its own navigation and footer in place of the reading-page chrome.
 
 `src/components/wind-study.tsx` owns the Wind Study. React holds accessible control state; the Canvas loop holds particle positions and interpolated values in its effect, keeping frame updates out of React renders. The vector field is deterministic in its seeded distribution and expressive rather than scientifically calibrated. Device-pixel scaling is capped at 2 and particle count at 850. ResizeObserver rebuilds the surface, IntersectionObserver and document visibility suspend animation, and cleanup disconnects observers and cancels animation frames. Pause and reduced motion draw static streamlines from the same settings. Native range/buttons and arrow-key eddy movement make the interaction available without a pointer. No API calls, new packages, data collection, or external animation service are involved.
 
@@ -66,7 +68,8 @@ The collection also includes the NLP Gen UI professional case study and the port
 
 ## Adding content
 
-- Home copy: `apps/web/src/app/page.tsx`.
+- Homepage route and accessible page links: `apps/web/src/app/page.tsx`.
+- Studio interfaces, content, and scene: `apps/web/src/components/studio/`.
 - Gen UI professional case study: `apps/web/src/app/work/gen-ui/page.tsx`.
 - Leadership evidence and featured result: `apps/web/src/components/career.tsx`.
 - Care IQ case study: `apps/web/src/app/work/care-iq/page.tsx`.

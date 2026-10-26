@@ -1,5 +1,7 @@
 # Second-pass UX review
 
+Historical review of the earlier editorial homepage. See [Corner Studio](CORNER-STUDIO.md) for the current interactive homepage and its validation scope.
+
 Reviewed and implemented 2026-09-13. Direction preserved: **Good systems. Wild places.**
 
 ## What was missing
