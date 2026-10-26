@@ -1162,12 +1162,12 @@ export function createControllerRuntime(root, onStateChange = () => {}) {
   syncProjectBrowser();
   restore(saved);
   syncChrome();
-  function applySavedNavigation(snapshot, immediate = true) {
+  function applySavedNavigation(snapshot, immediate = true, forceSceneNavigation = false) {
     const model = snapshot?.modelContent || snapshot;
     const previousSection = activeSection;
     restore(snapshot, { animate: !immediate });
     const section = ['work', 'life', 'about'].includes(model?.section) ? model.section : null;
-    if (section === previousSection) {
+    if (!forceSceneNavigation && section === previousSection) {
       syncSceneChrome();
       return;
     }
@@ -1212,7 +1212,9 @@ export function createControllerRuntime(root, onStateChange = () => {}) {
       root.classList.remove('kd-no-scene');
       scene.setTheme(progress);
       scene.setAngle(settings.angle);
-      applySavedNavigation(readStudioState());
+      // A newly attached scene starts at overview even if the controller already
+      // restored this destination for an earlier canvas/camera instance.
+      applySavedNavigation(readStudioState(), true, true);
       onStateChange(currentSnapshot().modelContent);
     },
     dispose() {

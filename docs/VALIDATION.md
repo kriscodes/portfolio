@@ -6,7 +6,7 @@ The checks below cover the production export, browser behavior, and the first Co
 
 - **Production build:** the full workspace build passed for Next.js, the Express API, and shared contracts. The frontend exported successfully for static hosting.
 - **Type checks:** passed across all workspace packages.
-- **Automated tests:** all six studio state tests and the existing API integration test passed. The root test command builds shared contracts before running package tests.
+- **Automated tests:** all six studio state tests, the Catalina map-rendering regression, and the existing API integration test passed. The map test checks real coastline paths, finite harbor coordinates, boat movement between both harbors, and both themes. The root test command builds shared contracts before running package tests.
 - **Formatting:** the root Prettier check passed.
 - **Desktop browser:** exercised Work navigation, the Care IQ preview, Neon Drift under Experiments, monitor back navigation, Escape, and the theme switch. Checked About tabs and page controls, and Life's sailboat, Catalina map, pause, reverse, and outdoors controls.
 - **Narrow browser viewports:** checked the production export at 390px and 320px. Exercised Work, Life, and About navigation, tabs and paging, and theme switching.
@@ -14,6 +14,7 @@ The checks below cover the production export, browser behavior, and the first Co
 - **Static references:** all 230 local route and asset references resolved across 12 generated HTML files.
 - **First live release:** implementation commit `087cebbe03291e23e5109ee944c031d07f51321e` reached Render `live` through commit auto-deploy. Web deployment `dep-dbfachijnfac73eim590` completed at 2026-10-26 01:02:24 UTC; API deployment `dep-dbfachijnfac73eim5c0` completed at 01:02:30 UTC (October 25 in Pacific time).
 - **Public workload:** HTTPS homepage and Care IQ case study returned 200; www redirected to the apex; the bundled demo asset returned 200; an unknown route returned the custom 404; API health returned `status: ok`. The live domain rendered the 3D scene, switched themes, opened Care IQ inside the monitor, and navigated to Life and About.
+- **Shared-link regression:** direct project, Catalina, and career-page links were checked against the production export after correcting initialization against the final Drei camera. A new scene always restores its destination even when the controller already has that destination selected. The Catalina coastline and boat rendered correctly, and playback worked in both themes. The Care IQ audit control also remains inside the preview without linking to an unavailable route.
 
 This is a scoped implementation and browser review. It does not claim physical-device coverage, a formal accessibility audit, a performance score, or measured Core Web Vitals. The entries below are historical checks for the earlier visual design and do not describe the new homepage.
 

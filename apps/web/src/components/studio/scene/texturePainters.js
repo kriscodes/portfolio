@@ -1,4 +1,4 @@
-import { geoMercator, geoPath } from 'd3-geo';
+import { geoMercator, geoPath as createGeoPath } from 'd3-geo';
 import voyageCoast from './voyage-coast.json';
 
 export function paintKristianProjectPreview(ctx, width, height, id) {
@@ -287,7 +287,7 @@ export function paintKristianVoyageMap(ctx, width, height, state) {
     mapBottom = H - controls;
   var typeScale = Math.min(1.6, Math.max(1, Math.sqrt(controls / 78)));
   var compact = controls > 135;
-  var d3 = { geoMercator, geoPath };
+  var d3 = { geoMercator, geoPath: createGeoPath };
   var land = state.land || voyageCoast;
   var start = [-118.46103, 33.96175];
   var finish = [-118.325, 33.345];

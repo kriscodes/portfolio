@@ -6,7 +6,7 @@
     "dev": "next dev --webpack --port 3210 --hostname 127.0.0.1",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/components/studio/state.test.ts"
+    "test": "tsx --test src/components/studio/state.test.ts src/components/studio/scene/*.test.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "5.3.0",

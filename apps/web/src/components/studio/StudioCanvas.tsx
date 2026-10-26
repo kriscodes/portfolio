@@ -7,6 +7,8 @@ import { WebGLRenderer, type PerspectiveCamera as ThreePerspectiveCamera } from 
 import { createStudioScene } from './scene/createStudioScene';
 import type { StudioCallbacks, StudioSceneAPI } from './scene/types';
 
+const studioCameraName = 'Corner Studio camera';
+
 export interface StudioCanvasProps {
   sceneElement: HTMLElement | null;
   callbacks: StudioCallbacks;
@@ -19,7 +21,14 @@ function StudioModel({ sceneElement, callbacks, onReady, onError }: StudioCanvas
   const model = useRef<StudioSceneAPI | null>(null);
 
   useEffect(() => {
-    if (!sceneElement || !(camera as ThreePerspectiveCamera).isPerspectiveCamera) return;
+    // Drei replaces Fiber's temporary camera after mounting. Initialize only
+    // against the final camera so restoring a shared URL cannot be discarded.
+    if (
+      !sceneElement ||
+      camera.name !== studioCameraName ||
+      !(camera as ThreePerspectiveCamera).isPerspectiveCamera
+    )
+      return;
     let current: StudioSceneAPI | null = null;
     const contextLost = (event: Event) => {
       event.preventDefault();
@@ -96,7 +105,14 @@ export default function StudioCanvas(props: StudioCanvasProps) {
           </p>
         }
       >
-        <PerspectiveCamera makeDefault fov={32} near={0.1} far={100} position={[10.5, 8.4, 12]} />
+        <PerspectiveCamera
+          name={studioCameraName}
+          makeDefault
+          fov={32}
+          near={0.1}
+          far={100}
+          position={[10.5, 8.4, 12]}
+        />
         <StudioModel {...props} />
       </Canvas>
     </CanvasBoundary>
