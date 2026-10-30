@@ -1,40 +1,61 @@
 import Link from 'next/link';
-import { SectionLabel } from '@/components/chrome';
-import { notes } from '@/components/notes';
-export const metadata = {
-  title: 'Field notes',
-  description: 'Notes on architecture, boundaries, judgment, and leaving room for the unknown.',
-};
-export default function Notes() {
+import { pageMetadata } from '@/lib/metadata';
+
+export const metadata = pageMetadata(
+  'Field notes',
+  'Notes on architecture, boundaries, judgment, and leaving room for the unknown.',
+  '/field-notes/',
+);
+
+export default function FieldNotesPage() {
   return (
-    <main id="main">
-      <section className="page-intro">
-        <SectionLabel number="03">THE OPEN NOTEBOOK</SectionLabel>
-        <h1>
-          Observations
-          <br />
-          from the <em>field.</em>
-        </h1>
-        <p>
-          Notes on building software, making decisions, and keeping a sense of perspective along the
-          way.
-        </p>
-      </section>
-      <section className="section notebook-list">
-        {notes.map((note) => (
-          <Link key={note.slug} className="notebook-entry" href={`/field-notes/${note.slug}`}>
-            <div className="notebook-number">
-              {note.number}
-              <span>FIELD NOTE</span>
-            </div>
-            <div>
-              <span className="eyebrow">{note.category}</span>
-              <h2>{note.title}</h2>
-              <p>{note.subtitle}</p>
-              <span className="text-link">Read the note ↗</span>
-            </div>
+    <main id="main" className="ip-main">
+      <section aria-labelledby="ip-notes-title">
+        <div className="ip-hero">
+          <p className="ip-eyebrow">The open notebook</p>
+          <h1 id="ip-notes-title">
+            Notes from
+            <br /> the <span className="ip-accent">field.</span>
+          </h1>
+          <p className="ip-deck">
+            On building software, making decisions,
+            <br /> and keeping a sense of perspective.
+          </p>
+        </div>
+        <div className="ip-notes-list">
+          <Link href="/field-notes/the-boundary-is-the-feature" className="ip-note">
+            <span className="ip-note-number">001</span>
+            <span>
+              <span className="ip-small-label">Engineering</span>
+              <h2>
+                The boundary
+                <br /> is the feature.
+              </h2>
+              <p>Why practice context belongs inside the transaction.</p>
+            </span>
+            <span className="ip-note-arrow" aria-hidden="true">
+              ↗
+            </span>
           </Link>
-        ))}
+          <Link href="/field-notes/leave-room-for-the-unknown" className="ip-note">
+            <span className="ip-note-number">002</span>
+            <span>
+              <span className="ip-small-label">Perspective</span>
+              <h2>
+                Leave room
+                <br /> for the unknown.
+              </h2>
+              <p>A direction can be clear without pretending the whole route is known.</p>
+            </span>
+            <span className="ip-note-arrow" aria-hidden="true">
+              ↗
+            </span>
+          </Link>
+        </div>
+        <div className="ip-ending">
+          <p>Interesting questions tend to lead somewhere.</p>
+          <Link href="/contact">Start a conversation ↗</Link>
+        </div>
       </section>
     </main>
   );

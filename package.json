@@ -7,10 +7,13 @@
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build && node scripts/package-web.mjs",
-    "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter @kristian/contracts build && pnpm -r --if-present test",
+    "typecheck": "pnpm --filter @kristian/contracts build && pnpm -r typecheck",
+    "test": "pnpm test:unit && pnpm test:web",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:unit": "pnpm --filter @kristian/contracts build && pnpm -r --if-present test && node --experimental-strip-types --test apps/web/src/components/sail-geometry.test.mjs scripts/test-validate-web.mjs",
+    "test:web": "node scripts/validate-web.mjs",
+    "validate": "pnpm typecheck && pnpm test:unit && pnpm build && pnpm test:web"
   },
   "devDependencies": {
     "prettier": "3.6.2"

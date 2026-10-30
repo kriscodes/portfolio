@@ -1,6 +1,8 @@
-# Kristian Salmeron — Corner Studio
+# Kristian Salmeron — Making things work
 
-A portfolio for kristiansalmeron.com, with an interactive corner studio as its homepage. Explore software projects, experiments, background, and a life outdoors in After Hours or Open Desk. Readable Work, About, Contact, and case-study pages remain available alongside the scene.
+The approved portfolio redesign for kristiansalmeron.com: silver and graphite, Instrument Sans, one subtle blue-gray word accent, quiet margin labels, and an interactive sail form study. Work, project stories, About, Contact, Field notes, and both complete articles use real, statically generated routes.
+
+This source carries the new design. The historical documents in `docs/` describe the earlier Field Guide edition and its content provenance.
 
 ## Deploy to Render
 
@@ -8,7 +10,6 @@ The complete source is in this repository. Deploy the frontend and API using the
 
 ## Start here
 
-- [Corner Studio implementation and interaction guide](docs/CORNER-STUDIO.md)
 - [Design and exact content strategy](docs/DESIGN-AND-CONTENT.md)
 - [Second-pass UX review](docs/UX-REVIEW.md)
 - [Architecture and API](docs/ARCHITECTURE.md)
@@ -20,8 +21,7 @@ The complete source is in this repository. Deploy the frontend and API using the
 Use Node 22.13+ (tested with 22.23.2) and pnpm 11.22.0.
 
 ```sh
-pnpm install
-pnpm --filter @kristian/contracts build
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
@@ -30,12 +30,12 @@ Web: `http://127.0.0.1:3210`. API: `http://localhost:3211`.
 On systems with a low watcher limit, use `WATCHPACK_POLLING=true pnpm dev`.
 
 ```sh
-pnpm build
-pnpm typecheck
-pnpm test
+pnpm validate
 ```
 
-The root build creates `out/`, the deployable static frontend. The API builds to `apps/api/dist/` and runs independently with `pnpm --filter @kristian/api start`.
+`pnpm validate` checks types, runs the API contract test, 8 retained studio regressions, and 13 geometry/audit regression tests, builds the production export, and audits every content route, internal link, local asset, accessible control, and canonical metadata. The root build creates `out/`, the deployable static frontend. The API builds to `apps/api/dist/` and runs independently with `pnpm --filter @kristian/api start`.
+
+After deployment, run `node scripts/test-live-web.mjs https://kristiansalmeron.com` to verify delivered pages, assets, crawler files, and the custom HTTP 404. This HTTP check also accepts a local or staging origin.
 
 ## Code formatting
 
@@ -46,17 +46,17 @@ Edit source files in `apps/` and `packages/`. Generated `.next/`, `out/`, and `d
 ## Workspace
 
 ```text
-apps/web/             Next.js App Router, React, Tailwind CSS
+apps/web/             Next.js App Router, React, scoped CSS, local fonts
 apps/api/             Express REST API foundation
 packages/contracts/   Shared API types and public project summaries
 docs/                 Design, content, architecture, provenance, decisions
-scripts/              Static export packaging
+scripts/              Static export packaging and release validation
 ```
 
 The stack follows the inspected CareIQ workspace: pnpm, Next 16.3.3, React 19.2.8, Tailwind 4.3.3, TypeScript, Express 5.2.1, Drizzle 0.45.2, PostgreSQL client 8.23.0. Drizzle and pg are included for the future persistence slice but are not connected in this UI release. Clerk is intentionally deferred until there is an actual authenticated workflow. There is no invented login requirement for reading a portfolio.
 
 ## Included
 
-An interactive Three.js studio with React Three Fiber and Drei; After Hours and Open Desk themes; sign-driven camera navigation; an explorable project monitor; Life and About displays; nine content routes plus a custom 404; request-path explorer; tradeoff ledger; land/sea/lens selector; keyboard-accessible photo dialog; working LinkedIn and Instagram destinations; copyable website address; per-page metadata; custom favicon; two starter essays; read-only API contracts; a meaningful API integration test; a resume-grounded Gen UI case study and leadership examples; three personal Instagram photographs.
+Nine content routes plus a custom 404; responsive navigation; a sail study with height, width, draft, and wind controls; interactive architecture explanations; land/sea/lens selector; working LinkedIn and Instagram destinations; locally served open-source fonts and licenses; per-page canonical/social metadata; sitemap and robots; two complete essays; preserved API contracts; geometry, contract, and release audit tests.
 
-Personal photos and leadership evidence are sourced from Kristian’s Instagram and resume. No invented employment history, impact metrics, awards, email addresses, compliance claims, or customer data are included. Historical design-review documents describe the earlier visual direction; see the Corner Studio guide for the current homepage.
+Wind starts only on request, stops when the sail leaves view or the tab is hidden, and respects reduced motion. A static sail and readable architecture summaries remain available without JavaScript. The sail response is an illustrative form study, not engineering validation. Existing public content and project claims are preserved; no patient data is used.

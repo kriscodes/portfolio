@@ -1,3 +1,16 @@
+## Tension sail redesign — 2026-10-29
+
+- Applied the approved silver/graphite design, Instrument Sans typography, subtle accent, margin labels, and sail study across all nine content routes.
+- Reconciled the frontend with production commit `1bf92a840343a41ca8457f1a29bc1abb392cfdc9`, preserving its dependency lockfile, public API contracts, article correction, and existing studio regression tests.
+- Full production build and TypeScript checks passed. All 22 automated tests passed: 8 retained studio/map tests, 1 API contract test, 5 sail geometry/wind tests, and 8 release-audit regression tests.
+- Static release audit passed for 9 content routes, 12 exported HTML documents, 110 links, and 21 local assets. Canonical/social metadata, sitemap, robots, semantic structure, labeled controls, and prototype cleanup were checked.
+- Local HTTP release checks passed for all 9 direct routes, 18 delivered assets, crawler files, and a custom HTTP 404 response.
+- Browser checks covered all 9 pages at 320px without horizontal page overflow or broken visible images, plus desktop and 600px/820px tablet layouts. Light and dark appearances, native keyboard range limits, zero-wind state, project stage selectors, personal interests, article links, and navigation were exercised. No browser console errors were observed.
+- Static sail and no-JavaScript summaries are provided. Canvas lifecycle, reduced motion, observer/listener cleanup, and tab/offscreen suspension were reviewed; geometry and bounded wind dynamics are tested.
+- Formatting and whitespace checks passed. Public release verification is performed against the actual Render deployment after publishing.
+
+This is scoped browser and implementation testing, not physical-device coverage, formal accessibility certification, or a measured Core Web Vitals score. The records below are historical.
+
 # Validation
 
 ## 2D studio and 404 — 2026-10-25
