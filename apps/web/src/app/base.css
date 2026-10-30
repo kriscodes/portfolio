@@ -27,7 +27,7 @@
   src: url('/fonts/ibm-plex-mono-latin.woff2') format('woff2');
 }
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 html {
   scroll-padding-top: 24px;
