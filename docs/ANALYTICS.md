@@ -65,7 +65,9 @@ The Privacy view links to `https://kristiansalmeron.com/?analytics_opt_out=1` to
 
 ## Verification and operation
 
-The November 8, 2026 plan update does not change or replace earlier local validation results. At this configuration update, production deployment remains unverified; local tests and builds are not evidence that the approved Render resources or custom domain are live.
+Production was verified on November 8, 2026 at `https://analytics.kristiansalmeron.com`, running source commit `ab5e722`. The API uses the always-on `0.5c-512mb` plan, and the 1 GB database is available with all external database IP access blocked. Both the API and public portfolio deployments reached `live`; the analytics domain has a managed HTTPS certificate. The health and authentication endpoints respond successfully, unauthenticated reports return HTTP 401 with private/no-store caching, fixed assets load, untrusted collection origins return HTTP 403, and a bot-only collector check returns HTTP 204 without creating fake traffic. The public portfolio's nine-route HTTP release audit also passed, and the delivered scripts contain the in-house collector, retry queue, and browser opt-out.
+
+The free-to-paid hosting transition initially returned a Render gateway error even though the running app and database passed localhost checks. Redeploying the same tested version restored public routing. The verified API deployment is `dep-dbob223rjlhs73att3lg`; the public portfolio deployment is `dep-dboavblfi0pc73b48a8g`. Initial owner password setup is performed directly by the owner on the one-time setup page; no production password is entered or stored by the agent.
 
 Run repository type checks, unit/integration tests, the production build, and the static-export validation before releasing. Use a disposable PostgreSQL database for the optional persistent-store integration test. Verify setup access, invalid passwords, blocked unauthenticated reports, session expiry/revocation, origin validation, allowed platform attribution, real collection/reporting, and empty states.
 
