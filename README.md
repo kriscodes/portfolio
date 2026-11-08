@@ -10,6 +10,7 @@ The complete source is in this repository. Deploy the frontend and API using the
 
 ## Start here
 
+- [Private analytics, owner setup, social links, and Render deployment](docs/ANALYTICS.md)
 - [Design and exact content strategy](docs/DESIGN-AND-CONTENT.md)
 - [Second-pass UX review](docs/UX-REVIEW.md)
 - [Architecture and API](docs/ARCHITECTURE.md)
@@ -33,7 +34,7 @@ On systems with a low watcher limit, use `WATCHPACK_POLLING=true pnpm dev`.
 pnpm validate
 ```
 
-`pnpm validate` checks types, runs the API contract test, 8 retained studio regressions, and 13 geometry/audit regression tests, builds the production export, and audits every content route, internal link, local asset, accessible control, and canonical metadata. The root build creates `out/`, the deployable static frontend. The API builds to `apps/api/dist/` and runs independently with `pnpm --filter @kristian/api start`.
+`pnpm validate` checks types, runs API contract/authentication/collection tests, social attribution tests, retained studio regressions, and geometry/audit regressions, builds the production export, and audits every content route, internal link, local asset, accessible control, and canonical metadata. Set `ANALYTICS_TEST_DATABASE_URL` to a disposable PostgreSQL database to include persistent-store integration checks. The root build creates `out/`, the deployable static frontend. The API builds to `apps/api/dist/` and runs independently with `pnpm --filter @kristian/api start`.
 
 After deployment, run `node scripts/test-live-web.mjs https://kristiansalmeron.com` to verify delivered pages, assets, crawler files, and the custom HTTP 404. This HTTP check also accepts a local or staging origin.
 
@@ -47,13 +48,13 @@ Edit source files in `apps/` and `packages/`. Generated `.next/`, `out/`, and `d
 
 ```text
 apps/web/             Next.js App Router, React, scoped CSS, local fonts
-apps/api/             Express REST API foundation
+apps/api/             Express API, private analytics, in-house owner login
 packages/contracts/   Shared API types and public project summaries
 docs/                 Design, content, architecture, provenance, decisions
 scripts/              Static export packaging and release validation
 ```
 
-The stack follows the inspected CareIQ workspace: pnpm, Next 16.3.3, React 19.2.8, Tailwind 4.3.3, TypeScript, Express 5.2.1, Drizzle 0.45.2, PostgreSQL client 8.23.0. Drizzle and pg are included for the future persistence slice but are not connected in this UI release. Clerk is intentionally deferred until there is an actual authenticated workflow. There is no invented login requirement for reading a portfolio.
+The stack uses pnpm, Next 16.3.3, React 19.2.8, Tailwind 4.3.3, TypeScript, Express 5.2.1, Drizzle 0.45.2, and PostgreSQL client 8.23.0. Private analytics uses PostgreSQL and a single-owner password login implemented with Node's scrypt and opaque server sessions. No third-party analytics or authentication account is required. The public portfolio remains readable without login; see [analytics setup](docs/ANALYTICS.md) for the separate private dashboard.
 
 ## Included
 

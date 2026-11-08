@@ -1,5 +1,7 @@
 # Architecture
 
+For the current in-house analytics collector, PostgreSQL store, private reporting API, and owner login, see [Private Studio Insights](ANALYTICS.md). The historical portfolio architecture below predates that addition and the Sail Study redesign.
+
 The interactive homepage is documented in [Corner Studio](CORNER-STUDIO.md). It adds a client-side Three.js / React Three Fiber / Drei scene to the static frontend. The existing reading routes, shared API contracts, and independent API service continue to use the boundaries below.
 
 ## CareIQ continuity

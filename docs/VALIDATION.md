@@ -1,3 +1,13 @@
+## In-house Studio Insights — 2026-11-08
+
+- Reconciled with the actual deployed portfolio source at `f6c542b` before implementation; retained the current public Sail Study design.
+- Full `pnpm validate` passed with `ANALYTICS_TEST_DATABASE_URL` set to a disposable local PostgreSQL 18 database. All 48 tests passed, including actual PostgreSQL persistence, auth and session revocation, password-recovery concurrency, reporting access, payload sanitization, all five social sources, retry deduplication, original timestamps, privacy opt-out, and existing portfolio regressions.
+- Production frontend/API builds and TypeScript checks passed. The static audit passed for 9 content routes, 12 exported documents, 110 links, and 21 local assets.
+- Chrome checks used a separate local preview database: owner login, protected report loading, date switching, five-platform link generation, desktop layout, and a 390px phone layout. Five synthetic test visits were collected only into that disposable database; no test traffic was inserted into production.
+- Fixed a local hidden-directory asset-serving issue and verified the actual HTML, JavaScript, and CSS over HTTP. Independent review identified and corrected the password-recovery/session-issuance race.
+- Production infrastructure is not yet deployed. Render rejected database creation with HTTP 402 because the workspace needs a payment method. The approved baseline is the existing free API plus $6.30/month durable database; the custom-domain fee choice remains pending. The Namecheap CNAME for `analytics` was saved and verified in its settings.
+- No third-party analytics/authentication provider or new application account was created. No production password, session token, or database credential was saved in source.
+
 ## Tension sail redesign — 2026-10-29
 
 - Applied the approved silver/graphite design, Instrument Sans typography, subtle accent, margin labels, and sail study across all nine content routes.

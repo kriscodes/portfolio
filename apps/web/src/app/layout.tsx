@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Navigation, Footer } from '@/components/chrome';
+import PortfolioAnalytics from '@/components/portfolio-analytics';
 import { siteUrl } from '@/lib/metadata';
 import './globals.css';
 import './base.css';
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body>
+        <PortfolioAnalytics />
         <a className="skip-link" href="#main">
           Skip to content
         </a>

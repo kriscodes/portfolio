@@ -1,0 +1,70 @@
+# Private Studio Insights
+
+Studio Insights is the portfolio's own analytics collector, PostgreSQL store, reporting API, and single-owner password login. It uses the existing Render account and repository. It does not require an analytics provider, an external authentication provider, or a new account with another application.
+
+## Services and deployment
+
+The public portfolio remains a static site. The existing `kristian-salmeron-api` service hosts the collector and dashboard at `https://analytics.kristiansalmeron.com`. Every reporting endpoint checks the owner session on the server, including requests through the service's default `onrender.com` address. Public assets contain no visitor reports or credentials.
+
+The `render.yaml` changes reuse both existing services, keep the API on its existing free compute plan, and add a private-network-only `0.1c-256mb` PostgreSQL 18 database with 1 GB of storage in Oregon. The public static site's URL and appearance are preserved. Render's custom-domain association does not create DNS records at the domain registrar.
+
+The owner approved the $6.30/month persistent database on November 8, 2026 and declined the optional $7/month always-on API upgrade. The database price is $6/month plus $0.30/month for 1 GB storage. The new subdomain can add $0.25/month if the workspace's included custom-domain allowance is exceeded; review any overage before applying it. Usage overages follow the existing Render workspace plan. The free database expires after 30 days, which is why durable visitor history uses the paid database. The free API sleeps after 15 minutes and can take about one minute to wake.
+
+The portfolio keeps at most 100 pending events for up to 24 hours in first-party browser storage and uses idempotent event IDs to retry collection while the API wakes. Original event timestamps survive retries so delayed delivery does not turn an old visit into recent activity. This improves delivery without an always-on service, but cannot guarantee recording someone who leaves immediately and never returns. Privacy settings, unavailable browser storage, ad blockers, and offline devices can also prevent delivery. The dashboard itself can take a minute to open after inactivity. Opting out clears pending events before further sends.
+
+Required runtime configuration:
+
+| Variable                       | Purpose                                                              |
+| ------------------------------ | -------------------------------------------------------------------- |
+| `DATABASE_URL`                 | Render internal connection string; resolve through `fromDatabase`    |
+| `ANALYTICS_OWNER_EMAIL`        | Only account the application may create                              |
+| `ANALYTICS_ORIGIN`             | Canonical dashboard origin, `https://analytics.kristiansalmeron.com` |
+| `ANALYTICS_SETUP_TOKEN`        | Independent random one-time setup secret of at least 32 characters   |
+| `ANALYTICS_HASH_SECRET`        | Independent random secret for stored pseudonymous identifiers        |
+| `NEXT_PUBLIC_ANALYTICS_ORIGIN` | Public portfolio build-time collector origin; no secret              |
+
+Generate and store secrets through Render's environment configuration. Preserve existing values through later Blueprint syncs. Never store a password, session cookie, setup token, connection string, or hash secret in source, deployment notes, screenshots, or logs.
+
+Set `ANALYTICS_OWNER_EMAIL` directly on the existing API service before deploying. The Blueprint deliberately omits its value from source; `sync: false` prompts for new services but is ignored for updates to existing ones. Keep this private value and the generated setup/hash secrets in Render, and let the Blueprint supply the database connection reference.
+
+DNS for the new subdomain: add a CNAME named `analytics` targeting the exact `onrender.com` hostname shown for `kristian-salmeron-api` in Render. Verify it in Render and wait for its managed HTTPS certificate. Do not change the root domain, email/MX records, or unrelated subdomains.
+
+## First owner login
+
+The deployment starts closed to visitor-data reads. There is no public registration flow. Open the dashboard's one-time setup view using the setup code from Render's secret configuration; the supported fragment form is `/#setup=SETUP_CODE`. Fragments are not sent to the server as part of the page URL. Choose a unique password of at least 14 characters directly in the dashboard. The server fixes the account to `ANALYTICS_OWNER_EMAIL` and atomically disables setup after the owner is created.
+
+Password verification uses Node's scrypt. Sessions use random opaque tokens with only their digests stored in PostgreSQL, an eight-hour expiry, and host-only HttpOnly cookies. Production cookies use Secure and SameSite Strict. Sign-out revokes the session. Login attempts are limited, and browser-origin checks protect authentication mutations. Database failures do not expose reports or silently switch production to temporary storage.
+
+If the owner password is lost, a trusted operator can run `node apps/api/dist/analytics/reset-owner.js` in an environment with authorized database access. It reads a new password from standard input, requires the configured database and owner email, and revokes existing sessions. Render's interactive service shell is unavailable on the selected free API plan; recovery therefore requires a separate authorized operator environment, or a temporary compute upgrade approved by the owner. An external database connection must use TLS and an explicitly allowed operator IP, without opening the database to the whole internet. Do not put the password in a command argument, source file, screenshot, or chat. There is no public reset endpoint or external email service.
+
+## Shareable portfolio links
+
+Use the dashboard's Shared links view to copy these links or generate a separate campaign such as `bio`, `launch`, or `portfolio`:
+
+| Platform  | Source      | Medium      |
+| --------- | ----------- | ----------- |
+| Facebook  | `facebook`  | `social`    |
+| Instagram | `instagram` | `social`    |
+| LinkedIn  | `linkedin`  | `social`    |
+| TikTok    | `tiktok`    | `social`    |
+| WhatsApp  | `whatsapp`  | `messaging` |
+
+Example: `https://kristiansalmeron.com/?utm_source=instagram&utm_medium=social&utm_campaign=portfolio`.
+
+The source tag is important for in-app browsers and private messaging, which may omit a referrer. Attribution describes the shared link: if an Instagram-tagged link is forwarded through WhatsApp, it still credits the original Instagram tag. Counted visits require someone to open the website; publishing a link does not reveal platform impressions, identities, followers, or the sender or recipient of a private message. Keep personal names, emails, phone numbers, and other sensitive values out of campaign labels.
+
+## Measurement and privacy
+
+The collector accepts a fixed set of portfolio events and sanitized properties. It records page paths without query strings or fragments, coarse device type, recognized referral sources, and approved campaign labels. Random browser identifiers rotate daily, and sessions expire after inactivity. The server hashes identifiers before storage. It does not use fingerprinting, precise geolocation, third-party trackers, or session recordings. Network infrastructure still processes request metadata as part of serving HTTP.
+
+Visitors are estimates. The same person may be counted again on another day, device, or in-app browser. Blocking analytics, opting out, bot filtering, connectivity problems, or storage restrictions can affect counts. Project arrivals, preview launches, and outbound clicks are different events; do not interpret their independent totals as a conversion funnel. A LinkedIn click is a click, not evidence that a conversation or application happened.
+
+Reports use America/Los_Angeles dates. Recent visitors means activity observed during the preceding five minutes. Reporting begins after installation; it does not reconstruct visits from before tracking was enabled. Raw events are retained for 180 days, with cleanup while the service runs. Database backup retention is separate from application event retention and follows the selected Render database plan.
+
+The Privacy view links to `https://kristiansalmeron.com/?analytics_opt_out=1` to exclude this browser on the portfolio origin. Use `?analytics_opt_out=0` to re-enable it. Exclusion is browser-specific, so set it in each browser you use. The tracker also respects supported browser privacy signals. An authenticated owner session is excluded from collection when the browser sends that session cookie to the collector.
+
+## Verification and operation
+
+Run repository type checks, unit/integration tests, the production build, and the static-export validation before releasing. Use a disposable PostgreSQL database for the optional persistent-store integration test. Verify setup access, invalid passwords, blocked unauthenticated reports, session expiry/revocation, origin validation, allowed platform attribution, real collection/reporting, and empty states.
+
+After a Render deploy is `live`, verify the health endpoint, login shell, protected reporting endpoints, HTTPS on the canonical domain, and the deployed collector. Complete the first owner setup yourself. Keep the database independent of the app filesystem so deploys and restarts preserve visitor history. Use Render's database exports/backups for recovery and review resource usage if traffic grows.

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Studio Insights — Kristian Salmeron</title>
+    <link rel="stylesheet" href="/analytics-assets/styles.css" />
+    <script src="/analytics-assets/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="workspace">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Studio Insights home">
+          <span class="brand-mark" aria-hidden="true">ks.</span>
+          <span class="brand-name">KRISTIAN SALMERON<span>STUDIO INSIGHTS</span></span>
+        </a>
+        <div class="top-actions">
+          <span class="privacy-badge"><span aria-hidden="true">◈</span> Private workspace</span>
+          <button
+            class="theme-button"
+            type="button"
+            id="theme-toggle"
+            aria-label="Switch to After Hours appearance"
+          >
+            After Hours <span aria-hidden="true">◐</span>
+          </button>
+          <button class="quiet-button" type="button" id="logout" hidden>Sign out</button>
+        </div>
+      </header>
+
+      <div id="starting" class="starting" role="status">Opening your workspace…</div>
+
+      <main id="main" class="auth-stage" hidden>
+        <section class="auth-card" id="login-view" aria-labelledby="login-heading" hidden>
+          <div class="eyebrow">YOUR PRIVATE STUDIO</div>
+          <h1 id="login-heading">Welcome back.</h1>
+          <p class="auth-intro">Sign in to see who’s arriving and what they explore.</p>
+          <form id="login-form">
+            <label for="login-email">Email address</label>
+            <input
+              id="login-email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+              maxlength="254"
+              spellcheck="false"
+            />
+            <label for="login-password">Password</label>
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              maxlength="128"
+            />
+            <button class="primary-button" type="submit">Sign in</button>
+            <p class="form-status" id="login-status" role="status" aria-live="polite"></p>
+          </form>
+          <p class="auth-footnote">One owner account. No public registration.</p>
+        </section>
+
+        <section class="auth-card" id="setup-view" aria-labelledby="setup-heading" hidden>
+          <div class="eyebrow">FIRST VISIT</div>
+          <h1 id="setup-heading">Make this space yours.</h1>
+          <p class="auth-intro">
+            Create the password for your owner account. Your private setup code can only be used
+            once.
+          </p>
+          <form id="setup-form">
+            <div id="setup-code-field">
+              <label for="setup-code">Private setup code</label>
+              <input
+                id="setup-code"
+                name="token"
+                type="password"
+                autocomplete="off"
+                maxlength="256"
+                spellcheck="false"
+              />
+            </div>
+            <p class="setup-confirmed" id="setup-code-confirmed" hidden>
+              Private setup code received.
+            </p>
+            <label for="setup-password">Choose a password</label>
+            <input
+              id="setup-password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              minlength="14"
+              maxlength="128"
+              required
+              aria-describedby="password-help"
+            />
+            <p class="field-help" id="password-help">
+              Use at least 14 characters. A few unrelated words work well.
+            </p>
+            <label for="setup-password-confirm">Confirm password</label>
+            <input
+              id="setup-password-confirm"
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="14"
+              maxlength="128"
+              required
+            />
+            <button class="primary-button" type="submit">Create owner login</button>
+            <p class="form-status" id="setup-status" role="status" aria-live="polite"></p>
+          </form>
+          <p class="auth-footnote">Setup closes automatically after your account is created.</p>
+        </section>
+
+        <section
+          class="auth-card"
+          id="unavailable-view"
+          aria-labelledby="unavailable-heading"
+          hidden
+        >
+          <div class="eyebrow">STUDIO INSIGHTS</div>
+          <h1 id="unavailable-heading">The workspace is taking a moment.</h1>
+          <p class="auth-intro" id="unavailable-message">We couldn’t connect. Please try again.</p>
+          <button type="button" class="primary-button" id="retry-auth">Try again</button>
+        </section>
+      </main>
+
+      <div class="dashboard-shell" id="dashboard" hidden>
+        <aside class="sidebar">
+          <div class="nav-group">
+            <p class="eyebrow">YOUR WEBSITE</p>
+            <nav class="workspace-nav" aria-label="Workspace">
+              <button
+                class="nav-button active"
+                type="button"
+                data-view="overview"
+                aria-current="page"
+              >
+                <span aria-hidden="true">↗</span> Overview
+              </button>
+              <button class="nav-button" type="button" data-view="links">
+                <span aria-hidden="true">↗</span> Shared links
+              </button>
+              <button class="nav-button" type="button" data-view="privacy">
+                <span aria-hidden="true">◈</span> Privacy
+              </button>
+            </nav>
+          </div>
+          <div class="sidebar-note">
+            <strong>One private workspace.</strong><span>kristiansalmeron.com</span>
+            <p>Real activity.<br />A clearer picture of your audience.</p>
+          </div>
+        </aside>
+
+        <main class="dashboard-main" id="dashboard-main">
+          <section id="overview-view" class="workspace-view" aria-labelledby="overview-heading">
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">KRISTIANSALMERON.COM</p>
+                <h1 id="overview-heading">A little window into your audience.</h1>
+                <p>Who’s arriving, what they explore, and what happens next.</p>
+              </div>
+              <div class="report-controls">
+                <div class="period" role="group" aria-label="Reporting period">
+                  <button type="button" data-days="7" aria-pressed="true">7 days</button
+                  ><button type="button" data-days="30" aria-pressed="false">30 days</button
+                  ><button type="button" data-days="90" aria-pressed="false">90 days</button>
+                </div>
+                <button
+                  class="refresh-button"
+                  type="button"
+                  id="refresh-data"
+                  aria-label="Refresh visitor data"
+                >
+                  ↻
+                </button>
+              </div>
+            </div>
+            <div class="notice" id="report-error" role="alert" hidden></div>
+            <div class="first-visit" id="no-data-notice" hidden>
+              <strong>Your studio is ready for its first visitor.</strong>
+              <p>
+                Share a tagged link from Shared links. Activity will appear here after someone
+                visits with tracking enabled.
+              </p>
+            </div>
+            <div class="stats" aria-label="Visitor summary" aria-live="polite" aria-atomic="true">
+              <section class="stat">
+                <h2>Visitors</h2>
+                <div class="stat-value" id="total-visitors">—</div>
+                <p>Estimated audience</p>
+              </section>
+              <section class="stat">
+                <h2>Project views</h2>
+                <div class="stat-value" id="total-projects">—</div>
+                <p>Projects and case studies</p>
+              </section>
+              <section class="stat">
+                <h2>LinkedIn clicks</h2>
+                <div class="stat-value" id="total-linkedin">—</div>
+                <p>Outbound clicks</p>
+              </section>
+            </div>
+            <section class="panel chart-panel" aria-labelledby="chart-heading">
+              <div class="panel-heading">
+                <h2 id="chart-heading">Visitors over time</h2>
+                <span class="secondary" id="chart-range">Loading visitor data…</span>
+              </div>
+              <div class="visitor-chart" id="visitor-chart"></div>
+              <div class="chart-footer">
+                <span class="secondary">Daily visitor estimates</span
+                ><span
+                  class="secondary"
+                  id="chart-selection"
+                  role="status"
+                  aria-live="polite"
+                ></span>
+              </div>
+              <details class="chart-details">
+                <summary>View daily numbers</summary>
+                <div id="daily-table"></div>
+              </details>
+            </section>
+            <div class="panel-grid">
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Where they came from</h2>
+                  <span class="secondary">Visitors</span>
+                </div>
+                <div id="source-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>What caught their eye</h2>
+                  <span class="secondary">Actions</span>
+                </div>
+                <div id="project-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Pages they explored</h2>
+                  <span class="secondary">Pageviews</span>
+                </div>
+                <div id="page-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Devices</h2>
+                  <span class="secondary">Visitors</span>
+                </div>
+                <div id="device-list"></div>
+              </section>
+            </div>
+            <section class="panel campaign-panel">
+              <div class="panel-heading">
+                <h2>Shared link activity</h2>
+                <span class="secondary">Visitors by source and campaign</span>
+              </div>
+              <div id="campaign-list"></div>
+            </section>
+            <div class="report-footer">
+              <span id="recent-visitors">Recent visitors: —</span
+              ><span id="last-updated">Waiting for activity</span>
+            </div>
+            <p class="measurement-note">
+              Visitors are estimates, not identified people. Daily counts may count the same person
+              again on another day. Ad blockers, privacy settings, and bots can affect totals. All
+              report dates use Pacific time.
+            </p>
+          </section>
+
+          <section id="links-view" class="workspace-view" aria-labelledby="links-heading" hidden>
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">MAKE EVERY SHARE COUNT</p>
+                <h1 id="links-heading">A link for each platform.</h1>
+                <p>See which places bring people to your portfolio.</p>
+              </div>
+            </div>
+            <section class="panel campaign-builder">
+              <label for="campaign-name">Campaign name</label
+              ><input
+                id="campaign-name"
+                type="text"
+                value="portfolio"
+                maxlength="64"
+                autocomplete="off"
+                spellcheck="false"
+                aria-describedby="campaign-help"
+              />
+              <p class="field-help" id="campaign-help">
+                Use a short label such as portfolio, bio, or winter-update. Letters, numbers, and
+                hyphens only.
+              </p>
+            </section>
+            <div class="shared-links" id="shared-links"></div>
+            <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+            <section class="text-section">
+              <h2>How these links work</h2>
+              <p>
+                Each link opens your normal portfolio with a small platform tag. Keep that tag when
+                you paste it into your profile, bio, post, or message. This is especially useful for
+                WhatsApp and other apps that may not send referral information.
+              </p>
+              <p>
+                If someone forwards a tagged link elsewhere, it keeps the original platform label.
+                The label records the link’s source; it doesn’t reveal a visitor’s identity or prove
+                which app they used.
+              </p>
+            </section>
+          </section>
+
+          <section
+            id="privacy-view"
+            class="workspace-view"
+            aria-labelledby="privacy-heading"
+            hidden
+          >
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">ONLY YOUR EYES</p>
+                <h1 id="privacy-heading">Your data. Your workspace.</h1>
+                <p>One owner login, with tracking and storage in your own application.</p>
+              </div>
+            </div>
+            <section class="panel privacy-panel">
+              <div class="panel-heading">
+                <h2>Owner access</h2>
+                <span class="access-pill">Signed in</span>
+              </div>
+              <dl class="privacy-facts">
+                <div>
+                  <dt>Account</dt>
+                  <dd id="owner-email">Your owner account</dd>
+                </div>
+                <div>
+                  <dt>Registration</dt>
+                  <dd>Closed to the public</dd>
+                </div>
+                <div>
+                  <dt>Reports</dt>
+                  <dd>Sign-in required for every data request</dd>
+                </div>
+                <div>
+                  <dt>Storage</dt>
+                  <dd>Your application’s database on Render</dd>
+                </div>
+              </dl>
+              <button class="secondary-button" id="privacy-logout" type="button">
+                Sign out of this browser
+              </button>
+            </section>
+            <section class="panel privacy-panel">
+              <div class="panel-heading"><h2>Keep your own visits out</h2></div>
+              <p class="panel-copy">
+                Open your portfolio using the link below to exclude this browser from visitor
+                tracking. Do this in each browser or device you use to check your website.
+              </p>
+              <div class="privacy-actions">
+                <a
+                  class="secondary-button"
+                  href="https://kristiansalmeron.com/?analytics_opt_out=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Exclude my portfolio visits ↗</a
+                ><a
+                  class="text-link"
+                  href="https://kristiansalmeron.com/?analytics_opt_out=0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Allow tracking again ↗</a
+                >
+              </div>
+            </section>
+            <section class="text-section">
+              <h2>A useful picture, with less personal data.</h2>
+              <p>
+                The dashboard shows aggregate traffic and actions. It doesn’t show visitor names,
+                email addresses, exact locations, or session recordings. Website and campaign URLs
+                are limited to the information needed for these reports.
+              </p>
+              <p>
+                The recent visitor count means visitors with recorded activity in the last five
+                minutes. A LinkedIn click is an outbound click, not confirmation that someone
+                contacted you.
+              </p>
+            </section>
+          </section>
+        </main>
+      </div>
+      <footer class="workspace-footer">
+        <span>STUDIO INSIGHTS</span><span>Built for kristiansalmeron.com</span>
+      </footer>
+    </div>
+    <noscript
+      ><p class="noscript-note">
+        Enable JavaScript to sign in and view your private dashboard.
+      </p></noscript
+    >
+  </body>
+</html>

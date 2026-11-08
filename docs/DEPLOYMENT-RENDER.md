@@ -1,5 +1,7 @@
 # Deploy kristiansalmeron.com to Render
 
+The current private analytics deployment extends the original two-service configuration with persistent storage and an owner login. Follow [Private Studio Insights](ANALYTICS.md) for the current environment variables, database, costs, subdomain, first-owner setup, and verification. The original base-portfolio deployment notes below describe the earlier release without analytics.
+
 ## What you own
 
 This folder is the complete source repository: Next.js frontend, Express API, shared contracts, local photographs, fonts, design assets, and documentation. It is not tied to ChatGPT hosting. The existing chatgpt.site address is a review deployment; `.openai/hosting.json` is only its deployment metadata and is ignored by Render.

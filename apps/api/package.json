@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && node --input-type=module -e \"import { cpSync } from 'node:fs'; cpSync('src/analytics/web', 'dist/analytics/web', { recursive: true });\"",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/app.test.ts",
+    "test": "tsx --test src/app.test.ts src/analytics/*.test.ts",
     "start": "node dist/server.js"
   },
   "dependencies": {
