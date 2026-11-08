@@ -1,63 +1,95 @@
-# Kristian Salmeron — Making things work
+# Kristian Salmeron — Portfolio
 
-The approved portfolio redesign for kristiansalmeron.com: silver and graphite, Instrument Sans, one subtle blue-gray word accent, quiet margin labels, and an interactive sail form study. Work, project stories, About, Contact, Field notes, and both complete articles use real, statically generated routes.
+Engineering work, architecture case studies, and interactive frontend studies by Kristian Salmeron.
 
-This source carries the new design. The historical documents in `docs/` describe the earlier Field Guide edition and its content provenance.
+**[Explore the live portfolio](https://kristiansalmeron.com/)**
 
-## Deploy to Render
+The site brings together professional work, independent projects, engineering essays, and personal interests. It pairs readable, statically generated pages with focused React interactions that explain a system or invite closer inspection.
 
-The complete source is in this repository. Deploy the frontend and API using the included [Render Blueprint](render.yaml) and [step-by-step deployment guide](docs/DEPLOYMENT-RENDER.md). The chatgpt.site review deployment is separate; there is no runtime dependency on it.
+![Portfolio homepage with the interactive sail study and selected engineering work](docs/portfolio-overview.jpg)
 
-## Start here
+_Live portfolio · November 8, 2026_
 
-- [Private analytics, owner setup, social links, and Render deployment](docs/ANALYTICS.md)
-- [Design and exact content strategy](docs/DESIGN-AND-CONTENT.md)
-- [Second-pass UX review](docs/UX-REVIEW.md)
-- [Architecture and API](docs/ARCHITECTURE.md)
-- [Content provenance and launch inputs](docs/CONTENT-PROVENANCE.md)
-- [Decision record: a static reading experience with a separate API](docs/decisions/001-static-ui-separate-api.md)
+## What to explore
+
+- **Selected work:** a document-rendering performance case study, the CareIQ healthcare application architecture, and the portfolio itself.
+- **Interactive explanations:** request stages and architecture tradeoffs alongside the written case studies.
+- **Sail study:** direct controls for height, width, draft, and wind. This is an illustrative form study, not an engineering validation or sailing prediction tool.
+- **Field notes and About:** two complete essays and a land, sea, and photography selector.
+
+The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Wind motion starts on request, pauses offscreen or in a hidden tab, and respects reduced-motion preferences. A static sail and readable architecture summaries remain available without JavaScript.
+
+## Architecture
+
+| Workspace             | Responsibility                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/`           | Next.js App Router and React frontend, exported as static HTML and assets                                            |
+| `apps/api/`           | Independently deployed Express API, public project summaries, first-party analytics, and the private owner dashboard |
+| `packages/contracts/` | Shared API types and project-summary contracts                                                                       |
+| `docs/`               | Architecture decisions, operations, content provenance, design history, and validation records                       |
+| `scripts/`            | Static-export packaging and release checks                                                                           |
+
+Public content is generated at build time and remains readable when the API is unavailable. Client components add interaction; optional first-party analytics uses the separate API and PostgreSQL store. Private reports require an owner session. See [Studio Insights](docs/ANALYTICS.md) for its configuration and privacy boundaries.
+
+The root build assembles the deployable static frontend in `out/`. The API compiles to `apps/api/dist/` and runs as a separate Node.js service. [ADR 001](docs/decisions/001-static-ui-separate-api.md) records the original static-frontend/separate-API decision; the later analytics addition is documented separately.
 
 ## Run locally
 
-Use Node 22.13+ (tested with 22.23.2) and pnpm 11.22.0.
+Use **Node.js 22.23.2**, pinned in [`.node-version`](.node-version), and **pnpm 11.22.0**, pinned in [`package.json`](package.json).
 
 ```sh
+git clone https://github.com/kriscodes/portfolio.git
+cd portfolio
 pnpm install --frozen-lockfile
+pnpm --filter @kristian/contracts build
 pnpm dev
 ```
 
-Web: `http://127.0.0.1:3210`. API: `http://localhost:3211`.
+Open the frontend at [http://127.0.0.1:3210](http://127.0.0.1:3210). The development API runs at [http://localhost:3211](http://localhost:3211), with public endpoints at `/api/v1/health` and `/api/v1/projects`.
 
-On systems with a low watcher limit, use `WATCHPACK_POLLING=true pnpm dev`.
+Building the shared contracts first makes their generated exports available before the parallel development processes start. Basic portfolio browsing and the public API can run in development without a database or analytics credentials.
+
+For local analytics work, use the variable names in [`.env.example`](.env.example) and the [analytics guide](docs/ANALYTICS.md). Load API values into the process environment before starting the API; its development script does not load a root `.env` file. Set the frontend's `NEXT_PUBLIC_ANALYTICS_ORIGIN` to the local collector before starting or building the frontend.
+
+On systems with restrictive file-watcher limits, enable Watchpack polling in the environment before running `pnpm dev`; a POSIX-shell example is `WATCHPACK_POLLING=true pnpm dev`.
+
+## Validate changes
 
 ```sh
 pnpm validate
+pnpm format:check
 ```
 
-`pnpm validate` checks types, runs API contract/authentication/collection tests, social attribution tests, retained studio regressions, and geometry/audit regressions, builds the production export, and audits every content route, internal link, local asset, accessible control, and canonical metadata. Set `ANALYTICS_TEST_DATABASE_URL` to a disposable PostgreSQL database to include persistent-store integration checks. The root build creates `out/`, the deployable static frontend. The API builds to `apps/api/dist/` and runs independently with `pnpm --filter @kristian/api start`.
+`pnpm validate` runs workspace type checks, unit and API tests, the production build, and the static-export audit. Coverage includes API contracts and analytics behavior, retained studio regressions, sail geometry, and release-audit regressions. The export audit checks content routes, internal links, local assets, accessible controls, and canonical metadata.
 
-After deployment, run `node scripts/test-live-web.mjs https://kristiansalmeron.com` to verify delivered pages, assets, crawler files, and the custom HTTP 404. This HTTP check also accepts a local or staging origin.
+Set `ANALYTICS_TEST_DATABASE_URL` to a disposable PostgreSQL database to include persistent-store integration checks. Validation records and their scope are in [docs/VALIDATION.md](docs/VALIDATION.md); recorded browser checks are not a formal accessibility certification or a measured Core Web Vitals score.
 
-## Code formatting
+Individual commands are available when working on a specific area:
 
-Run `pnpm format` to format the source, or `pnpm format:check` to check it without changing files. Prettier handles TypeScript, TSX, CSS, JSON, YAML, and Markdown. In VS Code or Cursor, install the recommended Prettier extension; this repository enables format on save.
+| Command             | Purpose                                                          |
+| ------------------- | ---------------------------------------------------------------- |
+| `pnpm typecheck`    | Build shared contracts and check workspace types                 |
+| `pnpm test:unit`    | Run API, analytics, frontend, sail, and audit regression tests   |
+| `pnpm build`        | Build the workspaces and assemble the static export              |
+| `pnpm test:web`     | Audit the generated export after a build                         |
+| `pnpm format:check` | Check source and documentation formatting without changing files |
 
-Edit source files in `apps/` and `packages/`. Generated `.next/`, `out/`, and `dist/` files are excluded; production JavaScript remains minified for delivery.
+After deploying, verify delivered pages, assets, crawler files, and the custom HTTP 404:
 
-## Workspace
-
-```text
-apps/web/             Next.js App Router, React, scoped CSS, local fonts
-apps/api/             Express API, private analytics, in-house owner login
-packages/contracts/   Shared API types and public project summaries
-docs/                 Design, content, architecture, provenance, decisions
-scripts/              Static export packaging and release validation
+```sh
+node scripts/test-live-web.mjs https://kristiansalmeron.com
 ```
 
-The stack uses pnpm, Next 16.3.3, React 19.2.8, Tailwind 4.3.3, TypeScript, Express 5.2.1, Drizzle 0.45.2, and PostgreSQL client 8.23.0. Private analytics uses PostgreSQL and a single-owner password login implemented with Node's scrypt and opaque server sessions. No third-party analytics or authentication account is required. The public portfolio remains readable without login; see [analytics setup](docs/ANALYTICS.md) for the separate private dashboard.
+The HTTP check also accepts a local or staging origin.
 
-## Included
+## Documentation
 
-Nine content routes plus a custom 404; responsive navigation; a sail study with height, width, draft, and wind controls; interactive architecture explanations; land/sea/lens selector; working LinkedIn and Instagram destinations; locally served open-source fonts and licenses; per-page canonical/social metadata; sitemap and robots; two complete essays; preserved API contracts; geometry, contract, and release audit tests.
+- [Current analytics, owner setup, attribution links, and operations](docs/ANALYTICS.md)
+- [Render deployment guide](docs/DEPLOYMENT-RENDER.md) and [Blueprint](render.yaml)
+- [Development notes and preserved implementation details](docs/development-notes.md)
+- [Architecture background](docs/ARCHITECTURE.md) and [static frontend/API decision](docs/decisions/001-static-ui-separate-api.md)
+- [Validation history and coverage limits](docs/VALIDATION.md)
+- [Content provenance and claim boundaries](docs/CONTENT-PROVENANCE.md)
+- [Earlier design and content strategy](docs/DESIGN-AND-CONTENT.md), [UX review](docs/UX-REVIEW.md), and [Corner Studio design](docs/CORNER-STUDIO.md)
 
-Wind starts only on request, stops when the sail leaves view or the tab is hidden, and respects reduced motion. A static sail and readable architecture summaries remain available without JavaScript. The sail response is an illustrative form study, not engineering validation. Existing public content and project claims are preserved; no patient data is used.
+Some design and deployment documents preserve earlier editions. Use the current source and analytics guide for present runtime configuration, and the development notes for the design timeline.
