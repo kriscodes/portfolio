@@ -145,6 +145,18 @@ test('privacy opt-out clears queued events before a retry or unload can send the
   assert.equal(context.timers.size, 0);
 });
 
+test('GitHub attribution survives a network retry', async () => {
+  const context = fixture([new Error('Offline'), { status: 204 }]);
+  const outbox = createAnalyticsOutbox(context.env);
+  const githubEvent = { ...payload(), source: 'github' as const, medium: 'social' as const };
+  outbox.enqueue(githubEvent);
+  await setImmediate();
+  assert.equal(context.entries().length, 1);
+  await context.advance(2000);
+  assert.deepEqual(context.sent, [githubEvent, githubEvent]);
+  assert.equal(context.entries().length, 0);
+});
+
 test('persisted payloads cannot replay arbitrary fields, private URL queries, or referral paths', () => {
   const reconstructed = sanitizedOutboxPayload({
     ...payload(),

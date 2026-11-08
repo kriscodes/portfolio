@@ -29,6 +29,7 @@ const SOURCES = new Set([
   'linkedin',
   'tiktok',
   'whatsapp',
+  'github',
   'google',
   'bing',
   'duckduckgo',

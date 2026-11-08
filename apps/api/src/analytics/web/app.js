@@ -18,6 +18,7 @@
     { name: 'LinkedIn', source: 'linkedin', medium: 'social' },
     { name: 'TikTok', source: 'tiktok', medium: 'social' },
     { name: 'WhatsApp', source: 'whatsapp', medium: 'messaging' },
+    { name: 'GitHub', source: 'github', medium: 'social' },
   ];
   const sourceNames = {
     facebook: 'Facebook',
@@ -25,6 +26,7 @@
     linkedin: 'LinkedIn',
     tiktok: 'TikTok',
     whatsapp: 'WhatsApp',
+    github: 'GitHub',
     direct: 'Direct / unknown',
     unknown: 'Direct / unknown',
     google: 'Google',

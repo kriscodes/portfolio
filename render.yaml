@@ -38,6 +38,12 @@ services:
       - type: redirect
         source: /whatsapp/
         destination: /?utm_source=whatsapp&utm_medium=messaging&utm_campaign=portfolio
+      - type: redirect
+        source: /github
+        destination: /?utm_source=github&utm_medium=social&utm_campaign=portfolio
+      - type: redirect
+        source: /github/
+        destination: /?utm_source=github&utm_medium=social&utm_campaign=portfolio
     envVars:
       - key: NODE_VERSION
         value: 22.23.2

@@ -4,7 +4,14 @@ export const ANALYTICS_OPT_OUT_KEY = 'ks_analytics_opt_out';
 const VISITOR_KEY = 'ks_analytics_visitor_v1';
 const SESSION_KEY = 'ks_analytics_session_v1';
 const SESSION_IDLE_MS = 30 * 60 * 1000;
-const SOCIAL_SOURCES = ['facebook', 'instagram', 'linkedin', 'tiktok', 'whatsapp'] as const;
+const SOCIAL_SOURCES = [
+  'facebook',
+  'instagram',
+  'linkedin',
+  'tiktok',
+  'whatsapp',
+  'github',
+] as const;
 type SocialSource = (typeof SOCIAL_SOURCES)[number];
 type Source = SocialSource | 'google' | 'bing' | 'duckduckgo' | 'direct' | 'referral' | 'other';
 type Medium = 'social' | 'messaging' | 'organic' | 'direct' | 'referral';
@@ -112,6 +119,7 @@ export function resolveAttribution(location: string, referrer: string): Attribut
     ['tiktok.com', 'tiktok'],
     ['whatsapp.com', 'whatsapp'],
     ['wa.me', 'whatsapp'],
+    ['github.com', 'github'],
     ['google.com', 'google'],
     ['bing.com', 'bing'],
     ['duckduckgo.com', 'duckduckgo'],

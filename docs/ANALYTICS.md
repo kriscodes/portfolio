@@ -48,6 +48,7 @@ Use the dashboard's Shared links view to copy the clean bio links for the defaul
 | LinkedIn  | `https://kristiansalmeron.com/linkedin`  | `linkedin`  | `social`    |
 | TikTok    | `https://kristiansalmeron.com/tiktok`    | `tiktok`    | `social`    |
 | WhatsApp  | `https://kristiansalmeron.com/whatsapp`  | `whatsapp`  | `messaging` |
+| GitHub    | `https://kristiansalmeron.com/github`    | `github`    | `social`    |
 
 For example, `/instagram` redirects to `/?utm_source=instagram&utm_medium=social&utm_campaign=portfolio`. The browser may show the expanded URL after opening the link; the clean URL is what belongs in a social bio. Existing long tracking links continue to work. For a custom campaign such as `bio` or `launch`, the generator keeps the full tagged URL so the campaign value is preserved.
 

@@ -61,8 +61,8 @@ function fixture(url = 'https://kristiansalmeron.com/') {
   };
 }
 
-test('all five tagged social links remain attributable without a referral header', () => {
-  for (const source of ['facebook', 'instagram', 'linkedin', 'tiktok', 'whatsapp']) {
+test('all tagged platform links remain attributable without a referral header', () => {
+  for (const source of ['facebook', 'instagram', 'linkedin', 'tiktok', 'whatsapp', 'github']) {
     const result = resolveAttribution(
       `https://kristiansalmeron.com/?utm_source=${source}&utm_campaign=portfolio`,
       '',
@@ -71,6 +71,18 @@ test('all five tagged social links remain attributable without a referral header
     assert.equal(result.campaign, 'portfolio');
     assert.equal(result.medium, source === 'whatsapp' ? 'messaging' : 'social');
   }
+});
+
+test('GitHub referrals are recognized without accepting lookalike domains', () => {
+  for (const host of ['github.com', 'www.github.com']) {
+    const result = resolveAttribution('https://kristiansalmeron.com/', `https://${host}/kriscodes`);
+    assert.equal(result.source, 'github');
+    assert.equal(result.medium, 'social');
+  }
+  assert.equal(
+    resolveAttribution('https://kristiansalmeron.com/', 'https://github.com.example.org/').source,
+    'referral',
+  );
 });
 
 test('attribution respects tagged links, strips private data, and rejects spoofed hostnames', () => {

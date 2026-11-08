@@ -200,6 +200,25 @@ test('collector validates origins, strips URL queries, hashes identifiers, and c
   });
 });
 
+test('GitHub visits retain their source and campaign in owner reports', async () => {
+  await fixture(async ({ call, store }) => {
+    const response = await call(
+      'collect',
+      collect({ ...event, source: 'github', medium: 'social', campaign: 'portfolio', path: '/' }),
+    );
+    assert.equal(response.status, 204);
+    assert.equal(store.events[0].source, 'github');
+    assert.equal(store.events[0].medium, 'social');
+    const setup = await call('setup', mutation({ token: setupToken, password }));
+    const cookie = setup.headers.get('set-cookie')!.split(';')[0];
+    const overview = await (await call('overview?days=7', { headers: { Cookie: cookie } })).json();
+    assert.deepEqual(overview.sources, [{ source: 'github', visitors: 1 }]);
+    assert.deepEqual(overview.campaigns, [
+      { source: 'github', campaign: 'portfolio', visitors: 1 },
+    ]);
+  });
+});
+
 test('collector acknowledges retries without duplicate counts and never acknowledges failed persistence', async () => {
   await fixture(async ({ call, store }) => {
     const queued = { ...event, eventId: '7ac5bde7-d744-49ea-b6b3-9a51f339b1b1' };
