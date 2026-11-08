@@ -641,10 +641,16 @@
       const row = create('div', 'shared-link');
       const name = create('label', 'platform-name', platform.name);
       name.htmlFor = 'share-' + platform.source;
-      const url = new URL('https://kristiansalmeron.com/');
-      url.searchParams.set('utm_source', platform.source);
-      url.searchParams.set('utm_medium', platform.medium);
-      url.searchParams.set('utm_campaign', campaign);
+      const url = new URL(
+        campaign === 'portfolio'
+          ? 'https://kristiansalmeron.com/' + platform.source
+          : 'https://kristiansalmeron.com/',
+      );
+      if (campaign !== 'portfolio') {
+        url.searchParams.set('utm_source', platform.source);
+        url.searchParams.set('utm_medium', platform.medium);
+        url.searchParams.set('utm_campaign', campaign);
+      }
       const input = create('input');
       input.id = 'share-' + platform.source;
       input.type = 'text';

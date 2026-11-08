@@ -39,17 +39,17 @@ If the owner password is lost, a trusted operator can run `node apps/api/dist/an
 
 ## Shareable portfolio links
 
-Use the dashboard's Shared links view to copy these links or generate a separate campaign such as `bio`, `launch`, or `portfolio`:
+Use the dashboard's Shared links view to copy the clean bio links for the default `portfolio` campaign. Render redirects these paths to the existing homepage URL with the matching attribution tags; no external shortener or additional service is involved. Both trailing-slash and slashless forms work.
 
-| Platform  | Source      | Medium      |
-| --------- | ----------- | ----------- |
-| Facebook  | `facebook`  | `social`    |
-| Instagram | `instagram` | `social`    |
-| LinkedIn  | `linkedin`  | `social`    |
-| TikTok    | `tiktok`    | `social`    |
-| WhatsApp  | `whatsapp`  | `messaging` |
+| Platform  | Clean bio link                           | Source      | Medium      |
+| --------- | ---------------------------------------- | ----------- | ----------- |
+| Facebook  | `https://kristiansalmeron.com/facebook`  | `facebook`  | `social`    |
+| Instagram | `https://kristiansalmeron.com/instagram` | `instagram` | `social`    |
+| LinkedIn  | `https://kristiansalmeron.com/linkedin`  | `linkedin`  | `social`    |
+| TikTok    | `https://kristiansalmeron.com/tiktok`    | `tiktok`    | `social`    |
+| WhatsApp  | `https://kristiansalmeron.com/whatsapp`  | `whatsapp`  | `messaging` |
 
-Example: `https://kristiansalmeron.com/?utm_source=instagram&utm_medium=social&utm_campaign=portfolio`.
+For example, `/instagram` redirects to `/?utm_source=instagram&utm_medium=social&utm_campaign=portfolio`. The browser may show the expanded URL after opening the link; the clean URL is what belongs in a social bio. Existing long tracking links continue to work. For a custom campaign such as `bio` or `launch`, the generator keeps the full tagged URL so the campaign value is preserved.
 
 The source tag is important for in-app browsers and private messaging, which may omit a referrer. Attribution describes the shared link: if an Instagram-tagged link is forwarded through WhatsApp, it still credits the original Instagram tag. Counted visits require someone to open the website; publishing a link does not reveal platform impressions, identities, followers, or the sender or recipient of a private message. Keep personal names, emails, phone numbers, and other sensitive values out of campaign labels.
 
