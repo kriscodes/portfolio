@@ -17,8 +17,8 @@ services:
   - type: web
     name: kristian-salmeron-api
     runtime: node
-    # Keep the existing free API; the browser queue retries during cold starts.
-    plan: free
+    # Owner-approved always-on API; retain browser retries for transient failures.
+    plan: 0.5c-512mb
     region: oregon
     domains:
       - analytics.kristiansalmeron.com

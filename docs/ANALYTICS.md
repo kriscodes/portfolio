@@ -4,13 +4,13 @@ Studio Insights is the portfolio's own analytics collector, PostgreSQL store, re
 
 ## Services and deployment
 
-The public portfolio remains a static site. The existing `kristian-salmeron-api` service hosts the collector and dashboard at `https://analytics.kristiansalmeron.com`. Every reporting endpoint checks the owner session on the server, including requests through the service's default `onrender.com` address. Public assets contain no visitor reports or credentials.
+The public portfolio remains a static site. The existing `kristian-salmeron-api` service is configured to host the collector and dashboard at `https://analytics.kristiansalmeron.com`. Every reporting endpoint checks the owner session on the server, including requests through the service's default `onrender.com` address. Public assets contain no visitor reports or credentials.
 
-The `render.yaml` changes reuse both existing services, keep the API on its existing free compute plan, and add a private-network-only `0.1c-256mb` PostgreSQL 18 database with 1 GB of storage in Oregon. The public static site's URL and appearance are preserved. Render's custom-domain association does not create DNS records at the domain registrar.
+The `render.yaml` changes reuse both existing services, move the API to the always-on `0.5c-512mb` compute plan, and add a private-network-only `0.1c-256mb` PostgreSQL 18 database with 1 GB of storage in Oregon. The public static site's URL and appearance are preserved. Render's custom-domain association does not create DNS records at the domain registrar.
 
-The owner approved the $6.30/month persistent database on November 8, 2026 and declined the optional $7/month always-on API upgrade. The database price is $6/month plus $0.30/month for 1 GB storage. The new subdomain can add $0.25/month if the workspace's included custom-domain allowance is exceeded; review any overage before applying it. Usage overages follow the existing Render workspace plan. The free database expires after 30 days, which is why durable visitor history uses the paid database. The free API sleeps after 15 minutes and can take about one minute to wake.
+On November 8, 2026, the owner updated the deployment decision and explicitly approved the always-on API and the custom analytics subdomain. The selected additional cost is **$13.55/month before usage overages**: $7/month API compute, $6.30/month persistent database ($6 compute plus $0.30 for 1 GB storage), and $0.25/month for the custom domain beyond the workspace's included allowance. This supersedes the earlier free-API proposal. Usage overages follow the existing Render workspace plan.
 
-The portfolio keeps at most 100 pending events for up to 24 hours in first-party browser storage and uses idempotent event IDs to retry collection while the API wakes. Original event timestamps survive retries so delayed delivery does not turn an old visit into recent activity. This improves delivery without an always-on service, but cannot guarantee recording someone who leaves immediately and never returns. Privacy settings, unavailable browser storage, ad blockers, and offline devices can also prevent delivery. The dashboard itself can take a minute to open after inactivity. Opting out clears pending events before further sends.
+The portfolio keeps at most 100 pending events for up to 24 hours in first-party browser storage and uses idempotent event IDs to retry transient network failures or service interruptions. Original event timestamps survive retries so delayed delivery does not turn an old visit into recent activity. Retries improve delivery but cannot guarantee every visit is recorded. Privacy settings, unavailable browser storage, ad blockers, and offline devices can also prevent delivery. Opting out clears pending events before further sends.
 
 Required runtime configuration:
 
@@ -35,7 +35,7 @@ The deployment starts closed to visitor-data reads. There is no public registrat
 
 Password verification uses Node's scrypt. Sessions use random opaque tokens with only their digests stored in PostgreSQL, an eight-hour expiry, and host-only HttpOnly cookies. Production cookies use Secure and SameSite Strict. Sign-out revokes the session. Login attempts are limited, and browser-origin checks protect authentication mutations. Database failures do not expose reports or silently switch production to temporary storage.
 
-If the owner password is lost, a trusted operator can run `node apps/api/dist/analytics/reset-owner.js` in an environment with authorized database access. It reads a new password from standard input, requires the configured database and owner email, and revokes existing sessions. Render's interactive service shell is unavailable on the selected free API plan; recovery therefore requires a separate authorized operator environment, or a temporary compute upgrade approved by the owner. An external database connection must use TLS and an explicitly allowed operator IP, without opening the database to the whole internet. Do not put the password in a command argument, source file, screenshot, or chat. There is no public reset endpoint or external email service.
+If the owner password is lost, a trusted operator can run `node apps/api/dist/analytics/reset-owner.js` in the private Render service shell, which is available on the approved paid API plan. It reads a new password from standard input, requires the configured database and owner email, and revokes existing sessions. Keep the database private; the service shell can use its internal connection. Do not put the password in a command argument, source file, screenshot, or chat. There is no public reset endpoint or external email service.
 
 ## Shareable portfolio links
 
@@ -64,6 +64,8 @@ Reports use America/Los_Angeles dates. Recent visitors means activity observed d
 The Privacy view links to `https://kristiansalmeron.com/?analytics_opt_out=1` to exclude this browser on the portfolio origin. Use `?analytics_opt_out=0` to re-enable it. Exclusion is browser-specific, so set it in each browser you use. The tracker also respects supported browser privacy signals. An authenticated owner session is excluded from collection when the browser sends that session cookie to the collector.
 
 ## Verification and operation
+
+The November 8, 2026 plan update does not change or replace earlier local validation results. At this configuration update, production deployment remains unverified; local tests and builds are not evidence that the approved Render resources or custom domain are live.
 
 Run repository type checks, unit/integration tests, the production build, and the static-export validation before releasing. Use a disposable PostgreSQL database for the optional persistent-store integration test. Verify setup access, invalid passwords, blocked unauthenticated reports, session expiry/revocation, origin validation, allowed platform attribution, real collection/reporting, and empty states.
 
