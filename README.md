@@ -6,18 +6,15 @@ Engineering work, architecture case studies, and interactive frontend studies by
 
 The site brings together professional work, independent projects, engineering essays, and personal interests. It pairs readable, statically generated pages with focused React interactions that explain a system or invite closer inspection.
 
-![Portfolio homepage with the interactive sail study and selected engineering work](docs/portfolio-overview.jpg)
-
-_Live portfolio · November 8, 2026_
+The editorial design uses a white background, CareIQ Signal blue, locally served serif headings, and simple project rows. [Design and release notes](docs/EDITORIAL-REDESIGN.md).
 
 ## What to explore
 
-- **Selected work:** a document-rendering performance case study, the CareIQ healthcare application architecture, and the portfolio itself.
+- **Selected work:** CareIQ, Toolbox, frontend experiments in Lab, and the NLP Gen UI performance case study.
 - **Interactive explanations:** request stages and architecture tradeoffs alongside the written case studies.
-- **Sail study:** direct controls for height, width, draft, and wind. This is an illustrative form study, not an engineering validation or sailing prediction tool.
 - **Field notes and About:** two complete essays and a land, sea, and photography selector.
 
-The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Wind motion starts on request, pauses offscreen or in a hidden tab, and respects reduced-motion preferences. A static sail and readable architecture summaries remain available without JavaScript.
+The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Content and architecture summaries remain readable without JavaScript. The earlier sail study is retained in source history and component files but is no longer mounted on the homepage.
 
 ## Architecture
 
