@@ -3,3 +3,5 @@ packages:
   - packages/*
 allowBuilds:
   esbuild: true
+  # The locked optional package supplies the native resolver binary.
+  unrs-resolver@1.12.2: false
