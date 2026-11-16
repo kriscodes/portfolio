@@ -6,7 +6,7 @@
     "dev": "next dev --webpack --port 3210 --hostname 127.0.0.1",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/lib/*.test.ts src/components/studio/state.test.ts src/components/studio/scene/*.test.ts src/components/sail-motion.test.ts",
+    "test": "node --import tsx --test src/lib/*.test.ts src/components/studio/state.test.ts src/components/studio/scene/*.test.ts src/components/sail-*.test.ts",
     "lint": "eslint src/app src/components/chrome.tsx \"src/components/sail-*.{ts,tsx}\" --max-warnings 0"
   },
   "dependencies": {

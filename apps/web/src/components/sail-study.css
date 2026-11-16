@@ -24,27 +24,14 @@
   z-index: -1;
 }
 
-.sail-study-image {
+.sail-study-art {
   display: block;
   width: 100%;
   height: auto;
 }
 
-.sail-study-canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.sail-study-stage[data-animated='true'] .sail-study-canvas {
-  opacity: 1;
-}
-.sail-study-stage[data-animated='true'] .sail-study-image {
-  opacity: 0;
+.sail-telltale {
+  fill: #205fa8;
 }
 
 .sail-study-caption {

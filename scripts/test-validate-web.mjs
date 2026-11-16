@@ -101,6 +101,22 @@ test('detects inaccessible native controls, duplicate IDs, and invalid ARIA refe
     );
 });
 
+test('checks images embedded in SVG artwork', async (t) => {
+  const options = await fixture(t, (source, name) =>
+    name === 'index.html'
+      ? source.replace(
+          '</main>',
+          '<svg role="img" aria-label="Sail"><image href="/favicon.svg"/><image href="/missing-cloth.webp"/><image xlink:href="/missing-ribbon.png"/></svg></main>',
+        )
+      : source,
+  );
+  const result = await validateExport(options);
+  assert.equal(result.errors.length, 2);
+  for (const asset of ['/missing-cloth.webp', '/missing-ribbon.png']) {
+    assert.ok(result.errors.some((error) => error.includes(`missing local asset ${asset}`)));
+  }
+});
+
 test('detects unsafe new-tab and placeholder links', async (t) => {
   const result = await validateExport(
     await fixture(t, (source, name) =>

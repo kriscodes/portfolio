@@ -317,6 +317,10 @@ export async function validateExport(options = {}) {
       const references = [];
       if (node.attrs.src) references.push(node.attrs.src);
       if (node.attrs.poster) references.push(node.attrs.poster);
+      if (node.tag === 'image') {
+        const source = node.attrs.href ?? node.attrs['xlink:href'];
+        if (source) references.push(source);
+      }
       if (
         node.tag === 'meta' &&
         ['og:image', 'og:image:secure_url', 'twitter:image'].includes(

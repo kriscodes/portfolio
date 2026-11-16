@@ -15,7 +15,7 @@ The editorial design uses a white background, CareIQ Signal blue, locally served
 - **Sail study:** a detailed cloth illustration with a single, deliberately paced gust and an early-settle control.
 - **Field notes and About:** two complete essays and a land, sea, and photography selector.
 
-The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Content, the still sail, and architecture summaries remain readable without JavaScript. The sail renderer loads only after interaction, stops automatically, and releases its resources at rest or when hidden. Reduced-motion preferences preserve the still composition. [Sail implementation notes](docs/SAIL-STUDY.md).
+The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Content, the still sail, and architecture summaries remain readable without JavaScript. The sail uses SVG motion with an independent telltale, without WebGL. Animation starts only on interaction and stops automatically or when hidden. Reduced-motion preferences preserve the still composition. [Sail implementation notes](docs/SAIL-STUDY.md).
 
 ## Architecture
 
