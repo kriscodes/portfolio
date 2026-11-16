@@ -81,7 +81,7 @@ test('the sail transform fixes the inclined luff and never folds the artwork', (
   for (let time = 0; time <= GUST_DURATION_MS; time += 40) {
     const transform = sailTransform(sampleSailGust(time));
     const [a, b, c, d] = numbersIn(transform);
-    assert.ok(a * d - b * c > 0.99, 'the cloth keeps its orientation and nearly all its area');
+    assert.ok(a * d - b * c > 0.95, 'the cloth keeps its orientation and over 95% of its area');
 
     for (const anchor of [SAIL_ANCHORS.head, SAIL_ANCHORS.tack]) {
       const point = transformedPoint(transform, anchor);
@@ -96,6 +96,8 @@ test('the sail transform fixes the inclined luff and never folds the artwork', (
 
   const clew = transformedPoint(sailTransform(fullGust), SAIL_ANCHORS.clew);
   assert.ok(Math.abs(SAIL_ANCHORS.clew.x - clew.x - SAIL_MAX_CLEW_DISPLACEMENT) < 0.00001);
+  const mobileDisplacement = ((SAIL_ANCHORS.clew.x - clew.x) * 320) / 1_350;
+  assert.ok(mobileDisplacement >= 10, 'the gust remains visible at a narrow artwork width');
   assert.equal(sailTransform(sampleSailGust(GUST_DURATION_MS)), 'matrix(1 0 0 1 0 0)');
 });
 

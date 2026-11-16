@@ -5,7 +5,7 @@ export const SAIL_ANCHORS = {
   head: { x: 1_087, y: 56 },
   clew: { x: 1_311, y: 1_090 },
 } as const;
-export const SAIL_MAX_CLEW_DISPLACEMENT = 3.5;
+export const SAIL_MAX_CLEW_DISPLACEMENT = 48;
 
 export const TELLTALE_SHAPE = {
   restingLength: 72,
@@ -53,7 +53,8 @@ function normalizedFill(gust: SailGust): number {
 
 /**
  * Affine tension preserves straight seams and the entire inclined leading edge.
- * The trailing corner moves only 3.5 artwork pixels; the image never folds over itself.
+ * The trailing corner moves 48 artwork pixels, visible even at mobile sizes.
+ * Compression stays below 4%, so the image never folds over itself.
  */
 export function sailTransform(gust: SailGust): string {
   const fill = normalizedFill(gust);
