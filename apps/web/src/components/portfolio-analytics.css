@@ -9,10 +9,10 @@
   align-items: center;
   gap: 18px;
   padding: 15px 18px;
-  background: #f7f6ee;
-  color: #30382f;
-  border: 1px solid #cad0bd;
-  box-shadow: 0 4px 20px #15251b15;
+  background: #ffffff;
+  color: #202b34;
+  border: 1px solid #dce6f0;
+  box-shadow: 0 4px 20px #202b3410;
   border-radius: 10px;
   font:
     14px/1.5 system-ui,
@@ -25,7 +25,7 @@
 .portfolio-analytics-note button {
   font: inherit;
   color: inherit;
-  border: 1px solid #adb69c;
+  border: 1px solid #0067e8;
   padding: 8px 12px;
   border-radius: 5px;
   background: transparent;
@@ -33,7 +33,7 @@
   min-height: 44px;
 }
 .portfolio-analytics-note button:focus-visible {
-  outline: 2px solid #4a653e;
+  outline: 2px solid #0067e8;
   outline-offset: 3px;
 }
 @media (max-width: 420px) {

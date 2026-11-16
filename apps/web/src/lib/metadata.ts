@@ -18,9 +18,9 @@ export function pageMetadata(title: string, description: string, path: string): 
       images: [
         {
           url: '/social-preview.png',
-          width: 1200,
-          height: 630,
-          alt: 'Kristian Salmeron — Making things work.',
+          width: 1731,
+          height: 909,
+          alt: 'Kristian Salmeron — Thoughtful interfaces. Reliable systems.',
         },
       ],
     },

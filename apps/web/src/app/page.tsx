@@ -1,62 +1,77 @@
 import Link from 'next/link';
-import SailStudy from '@/components/sail-study';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
-  'Making things work.',
-  'I build systems, explore ideas, and follow the interesting questions. Software engineering and architecture by Kristian Salmeron.',
+  'Thoughtful interfaces. Reliable systems.',
+  'Lead Software Engineer Kristian Salmeron. I build products that make complex work feel simple. Explore CareIQ, Toolbox, and frontend experiments.',
   '/',
 );
 
 export default function HomePage() {
   return (
-    <main id="main" className="home-main">
-      <SailStudy>
-        <div className="t3-intro">
-          <p className="t3-role">Software engineering &amp; architecture</p>
-          <h1>
-            <span className="t3-highlight">Making</span>
-            <br />
-            things work.
+    <main id="main" className="editorial-home">
+      <section className="editorial-hero" aria-labelledby="home-title">
+        <div className="editorial-intro">
+          <p className="ip-eyebrow">Lead Software Engineer</p>
+          <h1 id="home-title">
+            <span>Thoughtful interfaces.</span>
+            <span className="ip-accent">Reliable systems.</span>
           </h1>
-          <p className="t3-description">
-            I build systems, explore ideas,
-            <br />
-            and follow the interesting questions.
-          </p>
+          <a href="#selected-work" className="ip-text-link hero-work-link">
+            View selected work <span aria-hidden="true">↓</span>
+          </a>
         </div>
-      </SailStudy>
-      <section id="selected-work" className="t3-work" aria-labelledby="selected-work-heading">
-        <h2 id="selected-work-heading">Selected work</h2>
-        <div className="t3-projects">
-          <Link href="/work/gen-ui" className="t3-project">
-            <span className="t3-project-copy">
-              <span className="t3-project-name">NLP Gen UI</span>
-              <span className="t3-project-description">Medical documents, ready in seconds.</span>
-            </span>
-            <span className="t3-project-result">~15 min → &lt;5 sec</span>
-            <span className="t3-arrow" aria-hidden="true">
-              ↗
-            </span>
-          </Link>
-          <Link href="/work/care-iq" className="t3-project">
-            <span className="t3-project-copy">
-              <span className="t3-project-name">Care IQ</span>
-              <span className="t3-project-description">Trust starts at the boundary.</span>
-            </span>
-            <span className="t3-project-result">In development</span>
-            <span className="t3-arrow" aria-hidden="true">
-              ↗
-            </span>
+        <div className="editorial-aside">
+          <p>I build products that make complex work feel simple.</p>
+          <Link href="/about/" className="ip-button ip-button-outline">
+            About me <span aria-hidden="true">↗</span>
           </Link>
         </div>
       </section>
-      <div className="home-about">
-        <p>Away from the desk: sailing &amp; photography.</p>
-        <Link href="/about">
-          The person behind the work <span aria-hidden="true">↗</span>
-        </Link>
-      </div>
+      <section
+        id="selected-work"
+        className="editorial-work"
+        aria-labelledby="selected-work-heading"
+      >
+        <div className="editorial-section-heading">
+          <h2 id="selected-work-heading">Selected work</h2>
+          <span aria-hidden="true">01—03</span>
+        </div>
+        <div className="editorial-projects">
+          <Link href="/work/care-iq/" className="editorial-project">
+            <span className="project-number" aria-hidden="true">
+              01
+            </span>
+            <h3>CareIQ</h3>
+            <p>Front-desk workflows for independent practices.</p>
+            <span className="project-status">In development</span>
+            <span className="project-arrow" aria-hidden="true">
+              →
+            </span>
+          </Link>
+          <a href="https://toolbox.kristiansalmeron.com/" className="editorial-project">
+            <span className="project-number" aria-hidden="true">
+              02
+            </span>
+            <h3>Toolbox</h3>
+            <p>Practical tools for everyday work.</p>
+            <span className="project-arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+          <a href="https://lab.kristiansalmeron.com/" className="editorial-project">
+            <span className="project-number" aria-hidden="true">
+              03
+            </span>
+            <h3>Lab</h3>
+            <p>Experiments in frontend performance and rendering.</p>
+            <span className="project-note">Experiments</span>
+            <span className="project-arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        </div>
+      </section>
     </main>
   );
 }

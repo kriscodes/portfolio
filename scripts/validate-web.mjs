@@ -380,11 +380,11 @@ export async function validateExport(options = {}) {
 
   if (checkCopy) {
     const homeText = compact(pages.get('/')?.text).replace(/[’‘]/g, "'");
-    if (
-      !/I build systems, explore ideas, and follow (?:the )?interesting questions\./i.test(homeText)
-    )
+    if (!/I build products that make complex work feel simple\./i.test(homeText))
       add('/', 'approved supporting line is missing');
-    if (/A practice in making/i.test(homeText)) add('/', 'superseded headline is still present');
+    if (!/Thoughtful interfaces\.\s*Reliable systems\./i.test(homeText))
+      add('/', 'approved editorial headline is missing');
+    if (/R[eé]sum[eé]/i.test(homeText)) add('/', 'removed résumé link is still present');
     const genText = compact(pages.get('/work/gen-ui/')?.text);
     if (
       !/(?:15|fifteen)\s*(?:min(?:ute)?s?)/i.test(genText) ||
@@ -397,6 +397,11 @@ export async function validateExport(options = {}) {
     const careText = compact(pages.get('/work/care-iq/')?.text);
     if (!/(?:in|active|under)\s+development/i.test(careText))
       add('/work/care-iq/', 'current development status must be visible');
+    for (const component of ['Marketing site', 'Web app', 'API', 'Database'])
+      if (!careText.includes(component))
+        add('/work/care-iq/', `architecture component missing: ${component}`);
+    if (!/synthetic data/i.test(careText))
+      add('/work/care-iq/', 'synthetic-data context must be visible');
     if (/\b(?:HIPAA|SOC\s*2)[ -]?(?:certified|compliant)\b/i.test(careText))
       add('/work/care-iq/', 'unsubstantiated certification/compliance claim');
   }

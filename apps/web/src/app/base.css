@@ -26,11 +26,19 @@
   font-display: swap;
   src: url('/fonts/ibm-plex-mono-latin.woff2') format('woff2');
 }
+@font-face {
+  font-family: 'DM Serif Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/dm-serif-display-latin.woff2') format('woff2');
+}
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 html {
   scroll-padding-top: 24px;
+  scroll-behavior: smooth;
 }
 body {
   margin: 0;
@@ -59,16 +67,16 @@ input:focus-visible {
   background: var(--ip-soft);
 }
 :root .ip-shell.site-shell {
-  max-width: 1280px;
+  max-width: 1560px;
   width: 100%;
-  padding: 0 64px;
+  padding: 0 clamp(24px, 5.8vw, 90px);
   margin: 0 auto;
 }
-.skip-link {
+:root .skip-link {
   position: fixed;
   top: 12px;
   left: 16px;
-  z-index: 20;
+  z-index: 200;
   transform: translateY(-160%);
   padding: 12px 18px;
   background: var(--ip-ink);
@@ -79,40 +87,6 @@ input:focus-visible {
 .skip-link:focus {
   transform: translateY(0);
 }
-.home-about {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 25px;
-  padding-bottom: 55px;
-  font-size: 12px;
-  line-height: 1.7;
-}
-.home-about p {
-  margin: 0;
-  color: var(--ip-muted);
-}
-.home-about a {
-  color: var(--ip-ink);
-}
-.t3-gust:disabled {
-  opacity: 0.65;
-}
-.sail-fallback {
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--ip-muted);
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  max-width: 250px;
-}
-.home-main .sail-static-fallback {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 .ip-nojs-stages {
   padding-left: 20px;
 }
@@ -120,14 +94,13 @@ input:focus-visible {
   font-size: 19px;
   font-weight: 400;
   line-height: 1.4;
-  letter-spacing: -0.3px;
   margin: 25px 0 10px;
 }
 .ip-article .ip-case-hero h1 {
-  max-width: 900px;
+  max-width: 1000px;
 }
 .ip-article .ip-prose {
-  max-width: 625px;
+  max-width: 700px;
 }
 .ip-not-found {
   min-height: 620px;
@@ -135,56 +108,8 @@ input:focus-visible {
 .ip-not-found .ip-text-link {
   margin-top: 20px;
 }
-@media (max-width: 1100px) {
-  :root .ip-shell.site-shell {
-    padding: 0 48px;
-  }
-}
-@media (min-width: 621px) and (max-width: 960px) {
-  :root .ip-work-entry {
-    grid-template-columns: 115px minmax(0, 1fr) 235px;
-    gap: 25px;
-  }
-  :root .ip-work-entry .ip-study {
-    height: 240px;
-  }
-  :root .ip-work-entry .ip-paper {
-    left: 68px;
-  }
-  :root .ip-work-entry .ip-entry-title {
-    font-size: 31px;
-  }
-}
-@media (max-width: 800px) {
-  :root .ip-shell.site-shell {
-    padding: 0 32px;
-  }
-}
-@media (max-width: 620px) {
-  :root .ip-shell.site-shell {
-    padding: 0 23px;
-  }
-  .home-about {
-    align-items: start;
-    flex-direction: column;
-    gap: 15px;
-    padding-bottom: 40px;
-  }
-}
-@media (max-width: 360px) {
-  :root .ip-shell.site-shell {
-    padding: 0 18px;
-  }
-}
-@media (pointer: coarse) {
-  .home-about a {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   html {
-    scroll-behavior: auto !important;
+    scroll-behavior: auto;
   }
 }

@@ -4,20 +4,28 @@ import PortfolioAnalytics from '@/components/portfolio-analytics';
 import { siteUrl } from '@/lib/metadata';
 import './globals.css';
 import './base.css';
+import './editorial.css';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Kristian Salmeron — Making things work.',
+    default: 'Kristian Salmeron — Thoughtful interfaces. Reliable systems.',
     template: '%s — Kristian Salmeron',
   },
   description:
-    'I build systems, explore ideas, and follow the interesting questions. Software engineering, architecture, selected work, and field notes by Kristian Salmeron.',
+    'Lead Software Engineer Kristian Salmeron. Thoughtful interfaces, reliable systems, and products that make complex work feel simple.',
   icons: { icon: '/favicon.svg' },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <head>
+        <link
+          rel="preload"
+          href="/fonts/dm-serif-display-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <link
           rel="preload"
           href="/fonts/instrument-sans-latin.woff2"
