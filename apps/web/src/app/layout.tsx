@@ -5,6 +5,7 @@ import { siteUrl } from '@/lib/metadata';
 import './globals.css';
 import './base.css';
 import './editorial.css';
+import './sail-home.css';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {

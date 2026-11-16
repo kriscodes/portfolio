@@ -6,7 +6,8 @@
     "dev": "next dev --webpack --port 3210 --hostname 127.0.0.1",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/*.test.ts src/components/studio/state.test.ts src/components/studio/scene/*.test.ts"
+    "test": "node --import tsx --test src/lib/*.test.ts src/components/studio/state.test.ts src/components/studio/scene/*.test.ts src/components/sail-motion.test.ts",
+    "lint": "eslint src/app src/components/chrome.tsx \"src/components/sail-*.{ts,tsx}\" --max-warnings 0"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "5.3.0",
@@ -30,6 +31,8 @@
     "@types/three": "0.159.0",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.12",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.3"
   }
 }

@@ -380,9 +380,13 @@ export async function validateExport(options = {}) {
 
   if (checkCopy) {
     const homeText = compact(pages.get('/')?.text).replace(/[’‘]/g, "'");
-    if (!/I build products that make complex work feel simple\./i.test(homeText))
+    if (
+      !/12\+ years building interfaces, shaping systems, and making complex work feel simple\./i.test(
+        homeText,
+      )
+    )
       add('/', 'approved supporting line is missing');
-    if (!/Thoughtful interfaces\.\s*Reliable systems\./i.test(homeText))
+    if (!/Making\s*things\s*work\./i.test(homeText))
       add('/', 'approved editorial headline is missing');
     if (/R[eé]sum[eé]/i.test(homeText)) add('/', 'removed résumé link is still present');
     const genText = compact(pages.get('/work/gen-ui/')?.text);

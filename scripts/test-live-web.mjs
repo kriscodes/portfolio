@@ -63,7 +63,11 @@ const home =
     ?.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ') ?? '';
-if (!/I build products that make complex work feel simple\./i.test(home))
+if (
+  !/12\+ years building interfaces, shaping systems, and making complex work feel simple\./i.test(
+    home,
+  )
+)
   record('/', 'approved redesign supporting line was not delivered');
 
 // A missing asset returning the SPA HTML shell is a failure even when its status is 200.

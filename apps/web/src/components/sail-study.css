@@ -1,0 +1,108 @@
+.sail-study {
+  width: 100%;
+  margin: 0;
+}
+
+.sail-study-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1350 / 1165;
+  isolation: isolate;
+}
+
+.sail-study-stage::before {
+  content: '';
+  position: absolute;
+  bottom: 2.5%;
+  left: 9%;
+  width: 85%;
+  height: 3%;
+  border-radius: 50%;
+  background: #534b3f;
+  filter: blur(12px);
+  opacity: 0.12;
+  z-index: -1;
+}
+
+.sail-study-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sail-study-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sail-study-stage[data-animated='true'] .sail-study-canvas {
+  opacity: 1;
+}
+.sail-study-stage[data-animated='true'] .sail-study-image {
+  opacity: 0;
+}
+
+.sail-study-caption {
+  width: max-content;
+  max-width: 100%;
+  margin: 14px auto 0;
+  padding: 0 12px;
+}
+
+:root .sail-wind-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ip-accent);
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.5;
+}
+
+.sail-wind-button:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.sail-wind-button:disabled {
+  cursor: default;
+}
+
+.sail-wind-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.sail-study-caption p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ip-muted);
+}
+
+.sail-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .sail-study-caption {
+    margin-top: 6px;
+    text-align: center;
+  }
+}

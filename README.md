@@ -12,9 +12,10 @@ The editorial design uses a white background, CareIQ Signal blue, locally served
 
 - **Selected work:** CareIQ, Toolbox, frontend experiments in Lab, and the NLP Gen UI performance case study.
 - **Interactive explanations:** request stages and architecture tradeoffs alongside the written case studies.
+- **Sail study:** a detailed cloth illustration with a single, deliberately paced gust and an early-settle control.
 - **Field notes and About:** two complete essays and a land, sea, and photography selector.
 
-The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Content and architecture summaries remain readable without JavaScript. The earlier sail study is retained in source history and component files but is no longer mounted on the homepage.
+The interface uses responsive navigation, native controls, local fonts, and per-page metadata. Content, the still sail, and architecture summaries remain readable without JavaScript. The sail renderer loads only after interaction, stops automatically, and releases its resources at rest or when hidden. Reduced-motion preferences preserve the still composition. [Sail implementation notes](docs/SAIL-STUDY.md).
 
 ## Architecture
 
@@ -57,7 +58,7 @@ pnpm validate
 pnpm format:check
 ```
 
-`pnpm validate` runs workspace type checks, unit and API tests, the production build, and the static-export audit. Coverage includes API contracts and analytics behavior, retained studio regressions, sail geometry, and release-audit regressions. The export audit checks content routes, internal links, local assets, accessible controls, and canonical metadata.
+`pnpm validate` runs frontend linting, workspace type checks, unit and API tests, the production build, and the static-export audit. Coverage includes API contracts and analytics behavior, retained studio regressions, sail geometry, finite gust timing, and release-audit regressions. The export audit checks content routes, internal links, local assets, accessible controls, and canonical metadata. Linting applies the Next.js Core Web Vitals and TypeScript rules to app routes, shared navigation, and sail components; the retained studio is outside that lint command.
 
 Set `ANALYTICS_TEST_DATABASE_URL` to a disposable PostgreSQL database to include persistent-store integration checks. Validation records and their scope are in [docs/VALIDATION.md](docs/VALIDATION.md); recorded browser checks are not a formal accessibility certification or a measured Core Web Vitals score.
 
@@ -66,6 +67,7 @@ Individual commands are available when working on a specific area:
 | Command             | Purpose                                                          |
 | ------------------- | ---------------------------------------------------------------- |
 | `pnpm typecheck`    | Build shared contracts and check workspace types                 |
+| `pnpm lint`         | Check app routes, shared navigation, and sail components         |
 | `pnpm test:unit`    | Run API, analytics, frontend, sail, and audit regression tests   |
 | `pnpm build`        | Build the workspaces and assemble the static export              |
 | `pnpm test:web`     | Audit the generated export after a build                         |

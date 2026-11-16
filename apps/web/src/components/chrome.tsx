@@ -5,28 +5,42 @@ import { usePathname } from 'next/navigation';
 
 export function Navigation() {
   const pathname = usePathname();
+  const isHome = pathname === '/';
+
   return (
-    <header className="ip-header" id="top">
+    <header className={`ip-header${isHome ? ' sail-home-header' : ''}`} id="top">
       <Link href="/" className="ip-name" aria-label="Kristian Salmeron — Home">
-        <span className="ip-monogram" aria-hidden="true">
-          ks
-        </span>
-        <span>Kristian Salmeron</span>
+        {!isHome && (
+          <span className="ip-monogram" aria-hidden="true">
+            ks
+          </span>
+        )}
+        <span>Kristian Salmeron{isHome ? '.' : ''}</span>
       </Link>
       <nav aria-label="Main navigation">
-        <Link
-          href="/work/"
-          aria-current={pathname.startsWith('/work') ? 'page' : undefined}
-          className={pathname === '/' ? 'nav-home-work' : undefined}
-        >
+        <Link href="/work/" aria-current={pathname.startsWith('/work') ? 'page' : undefined}>
           Work
         </Link>
         <Link href="/about/" aria-current={pathname.startsWith('/about') ? 'page' : undefined}>
           About
         </Link>
-        <a href="https://lab.kristiansalmeron.com/">Lab</a>
-        <Link href="/contact/" aria-current={pathname.startsWith('/contact') ? 'page' : undefined}>
-          Contact
+        {isHome ? (
+          <Link href="/field-notes/">Field notes</Link>
+        ) : (
+          <a href="https://lab.kristiansalmeron.com/">Lab</a>
+        )}
+        <Link
+          href="/contact/"
+          className={isHome ? 'sail-home-contact-link' : undefined}
+          aria-current={pathname.startsWith('/contact') ? 'page' : undefined}
+        >
+          {isHome ? (
+            <>
+              Let’s talk <span aria-hidden="true">↗</span>
+            </>
+          ) : (
+            'Contact'
+          )}
         </Link>
       </nav>
     </header>
@@ -34,6 +48,29 @@ export function Navigation() {
 }
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname === '/') {
+    return (
+      <footer className="sail-home-footer">
+        <p>Built with intent.</p>
+        <div className="sail-home-social" aria-label="Social profiles">
+          <a href="https://github.com/kriscodes" target="_blank" rel="noopener noreferrer">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/kristian-salmeron-46295664"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LinkedIn <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <p>© {new Date().getFullYear()}</p>
+      </footer>
+    );
+  }
+
   return (
     <footer className="ip-footer">
       <div className="footer-invitation">

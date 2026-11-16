@@ -1,75 +1,67 @@
 import Link from 'next/link';
+import SailStudy from '@/components/sail-study';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
-  'Thoughtful interfaces. Reliable systems.',
-  'Lead Software Engineer Kristian Salmeron. I build products that make complex work feel simple. Explore CareIQ, Toolbox, and frontend experiments.',
+  'Making things work.',
+  'Lead Software Engineer Kristian Salmeron. 12+ years building interfaces, shaping systems, and making complex work feel simple.',
   '/',
 );
 
 export default function HomePage() {
   return (
-    <main id="main" className="editorial-home">
-      <section className="editorial-hero" aria-labelledby="home-title">
-        <div className="editorial-intro">
-          <p className="ip-eyebrow">Lead Software Engineer</p>
+    <main id="main" className="sail-home">
+      <section className="sail-home-hero" aria-labelledby="home-title">
+        <div className="sail-home-intro">
+          <p className="sail-home-eyebrow">Software engineering &amp; architecture</p>
           <h1 id="home-title">
-            <span>Thoughtful interfaces.</span>
-            <span className="ip-accent">Reliable systems.</span>
+            <span>Making</span>
+            <span>things</span>
+            <em>work.</em>
           </h1>
-          <a href="#selected-work" className="ip-text-link hero-work-link">
-            View selected work <span aria-hidden="true">↓</span>
+          <p className="sail-home-deck">
+            12+ years building interfaces, shaping systems, and making complex work feel simple.
+          </p>
+          <a href="#selected-work" className="sail-home-work-link">
+            Explore selected work <span aria-hidden="true">↗</span>
           </a>
+          <p className="sail-home-role">Lead Software Engineer · Los Angeles</p>
         </div>
-        <div className="editorial-aside">
-          <p>I build products that make complex work feel simple.</p>
-          <Link href="/about/" className="ip-button ip-button-outline">
-            About me <span aria-hidden="true">↗</span>
-          </Link>
+        <div className="sail-home-art">
+          <SailStudy />
         </div>
       </section>
       <section
         id="selected-work"
-        className="editorial-work"
+        className="sail-home-work"
         aria-labelledby="selected-work-heading"
       >
-        <div className="editorial-section-heading">
-          <h2 id="selected-work-heading">Selected work</h2>
-          <span aria-hidden="true">01—03</span>
-        </div>
-        <div className="editorial-projects">
-          <Link href="/work/care-iq/" className="editorial-project">
-            <span className="project-number" aria-hidden="true">
-              01
-            </span>
-            <h3>CareIQ</h3>
-            <p>Front-desk workflows for independent practices.</p>
-            <span className="project-status">In development</span>
-            <span className="project-arrow" aria-hidden="true">
-              →
+        <h2 id="selected-work-heading">Selected work</h2>
+        <div className="sail-home-projects">
+          <Link href="/work/gen-ui/" className="sail-home-project">
+            <h3>NLP Gen UI</h3>
+            <p>Medical documents, ready in seconds.</p>
+            <span className="sail-home-result">
+              <span className="visually-hidden">Document load time: </span>
+              ~15 min → &lt;5 sec
             </span>
           </Link>
-          <a href="https://toolbox.kristiansalmeron.com/" className="editorial-project">
-            <span className="project-number" aria-hidden="true">
-              02
+          <Link href="/work/care-iq/" className="sail-home-project">
+            <h3>CareIQ</h3>
+            <p>Marketing · Web app · API · Database</p>
+            <span className="sail-home-status">
+              In development <span aria-hidden="true">↗</span>
             </span>
-            <h3>Toolbox</h3>
-            <p>Practical tools for everyday work.</p>
-            <span className="project-arrow" aria-hidden="true">
-              ↗
-            </span>
-          </a>
-          <a href="https://lab.kristiansalmeron.com/" className="editorial-project">
-            <span className="project-number" aria-hidden="true">
-              03
-            </span>
-            <h3>Lab</h3>
-            <p>Experiments in frontend performance and rendering.</p>
-            <span className="project-note">Experiments</span>
-            <span className="project-arrow" aria-hidden="true">
-              ↗
-            </span>
-          </a>
+          </Link>
+          <div className="sail-home-more">
+            <span>Also exploring</span>
+            <a href="https://toolbox.kristiansalmeron.com/">
+              Toolbox <span aria-hidden="true">↗</span>
+            </a>
+            <a href="https://lab.kristiansalmeron.com/">
+              Lab <span aria-hidden="true">↗</span>
+            </a>
+          </div>
         </div>
       </section>
     </main>
