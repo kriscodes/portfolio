@@ -1,0 +1,26 @@
+{
+  "document": "https://docs.google.com/document/d/1L2YO3pc9l4X90jlVYJILBbHASpQCRKCBJULmBNB4UDU/edit",
+  "status": "Applied in Google Docs; five scoped replacements, each matched once.",
+  "changes": [
+    {
+      "old": "Lead Software Engineer\n",
+      "text": "Lead Software Engineer | Frontend Architecture\n"
+    },
+    {
+      "old": "Lead software engineer with 12+ years of experience building web and mobile applications across healthcare, insurance, analytics, and SaaS. At Highmark Health, architected a claims-auditing rule builder that saved roughly $35M in FY2026 and cut document rendering from 15 minutes to under 5 seconds. Hands-on full-stack technical leader in React, TypeScript, Next.js, and Node.js who serves as tech lead for about 25 cross-functional contributors (not direct reports) and mentors engineers.",
+      "text": "Frontend engineering lead with 12+ years building complex interfaces, reusable component systems, and performant web applications. At Highmark Health, architected a claims-auditing rule builder associated with roughly $35M in FY2026 savings and a medical document viewer that cut first-page rendering from approximately 15 minutes to under 5 seconds. Hands-on in React, TypeScript, Next.js, and Node.js; sets technical direction for about 25 cross-functional contributors (not direct reports) and mentors engineers."
+    },
+    {
+      "old": "Re-architected PDF delivery and rendering with Apryse, document linearization, progressive delivery, and separation from application data APIs; reduced initial rendering from approximately 15 minutes to under 5 seconds for 1,500+ medical coders.",
+      "text": "Medical document viewer: 15 minutes to under 5 seconds. Rebuilt a single-file vanilla interface in React/Next.js with reusable components; decoupled PDF rendering from NLP/OCR API completion using Apryse, linearization, and progressive delivery for 1,500+ medical coders."
+    },
+    {
+      "old": "Built the shared NLP Gen UI capability for integration into five enterprise applications and managed the technical relationship and implementation with Apryse.",
+      "text": "Built the medical document viewer as a shared capability integrated into five enterprise applications; managed the Apryse technical relationship and implementation."
+    },
+    {
+      "old": "Built appointment, patient, document, and visit-readiness interfaces with typed API models. Demonstrations use synthetic data; the product is not ready for live patient care.",
+      "text": "Built scheduling, patient, paperwork, and visit-readiness interfaces with typed API models. Added CodeQL, secret scanning, and coverage gates; prepared isolated staging and rollback procedures. Synthetic demonstrations only; not ready for live patient care."
+    }
+  ]
+}
