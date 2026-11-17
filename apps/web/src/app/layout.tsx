@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: '%s — Kristian Salmeron',
   },
   description:
-    'Lead Software Engineer Kristian Salmeron. Thoughtful interfaces, reliable systems, and products that make complex work feel simple.',
+    'Frontend engineering lead Kristian Salmeron. React, Next.js, reusable component systems, performance, and complex interfaces.',
   icons: { icon: '/favicon.svg' },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

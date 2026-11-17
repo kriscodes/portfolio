@@ -3,8 +3,8 @@ import SailStudy from '@/components/sail-study';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
-  'Making things work.',
-  'Lead Software Engineer Kristian Salmeron. 12+ years building interfaces, shaping systems, and making complex work feel simple.',
+  'Frontend engineering lead',
+  'Frontend engineering lead Kristian Salmeron. React, Next.js, reusable component systems, performance, and complex interfaces.',
   '/',
 );
 
@@ -13,17 +13,17 @@ export default function HomePage() {
     <main id="main" className="sail-home">
       <section className="sail-home-hero" aria-labelledby="home-title">
         <div className="sail-home-intro">
-          <p className="sail-home-eyebrow">Software engineering &amp; architecture</p>
+          <p className="sail-home-eyebrow">Frontend engineering lead</p>
           <h1 id="home-title">
             <span>Making</span> <span>things</span> <em>work.</em>
           </h1>
           <p className="sail-home-deck">
-            12+ years building interfaces, shaping systems, and making complex work feel simple.
+            12+ years making complex interfaces feel simple. React, reusable component systems, and performance.
           </p>
           <a href="#selected-work" className="sail-home-work-link">
             Explore selected work <span aria-hidden="true">↗</span>
           </a>
-          <p className="sail-home-role">Lead Software Engineer · Los Angeles</p>
+          <p className="sail-home-role">Lead Software Engineer · Frontend architecture · Los Angeles</p>
         </div>
         <div className="sail-home-art">
           <SailStudy />
