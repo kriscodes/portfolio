@@ -2,30 +2,40 @@
 'use strict';
 
 (() => {
+  const STAGING =
+    typeof window !== 'undefined' &&
+    /^(?:lab\.|toolbox\.)?staging\.kristiansalmeron\.com$/.test(window.location.hostname);
+  const PREFIX = STAGING ? 'ks_staging_' : 'ks_';
   const DAY_MS = 86_400_000;
   const VISIT_MS = 30 * 60_000;
   const IDLE_MS = 60_000;
   const ID = /^[A-Za-z0-9_-]{16,96}$/;
   const KEYS = {
-    preference: 'ks_analytics_opt_out',
-    visitor: 'ks_insights_visitor_v2',
-    session: 'ks_insights_session_v2',
-    outbox: 'ks_insights_outbox_v2',
-    previous: 'ks_insights_previous_v2',
+    preference: PREFIX + 'analytics_opt_out',
+    visitor: PREFIX + 'insights_visitor_v2',
+    session: PREFIX + 'insights_session_v2',
+    outbox: PREFIX + 'insights_outbox_v2',
+    previous: PREFIX + 'insights_previous_v2',
   };
-  const HOSTS = {
-    'kristiansalmeron.com': 'portfolio',
-    'www.kristiansalmeron.com': 'portfolio',
-    'lab.kristiansalmeron.com': 'lab',
-    'toolbox.kristiansalmeron.com': 'toolbox',
-  };
+  const HOSTS = STAGING
+    ? {
+        'staging.kristiansalmeron.com': 'portfolio',
+        'lab.staging.kristiansalmeron.com': 'lab',
+        'toolbox.staging.kristiansalmeron.com': 'toolbox',
+      }
+    : {
+        'kristiansalmeron.com': 'portfolio',
+        'www.kristiansalmeron.com': 'portfolio',
+        'lab.kristiansalmeron.com': 'lab',
+        'toolbox.kristiansalmeron.com': 'toolbox',
+      };
   const PATHS = {
     portfolio: new Set([
       '/',
       '/work/',
       '/work/care-iq/',
       '/work/gen-ui/',
-    '/work/rule-builder/',
+      '/work/rule-builder/',
       '/about/',
       '/contact/',
       '/field-notes/',
@@ -719,7 +729,9 @@
             name +
             '=' +
             encodeURIComponent(value) +
-            '; Path=/; Domain=kristiansalmeron.com; Secure; SameSite=Lax; Max-Age=' +
+            '; Path=/; Domain=' +
+            (STAGING ? 'staging.kristiansalmeron.com' : 'kristiansalmeron.com') +
+            '; Secure; SameSite=Lax; Max-Age=' +
             maxAge;
         }
         const part = document.cookie.split('; ').find((item) => item.startsWith(name + '='));

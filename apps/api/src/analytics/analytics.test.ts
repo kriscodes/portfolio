@@ -785,3 +785,32 @@ test(
     }
   },
 );
+
+test('staging collection accepts staging origins and refuses production origins', async () => {
+  await fixture(
+    async ({ call }) => {
+      const stage = await call('collect', {
+        method: 'OPTIONS',
+        headers: { Origin: 'https://staging.kristiansalmeron.com' },
+      });
+      assert.equal(stage.status, 204);
+      assert.equal(
+        stage.headers.get('access-control-allow-origin'),
+        'https://staging.kristiansalmeron.com',
+      );
+      const production = await call('collect', {
+        method: 'OPTIONS',
+        headers: { Origin: 'https://kristiansalmeron.com' },
+      });
+      assert.equal(production.status, 403);
+    },
+    { environment: 'staging', origin: 'https://analytics.staging.kristiansalmeron.com' },
+  );
+  await fixture(async ({ call }) => {
+    const response = await call('collect', {
+      method: 'OPTIONS',
+      headers: { Origin: 'https://staging.kristiansalmeron.com' },
+    });
+    assert.equal(response.status, 403);
+  });
+});

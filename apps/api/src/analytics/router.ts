@@ -3,7 +3,15 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { hashPassword, secretEqual, sessionToken, tokenHash, verifyPassword } from './auth.js';
 import { PostgresAnalyticsStore } from './store.js';
-import { CAMPAIGNS, contentFor, safePath, safeReferrer, siteOfHost } from './catalog.js';
+import {
+  CAMPAIGNS,
+  contentFor,
+  safePath,
+  safeReferrer,
+  siteOfHost,
+  SITE_HOSTS,
+  STAGING_SITE_HOSTS,
+} from './catalog.js';
 import {
   EVENTS,
   reportRange,
@@ -15,6 +23,7 @@ import {
 } from './types.js';
 
 export interface AnalyticsOptions {
+  environment?: 'production' | 'staging';
   store?: AnalyticsStore;
   databaseUrl?: string;
   ownerEmail?: string;
@@ -93,6 +102,10 @@ function classification(userAgent: string): AnalyticsEvent['device'] {
 }
 
 export function createAnalytics(options: AnalyticsOptions = {}) {
+  const environment = options.environment ?? process.env.APP_ENV ?? 'production';
+  if (!['production', 'staging'].includes(environment))
+    throw new Error('APP_ENV must be production or staging.');
+  const siteHosts = environment === 'staging' ? STAGING_SITE_HOSTS : SITE_HOSTS;
   const production = options.production ?? process.env.NODE_ENV === 'production';
   const databaseUrl = options.databaseUrl ?? process.env.DATABASE_URL;
   const ownerEmail = (options.ownerEmail ?? process.env.ANALYTICS_OWNER_EMAIL ?? '')
@@ -119,10 +132,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
   const cookieName = production ? COOKIE_DOMAINLESS : 'analytics_session';
   const authOrigins = new Set([origin, externalOrigin].filter((value): value is string => !!value));
   const collectOrigins = new Set([
-    'https://kristiansalmeron.com',
-    'https://www.kristiansalmeron.com',
-    'https://lab.kristiansalmeron.com',
-    'https://toolbox.kristiansalmeron.com',
+    ...Object.keys(siteHosts).map((host) => `https://${host}`),
     ...authOrigins,
   ]);
   const collectLimits = new Map<string, { count: number; expiresAt: number }>();
@@ -431,7 +441,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         isBot ||
         request.get('sec-gpc') === '1' ||
         request.get('dnt') === '1' ||
-        /(?:^|;)\s*ks_analytics_opt_out=1(?:;|$)/.test(request.headers.cookie ?? '')
+        /(?:^|;)\s*ks_(?:staging_)?analytics_opt_out=1(?:;|$)/.test(request.headers.cookie ?? '')
       ) {
         response.sendStatus(204);
         return;
@@ -477,7 +487,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         return;
       }
       const version = body.schemaVersion ?? 1;
-      const originSite = siteOfHost(new URL(request.get('origin')!).hostname);
+      const originSite = siteOfHost(new URL(request.get('origin')!).hostname, siteHosts);
       const isV2 = version === 2;
       const site =
         originSite ??
@@ -578,7 +588,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         eventId: typeof body.eventId === 'string' ? body.eventId : randomUUID(),
         event: body.event as AnalyticsEventName,
         path,
-        referrer: safeReferrer(body.referrer),
+        referrer: safeReferrer(body.referrer, siteHosts),
         source: valueFrom('source', SOURCES, isV2 ? 'unknown' : 'direct'),
         medium: valueFrom('medium', MEDIA, isV2 ? 'unknown' : 'direct'),
         campaign,

@@ -421,3 +421,23 @@ test('outbox drops old events and never treats a wake-up HTTP 200 page as an ack
   await new Promise((resolve) => setImmediate(resolve));
   assert.ok(f.local.getItem(KEYS.outbox));
 });
+
+test('staging tracker uses separate browser identifiers and storage keys', () => {
+  const stagingContext = {
+    module: { exports: {} },
+    URL,
+    Intl,
+    Date,
+    Map,
+    Set,
+    window: { location: { hostname: 'staging.kristiansalmeron.com' } },
+  };
+  vm.runInNewContext(
+    readFileSync(new URL('./web/tracker.js', import.meta.url), 'utf8'),
+    stagingContext,
+  );
+  const stage = stagingContext.module.exports as any;
+  assert.equal(stage.KEYS.visitor, 'ks_staging_insights_visitor_v2');
+  assert.equal(stage.KEYS.preference, 'ks_staging_analytics_opt_out');
+  for (const key of Object.values(stage.KEYS)) assert.ok(!Object.values(KEYS).includes(key));
+});

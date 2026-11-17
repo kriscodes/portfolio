@@ -7,6 +7,12 @@ export const SITE_HOSTS: Record<string, AnalyticsSite> = {
   'toolbox.kristiansalmeron.com': 'toolbox',
 };
 
+export const STAGING_SITE_HOSTS: Record<string, AnalyticsSite> = {
+  'staging.kristiansalmeron.com': 'portfolio',
+  'lab.staging.kristiansalmeron.com': 'lab',
+  'toolbox.staging.kristiansalmeron.com': 'toolbox',
+};
+
 export const SITE_PATHS: Record<AnalyticsSite, ReadonlySet<string>> = {
   portfolio: new Set([
     '/',
@@ -39,8 +45,8 @@ const REFERRERS = [
   'duckduckgo.com',
 ];
 
-export function siteOfHost(host: string): AnalyticsSite | null {
-  return SITE_HOSTS[host.toLowerCase()] ?? null;
+export function siteOfHost(host: string, hosts = SITE_HOSTS): AnalyticsSite | null {
+  return hosts[host.toLowerCase()] ?? null;
 }
 
 export function safePath(site: AnalyticsSite, value: unknown): string {
@@ -49,10 +55,10 @@ export function safePath(site: AnalyticsSite, value: unknown): string {
   return SITE_PATHS[site].has(path) ? path : '/unknown/';
 }
 
-export function safeReferrer(value: unknown): string {
+export function safeReferrer(value: unknown, hosts = SITE_HOSTS): string {
   if (typeof value !== 'string' || value.length > 253) return '';
   const host = value.toLowerCase();
-  if (siteOfHost(host)) return host;
+  if (siteOfHost(host, hosts)) return host;
   // Store only the known domain, never an arbitrary host or a potentially identifying subdomain.
   return REFERRERS.find((domain) => host === domain || host.endsWith('.' + domain)) ?? '';
 }
