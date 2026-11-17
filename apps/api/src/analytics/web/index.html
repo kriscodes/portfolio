@@ -38,7 +38,7 @@
         <section class="auth-card" id="login-view" aria-labelledby="login-heading" hidden>
           <div class="eyebrow">YOUR PRIVATE STUDIO</div>
           <h1 id="login-heading">Welcome back.</h1>
-          <p class="auth-intro">Sign in to see who’s arriving and what they explore.</p>
+          <p class="auth-intro">A private view of how your work is discovered and explored.</p>
           <form id="login-form">
             <label for="login-email">Email address</label>
             <input
@@ -133,7 +133,7 @@
       <div class="dashboard-shell" id="dashboard" hidden>
         <aside class="sidebar">
           <div class="nav-group">
-            <p class="eyebrow">YOUR WEBSITE</p>
+            <p class="eyebrow">YOUR STUDIO</p>
             <nav class="workspace-nav" aria-label="Workspace">
               <button
                 class="nav-button active"
@@ -152,8 +152,8 @@
             </nav>
           </div>
           <div class="sidebar-note">
-            <strong>One private workspace.</strong><span>kristiansalmeron.com</span>
-            <p>Real activity.<br />A clearer picture of your audience.</p>
+            <strong>Three connected sites.</strong><span>Portfolio · Lab · Toolbox</span>
+            <p>First-party measurement.<br />Thoughtfully limited data.</p>
           </div>
         </aside>
 
@@ -161,9 +161,11 @@
           <section id="overview-view" class="workspace-view" aria-labelledby="overview-heading">
             <div class="page-heading">
               <div>
-                <p class="eyebrow">KRISTIANSALMERON.COM</p>
-                <h1 id="overview-heading">A little window into your audience.</h1>
-                <p>Who’s arriving, what they explore, and what happens next.</p>
+                <p class="eyebrow">PORTFOLIO · LAB · TOOLBOX</p>
+                <h1 id="overview-heading">Small signals. A clearer picture.</h1>
+                <p>
+                  Understand how visitors find your work, explore it, and move between your sites.
+                </p>
               </div>
               <div class="report-controls">
                 <div class="period" role="group" aria-label="Reporting period">
@@ -189,23 +191,38 @@
                 visits with tracking enabled.
               </p>
             </div>
-            <div class="stats" aria-label="Visitor summary" aria-live="polite" aria-atomic="true">
-              <section class="stat">
-                <h2>Visitors</h2>
+            <p class="notice" id="coverage-warning" role="status" hidden>
+              This range exceeds the detailed-report limit. Engagement and navigation show partial
+              coverage; exits are withheld. Choose a shorter date range. Historical totals below
+              remain complete.
+            </p>
+            <div class="report-context">
+              <span class="access-pill">First-party analytics</span
+              ><span>Estimated activity · Pacific time</span>
+            </div>
+            <div class="stats" aria-label="Traffic summary" aria-live="polite" aria-atomic="true">
+              <section class="stat stat-featured">
+                <h2>Estimated visitors</h2>
                 <div class="stat-value" id="total-visitors">—</div>
-                <p>Estimated audience</p>
+                <p>Daily rotating identifiers</p>
               </section>
               <section class="stat">
-                <h2>Project views</h2>
-                <div class="stat-value" id="total-projects">—</div>
-                <p>Projects and case studies</p>
+                <h2>Pageviews</h2>
+                <div class="stat-value" id="total-pageviews">—</div>
+                <p>Across connected sites</p>
               </section>
               <section class="stat">
-                <h2>LinkedIn clicks</h2>
-                <div class="stat-value" id="total-linkedin">—</div>
-                <p>Outbound clicks</p>
+                <h2>Observed visits</h2>
+                <div class="stat-value" id="total-visits">—</div>
+                <p>New measurement only</p>
+              </section>
+              <section class="stat">
+                <h2>Average active time</h2>
+                <div class="stat-value" id="total-active">—</div>
+                <p>Per measured pageview</p>
               </section>
             </div>
+            <div class="site-cards" id="site-cards" aria-label="Site collection status"></div>
             <section class="panel chart-panel" aria-labelledby="chart-heading">
               <div class="panel-heading">
                 <h2 id="chart-heading">Visitors over time</h2>
@@ -226,24 +243,149 @@
                 <div id="daily-table"></div>
               </details>
             </section>
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">EXPLORATION</p>
+                <h2>Where attention goes</h2>
+              </div>
+              <p id="measurement-coverage" class="secondary">
+                New measurements appear after collection begins.
+              </p>
+            </div>
+            <section class="panel">
+              <div class="panel-heading">
+                <h2>Page engagement</h2>
+                <span class="secondary">Active time &amp; scroll milestones</span>
+              </div>
+              <div id="engagement-pages"></div>
+              <p class="panel-note">
+                Active time counts visible periods with recent activity, up to a 60-second idle
+                limit. Scroll columns count pageviews that reached each milestone; short pages can
+                reach 100% immediately. Unmeasured duration is shown as —.
+              </p>
+            </section>
             <div class="panel-grid">
               <section class="panel">
                 <div class="panel-heading">
-                  <h2>Where they came from</h2>
+                  <h2>Entry pages &amp; sources</h2>
+                  <span class="secondary">Visits</span>
+                </div>
+                <div id="entry-list"></div>
+                <p class="panel-note">
+                  First observed page of a visit. Missing referrers are direct / unknown.
+                </p>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Last observed pages</h2>
+                  <span class="secondary">Estimated exits</span>
+                </div>
+                <div id="exit-list"></div>
+                <p class="panel-note">
+                  Visits with no observed activity for 30 minutes. This does not prove a browser was
+                  closed. Late events may revise an exit.
+                </p>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Common next pages</h2>
+                  <span class="secondary">Linked pageviews</span>
+                </div>
+                <div id="path-list"></div>
+                <p class="panel-note">
+                  Observed navigation links within a visit. These are aggregate paths, not a
+                  verified conversion funnel.
+                </p>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Movement between sites</h2>
+                  <span class="secondary">Arrivals &amp; clicks</span>
+                </div>
+                <div id="movement-list"></div>
+                <p class="panel-note" id="movement-coverage">
+                  Short-lived first-party visit matching is limited to your participating
+                  subdomains. Blocked storage and missing referrers leave visits unmatched.
+                </p>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Projects, experiments &amp; tools</h2>
+                  <span class="secondary">Opens &amp; actions</span>
+                </div>
+                <div id="content-list"></div>
+                <p class="panel-note">
+                  Tool actions record an intentional interaction, never its inputs or output. The
+                  Lab experiment page currently contains a protocol to read.
+                </p>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Outbound interest</h2>
+                  <span class="secondary">Clicks</span>
+                </div>
+                <div id="outbound-list"></div>
+                <p class="panel-note">
+                  Link clicks are interest signals, not completed contacts, tool results, or
+                  conversions.
+                </p>
+              </section>
+            </div>
+            <details class="measurement-details">
+              <summary>How these estimates work</summary>
+              <div class="method-grid">
+                <p>
+                  <strong>Active time.</strong> The collector checks visibility and recent pointer,
+                  key, or scroll activity. Hidden and idle time is excluded; browser suspension and
+                  missed final requests can undercount. Cumulative snapshots avoid adding retries
+                  twice.
+                </p>
+                <p>
+                  <strong>Visits &amp; privacy.</strong> Random identifiers rotate daily. Visits
+                  expire after 30 minutes of inactivity and at the day boundary. Shared identifiers
+                  stay within this domain; returning people are not measured.
+                </p>
+                <p>
+                  <strong>Coverage.</strong> Historical totals remain available below. New timing,
+                  scroll, path, and cross-site metrics begin with the updated collector. Missing
+                  data is never reconstructed from old totals.
+                </p>
+                <p>
+                  <strong>Delivery.</strong> Blockers, privacy settings, multiple tabs, clock
+                  differences, and delayed events affect estimates. Events can retry for 24 hours.
+                  Reports may change as they arrive.
+                </p>
+              </div>
+            </details>
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">CONTINUITY</p>
+                <h2>Your historical picture</h2>
+              </div>
+              <p class="secondary">Includes legacy collection</p>
+            </div>
+            <div class="legacy-summary">
+              <span>Project opens <strong id="total-projects">—</strong></span
+              ><span>LinkedIn clicks <strong id="total-linkedin">—</strong></span>
+            </div>
+            <div class="panel-grid">
+              <section class="panel">
+                <div class="panel-heading">
+                  <h2>Sources across all activity</h2>
                   <span class="secondary">Visitors</span>
                 </div>
                 <div id="source-list"></div>
               </section>
               <section class="panel">
                 <div class="panel-heading">
-                  <h2>What caught their eye</h2>
+                  <h2>Project &amp; studio activity</h2>
                   <span class="secondary">Actions</span>
                 </div>
                 <div id="project-list"></div>
               </section>
               <section class="panel">
                 <div class="panel-heading">
-                  <h2>Pages they explored</h2>
+                  <h2>Pages across all activity</h2>
                   <span class="secondary">Pageviews</span>
                 </div>
                 <div id="page-list"></div>
@@ -284,19 +426,16 @@
             </div>
             <section class="panel campaign-builder">
               <label for="campaign-name">Campaign name</label
-              ><input
-                id="campaign-name"
-                type="text"
-                value="portfolio"
-                maxlength="64"
-                autocomplete="off"
-                spellcheck="false"
-                aria-describedby="campaign-help"
-              />
+              ><select id="campaign-name" aria-describedby="campaign-help">
+                <option value="portfolio">Portfolio</option>
+                <option value="bio">Bio</option>
+                <option value="launch">Launch</option>
+                <option value="winter-update">Winter update</option>
+              </select>
               <p class="field-help" id="campaign-help">
-                Use a short label such as portfolio, bio, or winter-update. Letters, numbers, and
-                hyphens only. Default portfolio links stay short; custom campaigns include tracking
-                tags.
+                Choose an approved campaign label. Portfolio links stay short; other campaigns
+                include tracking tags. Older custom links still attribute their source, but
+                unrecognized campaign labels are no longer collected.
               </p>
             </section>
             <div class="shared-links" id="shared-links"></div>
@@ -360,8 +499,9 @@
             <section class="panel privacy-panel">
               <div class="panel-heading"><h2>Keep your own visits out</h2></div>
               <p class="panel-copy">
-                Open your portfolio using the link below to exclude this browser from visitor
-                tracking. Do this in each browser or device you use to check your website.
+                Use a link below to set a shared browser preference across Portfolio, Lab, and
+                Toolbox. If cookies are blocked, set it on each site. Re-enable each site with an
+                older local exclusion separately. Browser privacy signals still take precedence.
               </p>
               <div class="privacy-actions">
                 <a
@@ -369,7 +509,7 @@
                   href="https://kristiansalmeron.com/?analytics_opt_out=1"
                   target="_blank"
                   rel="noopener noreferrer"
-                  >Exclude my portfolio visits ↗</a
+                  >Exclude my visits ↗</a
                 ><a
                   class="text-link"
                   href="https://kristiansalmeron.com/?analytics_opt_out=0"
@@ -379,12 +519,45 @@
                 >
               </div>
             </section>
+            <section class="panel privacy-panel">
+              <h2>Participating sites</h2>
+              <div class="privacy-actions">
+                <a
+                  class="text-link"
+                  href="https://lab.kristiansalmeron.com/?analytics_opt_out=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Exclude on Lab ↗</a
+                ><a
+                  class="text-link"
+                  href="https://toolbox.kristiansalmeron.com/?analytics_opt_out=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Exclude on Toolbox ↗</a
+                ><a
+                  class="text-link"
+                  href="https://kristiansalmeron.com/privacy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Read the privacy notice ↗</a
+                >
+              </div>
+              <p class="panel-note">
+                Opt-out purges identifiers and queued events when each site next runs. A page
+                blocked from loading the collector cannot save the preference. Check for its
+                confirmation before leaving. Owner requests are excluded when the browser sends the
+                host-only sign-in cookie.
+              </p>
+            </section>
             <section class="text-section">
               <h2>A useful picture, with less personal data.</h2>
               <p>
                 The dashboard shows aggregate traffic and actions. It doesn’t show visitor names,
-                email addresses, exact locations, or session recordings. Website and campaign URLs
-                are limited to the information needed for these reports.
+                email addresses, exact locations, or session recordings. Page routes and campaign
+                labels use approved catalogs. No query strings, fragments, tool inputs, prompts,
+                names, emails, or precise locations are collected. Events are retained for 180 days;
+                hosting backups have separate retention. Shared random identifiers expire daily, and
+                visits expire after 30 minutes of inactivity. There is no returning-person metric.
               </p>
               <p>
                 The recent visitor count means visitors with recorded activity in the last five
@@ -396,7 +569,7 @@
         </main>
       </div>
       <footer class="workspace-footer">
-        <span>STUDIO INSIGHTS</span><span>Built for kristiansalmeron.com</span>
+        <span>STUDIO INSIGHTS</span><span>PORTFOLIO / LAB / TOOLBOX</span>
       </footer>
     </div>
     <noscript

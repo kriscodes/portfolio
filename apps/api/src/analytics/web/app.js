@@ -52,12 +52,7 @@
   try {
     restoredTheme = localStorage.getItem('ks-insights-theme') || '';
   } catch {}
-  let theme =
-    restoredTheme === 'dark' || restoredTheme === 'light'
-      ? restoredTheme
-      : window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
+  let theme = restoredTheme === 'dark' || restoredTheme === 'light' ? restoredTheme : 'light';
 
   function setTheme() {
     document.documentElement.dataset.theme = theme;
@@ -167,7 +162,14 @@
     $('logout').hidden = true;
     document.querySelector('.skip-link').href = '#main';
     $('owner-email').textContent = 'Your owner account';
-    ['total-visitors', 'total-projects', 'total-linkedin'].forEach((id) => {
+    [
+      'total-visitors',
+      'total-projects',
+      'total-linkedin',
+      'total-pageviews',
+      'total-visits',
+      'total-active',
+    ].forEach((id) => {
       $(id).textContent = '—';
     });
     [
@@ -178,6 +180,14 @@
       'page-list',
       'device-list',
       'campaign-list',
+      'site-cards',
+      'engagement-pages',
+      'entry-list',
+      'exit-list',
+      'path-list',
+      'movement-list',
+      'content-list',
+      'outbound-list',
     ].forEach((id) => $(id).replaceChildren());
     $('recent-visitors').textContent = 'Recent visitors: —';
     $('last-updated').textContent = 'Waiting for activity';
@@ -500,7 +510,7 @@
       const ceiling = peak <= 4 ? 4 : peak <= 10 ? 10 : Math.ceil(peak / 10) * 10;
       const chart = svg('svg', {
         viewBox: '0 0 ' + width + ' ' + height,
-        role: 'img',
+        role: 'group',
         'aria-label':
           'Daily estimated visitors. ' +
           valid.map((item) => date(item.date) + ': ' + count(item.visitors)).join('; '),
@@ -534,6 +544,18 @@
         const title = svg('title');
         title.textContent = date(item.date) + ': ' + count(item.visitors) + ' estimated visitors';
         bar.appendChild(title);
+        bar.setAttribute('tabindex', '0');
+        bar.setAttribute('role', 'button');
+        bar.setAttribute('aria-label', title.textContent);
+        bar.addEventListener('focus', () => {
+          $('chart-selection').textContent = title.textContent;
+        });
+        bar.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            $('chart-selection').textContent = title.textContent;
+          }
+        });
         bar.addEventListener('pointerenter', () => {
           $('chart-selection').textContent = title.textContent;
         });
@@ -581,8 +603,225 @@
     $('daily-table').appendChild(table);
   }
 
+  const siteNames = { portfolio: 'Portfolio', lab: 'Lab', toolbox: 'Toolbox' };
+  const contentNames = {
+    careiq: 'Care IQ',
+    'care-iq': 'Care IQ',
+    'gen-ui': 'NLP Gen UI',
+    'neon-drift': 'Neon Drift',
+    'pdf-rendering': 'PDF rendering protocol',
+    'prompt-builder': 'Prompt Builder',
+  };
+  function siteName(site) {
+    return siteNames[site] || 'Unknown site';
+  }
+  function pageLabel(site, path) {
+    return siteName(site) + ' · ' + (path || '/');
+  }
+  function duration(seconds) {
+    if (seconds === null || seconds === undefined || !Number.isFinite(Number(seconds))) return '—';
+    const value = Math.max(0, Math.round(Number(seconds)));
+    return value < 60 ? value + 's' : Math.floor(value / 60) + 'm ' + (value % 60) + 's';
+  }
+  function percent(value) {
+    return value === null || value === undefined
+      ? '—'
+      : Math.round(Math.min(1, Math.max(0, Number(value))) * 100) + '%';
+  }
+  function detailRows(id, list, label, metric, description, message) {
+    const target = $(id);
+    target.replaceChildren();
+    if (!list.length) {
+      empty(target, message);
+      return;
+    }
+    for (const item of list.slice(0, 12)) {
+      const row = create('div', 'detail-row');
+      const text = create('div', '', label(item));
+      const note = description(item);
+      if (note) text.appendChild(create('small', '', note));
+      row.append(text, create('strong', '', metric(item)));
+      target.appendChild(row);
+    }
+    if (list.length > 12)
+      target.appendChild(create('p', 'panel-note', 'Showing the 12 highest counts.'));
+  }
+  function renderInsights(insights = {}) {
+    const coverage = insights.coverage || {};
+    const totals = insights.totals || {};
+    $('coverage-warning').hidden = !coverage.limited;
+    $('total-visits').textContent = count(totals.visits);
+    $('total-active').textContent = duration(totals.avgActiveSeconds);
+    $('measurement-coverage').textContent = insights.measurementStartedAt
+      ? 'New collection observed from ' +
+        timeFormat.format(new Date(insights.measurementStartedAt)) +
+        ' PT · ' +
+        count(coverage.timedPageviews) +
+        ' timed / ' +
+        count(coverage.pageviews) +
+        ' new pageviews'
+      : 'No new measurements yet. Historical traffic remains available below.';
+    const sites = $('site-cards');
+    sites.replaceChildren();
+    for (const site of ['portfolio', 'lab', 'toolbox']) {
+      const item = safeArray(insights.sites).find((entry) => entry.site === site);
+      const card = create('section', 'site-card');
+      const title = create('h3');
+      title.append(
+        create('span', 'status-dot' + (item?.lastEventAt ? '' : ' pending')),
+        document.createTextNode(siteName(site)),
+      );
+      card.append(
+        title,
+        create('strong', '', count(item?.pageviews) + ' pageviews'),
+        create(
+          'p',
+          '',
+          count(item?.entries) +
+            ' visit entries · ' +
+            count(item?.visits) +
+            ' visits with new measurement',
+        ),
+      );
+      card.appendChild(
+        create(
+          'p',
+          '',
+          item?.lastEventAt
+            ? 'Last observed ' + timeFormat.format(new Date(item.lastEventAt)) + ' PT'
+            : 'No events observed yet',
+        ),
+      );
+      sites.appendChild(card);
+    }
+    const pages = safeArray(insights.pages);
+    const target = $('engagement-pages');
+    target.replaceChildren();
+    if (!pages.length)
+      empty(
+        target,
+        'Active time and scroll depth will appear after updated collectors record pageviews.',
+      );
+    else {
+      const wrap = create('div', 'table-scroll');
+      wrap.tabIndex = 0;
+      wrap.setAttribute('role', 'region');
+      wrap.setAttribute(
+        'aria-label',
+        'Page engagement table, scroll horizontally for all milestones',
+      );
+      const table = create('table', 'insights-table');
+      table.appendChild(
+        create(
+          'caption',
+          '',
+          'Most viewed pages · Scroll counts are cumulative, not additional visits',
+        ),
+      );
+      const head = create('thead');
+      const tr = create('tr');
+      ['Page', 'Views', 'Avg. active', 'Timed', '25%', '50%', '75%', '100%'].forEach((label) => {
+        const th = create('th', '', label);
+        th.scope = 'col';
+        tr.appendChild(th);
+      });
+      head.appendChild(tr);
+      const body = create('tbody');
+      for (const item of pages.slice(0, 12)) {
+        const row = create('tr');
+        const label = create('td', '', item.path || '/');
+        label.appendChild(create('small', '', siteName(item.site)));
+        row.appendChild(label);
+        [
+          count(item.views),
+          duration(item.avgActiveSeconds),
+          count(item.timedViews),
+          count(item.scroll25),
+          count(item.scroll50),
+          count(item.scroll75),
+          count(item.scroll100),
+        ].forEach((value) => row.appendChild(create('td', '', value)));
+        body.appendChild(row);
+      }
+      table.append(head, body);
+      wrap.appendChild(table);
+      target.appendChild(wrap);
+    }
+    detailRows(
+      'entry-list',
+      safeArray(insights.entries),
+      (i) => pageLabel(i.site, i.path),
+      (i) => count(i.visits),
+      (i) => humanSource(i.source),
+      'Entry pages will appear with new visits.',
+    );
+    detailRows(
+      'exit-list',
+      pages.filter((i) => i.exits > 0).sort((a, b) => b.exits - a.exits),
+      (i) => pageLabel(i.site, i.path),
+      (i) => count(i.exits) + ' exits',
+      (i) => percent(i.exitRate) + ' of this page’s views in inactive visits',
+      'No inactive visits with an observed exit yet.',
+    );
+    detailRows(
+      'path-list',
+      safeArray(insights.paths),
+      (i) => pageLabel(i.fromSite, i.fromPath) + ' → ' + pageLabel(i.toSite, i.toPath),
+      (i) => count(i.transitions),
+      () => 'Observed next-page transitions',
+      'Linked page navigation will appear here.',
+    );
+    detailRows(
+      'movement-list',
+      safeArray(insights.movement),
+      (i) => siteName(i.fromSite) + ' → ' + siteName(i.toSite),
+      (i) => count(i.arrivals) + ' arrivals',
+      (i) =>
+        count(i.matchedArrivals) +
+        ' matched · ' +
+        count(i.unmatchedArrivals) +
+        ' unmatched · ' +
+        count(i.clicks) +
+        ' destination clicks',
+      'No movement between participating sites observed yet.',
+    );
+    $('movement-coverage').textContent =
+      count(coverage.sharedVisits) +
+      ' visits with shared identifiers · ' +
+      count(coverage.localVisits) +
+      ' site-local visits. Matching estimates connect only these subdomains. Destination clicks and observed arrivals are independent counts.';
+    detailRows(
+      'content-list',
+      safeArray(insights.engagement),
+      (i) => contentNames[i.content] || i.content,
+      (i) => count(i.opens) + ' opens',
+      (i) => siteName(i.site) + ' · ' + count(i.actions) + ' primary actions',
+      'Project, experiment, and tool engagement will appear here.',
+    );
+    detailRows(
+      'outbound-list',
+      safeArray(insights.outbound),
+      (i) =>
+        i.destinationSite
+          ? pageLabel(i.destinationSite, i.destinationPath)
+          : {
+              email: 'Email link',
+              linkedin: 'LinkedIn',
+              github: 'GitHub',
+              instagram: 'Instagram',
+              contact: 'Contact page',
+              website: 'Website',
+            }[i.target] || i.target,
+      (i) => count(i.clicks),
+      (i) => 'Clicked from ' + siteName(i.site),
+      'Relevant outbound and cross-site clicks will appear here.',
+    );
+  }
+
   function renderReport(report) {
     const totals = report.totals || {};
+    $('total-pageviews').textContent = count(totals.pageviews);
+    renderInsights(report.insights);
     $('total-visitors').textContent = count(totals.visitors);
     $('total-projects').textContent = count(totals.projectOpens);
     $('total-linkedin').textContent = count(totals.linkedinClicks);
