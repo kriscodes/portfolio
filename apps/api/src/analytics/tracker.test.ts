@@ -196,6 +196,28 @@ test('page chains use stable page IDs and do not duplicate unchanged SPA routes'
   assert.notEqual(views[1].pageId, first.pageId);
 });
 
+test('back/forward cache restoration records a fresh page linked to the latest observed page', () => {
+  const f = fixture(),
+    firstDocument = createTracker(f.env);
+  firstDocument.pageview();
+  const first = f.sent[0];
+  f.advance(1000);
+  firstDocument.pagehide();
+  f.navigate('/work/');
+  const secondDocument = createTracker(f.env);
+  secondDocument.pageview();
+  const second = f.sent.filter((event) => event.event === 'pageview').at(-1);
+  assert.equal(second.previousPageId, first.pageId);
+  f.advance(1000);
+  secondDocument.pagehide();
+  f.navigate('/');
+  firstDocument.restore();
+  const restored = f.sent.filter((event) => event.event === 'pageview').at(-1);
+  assert.equal(restored.path, '/');
+  assert.notEqual(restored.pageId, first.pageId);
+  assert.equal(restored.previousPageId, second.pageId);
+});
+
 test('opt-out and browser signals purge identifiers and prevent all event types', () => {
   for (const signal of ['preference', 'globalPrivacyControl', 'doNotTrack']) {
     const f = fixture();

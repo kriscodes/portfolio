@@ -567,7 +567,7 @@
         lastSentActive = page?.activeMs ?? -1;
       }
     }
-    function pageview() {
+    function pageview(restored = false) {
       if (!enabled()) return;
       const path = safePath(env.site, new URL(env.location()).pathname);
       if (path === '/privacy/') {
@@ -577,17 +577,14 @@
       }
       const now = env.now(),
         ident = identity(now);
-      if (page?.path === path && page.identity.sessionId === ident.sessionId) return;
+      if (!restored && page?.path === path && page.identity.sessionId === ident.sessionId) return;
       flush();
-      let previous = page
-        ? { id: page.id, session: page.identity.sessionId, at: now }
-        : parse(read(env.session, KEYS.previous));
-      if (
-        previous?.session !== ident.sessionId ||
-        now - previous.at >= VISIT_MS ||
-        previous.at > now
-      )
-        previous = null;
+      let previous =
+        page && !restored
+          ? { id: page.id, session: page.identity.sessionId, at: now }
+          : parse(read(env.session, KEYS.previous));
+      // The rotating visit ID bounds this link; a page may be actively read for over 30 minutes.
+      if (previous?.session !== ident.sessionId || previous.at > now) previous = null;
       page = {
         id: env.randomId(),
         previousId: previous && ID.test(previous.id) ? previous.id : '',
@@ -630,7 +627,8 @@
     return {
       notice,
       isEnabled: enabled,
-      pageview,
+      pageview: () => pageview(),
+      restore: () => pageview(true),
       track(event, props = {}) {
         if (!EVENTS.has(event) || ['pageview', 'page_engagement', 'scroll_depth'].includes(event))
           return;
@@ -797,7 +795,8 @@
     window.addEventListener('popstate', pageview);
     window.addEventListener(
       'pageshow',
-      safely(() => {
+      safely((event) => {
+        if (event.persisted) tracker.restore();
         tracker.visibility(!document.hidden);
         outbox.wake();
       }),
