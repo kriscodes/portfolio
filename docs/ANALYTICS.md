@@ -1,75 +1,104 @@
-# Private Studio Insights
+# Studio Insights
 
-Studio Insights is the portfolio's own analytics collector, PostgreSQL store, reporting API, and single-owner password login. It uses the existing Render account and repository. It does not require an analytics provider, an external authentication provider, or a new account with another application.
+Studio Insights is the first-party collector, PostgreSQL store, reporting API, and private owner dashboard for Portfolio, Lab, and Toolbox. It uses the existing Express service and database at `https://analytics.kristiansalmeron.com`. The public sites remain static; analytics failures do not block their primary interactions.
 
-## Services and deployment
+## Architecture and rollout
 
-The public portfolio remains a static site. The existing `kristian-salmeron-api` service is configured to host the collector and dashboard at `https://analytics.kristiansalmeron.com`. Every reporting endpoint checks the owner session on the server, including requests through the service's default `onrender.com` address. Public assets contain no visitor reports or credentials.
+| Site      | Repository            | Integration                                                                            |
+| --------- | --------------------- | -------------------------------------------------------------------------------------- |
+| Portfolio | `kriscodes/portfolio` | Client adapter loads the shared collector, preserves existing studio/project hooks     |
+| Lab       | `kriscodes/lab`       | Deferred collector in root layout; PDF rendering protocol opens                        |
+| Toolbox   | `kriscodes/toolbox`   | Deferred collector on public pages; Prompt Builder opens and valid generation attempts |
 
-The `render.yaml` changes reuse both existing services, move the API to the always-on `0.5c-512mb` compute plan, and add a private-network-only `0.1c-256mb` PostgreSQL 18 database with 1 GB of storage in Oregon. The public static site's URL and appearance are preserved. Render's custom-domain association does not create DNS records at the domain registrar.
+The shared dependency-free script is `/analytics-assets/tracker.js`. All sites use the same collection and opt-out implementation. It does no third-party tracking and requires no new service or paid plan. The API accepts only explicitly approved first-party origins; a v2 event's site must agree with its request origin. Local development origins are accepted only outside production.
 
-On November 8, 2026, the owner updated the deployment decision and explicitly approved the always-on API and the custom analytics subdomain. The selected additional cost is **$13.55/month before usage overages**: $7/month API compute, $6.30/month persistent database ($6 compute plus $0.30 for 1 GB storage), and $0.25/month for the custom domain beyond the workspace's included allowance. This supersedes the earlier free-API proposal. Usage overages follow the existing Render workspace plan.
+The previous production collection was Portfolio-only. Lab and Toolbox start sending data only when their integrations are deployed. Check the dashboard's site cards for observed collection; a deployed script does not guarantee delivery. The public privacy pages are excluded from measurement.
 
-The portfolio keeps at most 100 pending events for up to 24 hours in first-party browser storage and uses idempotent event IDs to retry transient network failures or service interruptions. Original event timestamps survive retries so delayed delivery does not turn an old visit into recent activity. Retries improve delivery but cannot guarantee every visit is recorded. Privacy settings, unavailable browser storage, ad blockers, and offline devices can also prevent delivery. Opting out clears pending events before further sends.
+Deploy the API first, then the Portfolio static site and the two participating integrations. Before the updated API is live, the new script URL will be unavailable. Until an integration is live, that site's activity is absent. Legacy clients remain supported during rollout; legacy data remains readable. The legacy and v2 identifier namespaces differ, so estimates can count the same browser again during rollout.
 
-Required runtime configuration:
+Render configuration is unchanged: Portfolio API and static site use repository-root builds from `main`; Toolbox's static site also deploys from `main`; Lab's automatic deployment is disabled. Do not enable Lab auto-deploy or change plans, secrets, domains, database networking, or build settings as part of this release. The unrelated Toolbox Prompt API is not changed.
 
-| Variable                       | Purpose                                                              |
-| ------------------------------ | -------------------------------------------------------------------- |
-| `DATABASE_URL`                 | Render internal connection string; resolve through `fromDatabase`    |
-| `ANALYTICS_OWNER_EMAIL`        | Only account the application may create                              |
-| `ANALYTICS_ORIGIN`             | Canonical dashboard origin, `https://analytics.kristiansalmeron.com` |
-| `ANALYTICS_SETUP_TOKEN`        | Independent random one-time setup secret of at least 32 characters   |
-| `ANALYTICS_HASH_SECRET`        | Independent random secret for stored pseudonymous identifiers        |
-| `NEXT_PUBLIC_ANALYTICS_ORIGIN` | Public portfolio build-time collector origin; no secret              |
+## Measurement contract
 
-Generate and store secrets through Render's environment configuration. Preserve existing values through later Blueprint syncs. Never store a password, session cookie, setup token, connection string, or hash secret in source, deployment notes, screenshots, or logs.
+All report dates and identifier day boundaries use America/Los_Angeles, including daylight-saving changes. Counts estimate observed browsers and activity; they do not identify individual people.
 
-Set `ANALYTICS_OWNER_EMAIL` directly on the existing API service before deploying. The Blueprint deliberately omits its value from source; `sync: false` prompts for new services but is ignored for updates to existing ones. Keep this private value and the generated setup/hash secrets in Render, and let the Blueprint supply the database connection reference.
+| Measure                | Calculation and limits                                                                                                                                                                                                                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Visitors               | Distinct hashed daily random identifiers. Multiple devices, storage restrictions, in-app browsers, and day boundaries can count the same person again.                                                                                                                                                                       |
+| Visits                 | A random visit identifier expires after 30 minutes without observed activity and at the daily boundary. Shared cookies can connect participating subdomains. Site-local fallback cannot reliably connect them.                                                                                                               |
+| Active time            | While visible, elapsed time counts only within 60 seconds of the latest observed interaction. Snapshots are sent about every 15 seconds and on lifecycle changes. Long timer gaps are discarded. The report uses the maximum cumulative value per page instance, bounded by elapsed wall time, rather than adding snapshots. |
+| Average active time    | Total measured active time divided by timed pageviews. Missing snapshots and historical pageviews are excluded, not treated as zero. Passive reading beyond the idle cutoff, browser suspension, and missed final delivery can undercount.                                                                                   |
+| Scroll depth           | At most four milestone events per page instance: 25%, 50%, 75%, 100%. They describe the visible bottom edge after a scroll. Non-scrollable pages are excluded. Reports count each page at most once per milestone. No continuous positions are sent.                                                                         |
+| Entries and sources    | First observed page of a visit, with its acquisition source. An absent referrer is direct / unknown. Approved campaign tags retain their original label when links are forwarded.                                                                                                                                            |
+| Exits                  | Last observed page in a visit with no observed activity for 30 minutes. The rate is exits divided by that page's views in inactive visits. It is not proof of closing a browser. Late events can revise results.                                                                                                             |
+| Next pages             | Explicit previous-page references within the same visit, rather than timestamp adjacency across unrelated tabs. Missing links remain absent. Independent action totals are never a verified funnel.                                                                                                                          |
+| Movement between sites | Recognized first-party referrer arrivals, matched when the shared visit contains recent source-site activity. Unmatched arrivals and destination clicks are separate counts. A matched arrival is still an estimate, not proof that a particular click caused it.                                                            |
+| Engagement             | Project opens, PDF rendering protocol opens, Prompt Builder opens, and intentional generation attempts. Tool actions do not imply successful output.                                                                                                                                                                         |
+| Outbound interest      | Click categories for GitHub, LinkedIn, Instagram, email, and participating sites. Only a fixed destination site and approved path are kept for owned-site links; email addresses and full external URLs are not sent.                                                                                                        |
 
-DNS for the new subdomain: add a CNAME named `analytics` targeting the exact `onrender.com` hostname shown for `kristian-salmeron-api` in Render. Verify it in Render and wait for its managed HTTPS certificate. Do not change the root domain, email/MX records, or unrelated subdomains.
+The collector does not record returning visitors because daily rotation cannot support a returning-person claim. No performance metrics were added: the scope remains lightweight engagement measurement rather than partially sampled performance scores.
 
-## First owner login
+Visible activity includes pointer, keyboard, touch, and scroll signals without reading their values. Navigation and page visibility changes establish an activity window. Initial page visibility is a bounded estimate, not evidence of continuous attention. New page instances separate inactivity and day boundaries.
 
-The deployment starts closed to visitor-data reads. There is no public registration flow. Open the dashboard's one-time setup view using the setup code from Render's secret configuration; the supported fragment form is `/#setup=SETUP_CODE`. Fragments are not sent to the server as part of the page URL. Choose a unique password of at least 14 characters directly in the dashboard. The server fixes the account to `ANALYTICS_OWNER_EMAIL` and atomically disables setup after the owner is created.
+## Identity and cross-subdomain privacy
 
-Password verification uses Node's scrypt. Sessions use random opaque tokens with only their digests stored in PostgreSQL, an eight-hour expiry, and host-only HttpOnly cookies. Production cookies use Secure and SameSite Strict. Sign-out revokes the session. Login attempts are limited, and browser-origin checks protect authentication mutations. Database failures do not expose reports or silently switch production to temporary storage.
+The first-party `ks_insights_visitor_v2` cookie holds a random daily identifier. `ks_insights_session_v2` holds a random visit identifier and approved acquisition categories. Both use `Secure`, `SameSite=Lax`, path `/`, and the owned parent domain `kristiansalmeron.com`. The visitor cookie expires at the next Pacific midnight; the visit cookie expires after 30 minutes or midnight, whichever comes first. The server also day-scopes v2 identifier hashes to prevent joining a client that fails to rotate. No identifier is placed in a URL.
 
-If the owner password is lost, a trusted operator can run `node apps/api/dist/analytics/reset-owner.js` in the private Render service shell, which is available on the approved paid API plan. It reads a new password from standard input, requires the configured database and owner email, and revokes existing sessions. Keep the database private; the service shell can use its internal connection. Do not put the password in a command argument, source file, screenshot, or chat. There is no public reset endpoint or external email service.
+Cookie sharing changes the previous per-origin measurement boundary: participating subdomains can connect activity within a short visit. It does not extend observation to unrelated sites, introduce a lasting identity, or change the owner authentication cookie. All subdomains under the parent are a trust boundary for domain cookies; a future untrusted hosted subdomain should trigger a review or removal of shared identity.
 
-## Shareable portfolio links
+When shared cookies are unavailable, identifiers fall back to origin-local storage and tab session storage. The server scopes those identifiers to their site. The dashboard reports shared versus site-local coverage. Missing referrers, blocked requests, independent tabs, storage partitioning, private browsing, and concurrent initial cookie creation can leave activity unmatched. Owned-site navigation sends origin-only referrer information where links allow it; external destinations retain their existing referrer protections.
 
-Use the dashboard's Shared links view to copy the clean bio links for the default `portfolio` campaign. Render redirects these paths to the existing homepage URL with the matching attribution tags; no external shortener or additional service is involved. Both trailing-slash and slashless forms work.
+## Opt-out
 
-| Platform  | Clean bio link                           | Source      | Medium      |
-| --------- | ---------------------------------------- | ----------- | ----------- |
-| Facebook  | `https://kristiansalmeron.com/facebook`  | `facebook`  | `social`    |
-| Instagram | `https://kristiansalmeron.com/instagram` | `instagram` | `social`    |
-| LinkedIn  | `https://kristiansalmeron.com/linkedin`  | `linkedin`  | `social`    |
-| TikTok    | `https://kristiansalmeron.com/tiktok`    | `tiktok`    | `social`    |
-| WhatsApp  | `https://kristiansalmeron.com/whatsapp`  | `whatsapp`  | `messaging` |
-| GitHub    | `https://kristiansalmeron.com/github`    | `github`    | `social`    |
+The public privacy notice and dashboard link to `?analytics_opt_out=1`. Use `?analytics_opt_out=0` to allow collection again. The preference is removed from the visible URL after processing. The shared `ks_analytics_opt_out` preference cookie lasts up to one year and contains only the choice, not a visitor identifier. The old origin-local preference is respected and migrated. An explicit shared choice supersedes stale local preferences where cookies are available.
 
-For example, `/instagram` redirects to `/?utm_source=instagram&utm_medium=social&utm_campaign=portfolio`. The browser may show the expanded URL after opening the link; the clean URL is what belongs in a social bio. Existing long tracking links continue to work. For a custom campaign such as `bio` or `launch`, the generator keeps the full tagged URL so the campaign value is preserved.
+Global Privacy Control and Do Not Track override an allow choice. Every enqueue, send, retry, activity check, and lifecycle wake checks privacy. Disabling clears local identifiers and pending events; the server independently drops requests carrying the shared opt-out cookie or privacy headers. Already received data is not retroactively deleted, and an in-flight request cannot always be recalled.
 
-The source tag is important for in-app browsers and private messaging, which may omit a referrer. Attribution describes the shared link: if an Instagram-tagged link is forwarded through WhatsApp, it still credits the original Instagram tag. Counted visits require someone to open the website; publishing a link does not reveal platform impressions, identities, followers, or the sender or recipient of a private message. Keep personal names, emails, phone numbers, and other sensitive values out of campaign labels.
+Origins cannot erase one another's localStorage. Each site clears its local state when it next runs. If cookies are blocked, set the preference on each site; if all storage is blocked, the choice lasts for the current page only. Other browsers, devices, and in-app browsers require their own preference. If the collector script itself is blocked, it cannot save a choice or show confirmation, but it also cannot collect. Clearing browser data can reset preferences. Authenticated owner traffic is excluded when the host-only owner cookie reaches the collector.
 
-## Measurement and privacy
+## Data minimization, delivery, and retention
 
-The collector accepts a fixed set of portfolio events and sanitized properties. It records page paths without query strings or fragments, coarse device type, recognized referral sources, and approved campaign labels. Random browser identifiers rotate daily, and sessions expire after inactivity. The server hashes identifiers before storage. It does not use fingerprinting, precise geolocation, third-party trackers, or session recordings. Network infrastructure still processes request metadata as part of serving HTTP.
+New requests, including old-client events, are sanitized at ingestion. Fixed route catalogs map unrecognized paths to `/unknown/`; query strings and fragments are removed. Referrers reduce to approved domains or unknown, never arbitrary subdomains. Campaigns are limited to `portfolio`, `bio`, `launch`, and `winter-update`. Existing custom tagged links still attribute recognized sources, but unknown campaign labels are discarded. Historical records are preserved unchanged.
 
-Visitors are estimates. The same person may be counted again on another day, device, or in-app browser. Blocking analytics, opting out, bot filtering, connectivity problems, or storage restrictions can affect counts. Project arrivals, preview launches, and outbound clicks are different events; do not interpret their independent totals as a conversion funnel. A LinkedIn click is a click, not evidence that a conversation or application happened.
+Properties use fixed catalogs. No prompts, form values, tool inputs, generated output, names, email addresses, precise location, fingerprints, replay data, or unrelated browsing activity are collected. Infrastructure necessarily processes HTTP metadata. Temporary hashed IP keys support rate limiting; raw IP addresses and user-agent strings are not stored in analytics events. Device reporting is coarse.
 
-Reports use America/Los_Angeles dates. Recent visitors means activity observed during the preceding five minutes. Reporting begins after installation; it does not reconstruct visits from before tracking was enabled. Raw events are retained for 180 days, with cleanup while the service runs. Database backup retention is separate from application event retention and follows the selected Render database plan.
+The browser outbox keeps at most 100 sanitized events for up to 24 hours. Stable event IDs make retries idempotent; original timestamps survive delayed delivery. Client timestamps have a five-minute transit/clock tolerance. An old queue is sanitized before retry. Backoff, lifecycle delivery, and keepalive improve delivery without guaranteeing it. Offline devices, blockers, privacy controls, dropped lifecycle events, and queue eviction reduce coverage.
 
-The Privacy view links to `https://kristiansalmeron.com/?analytics_opt_out=1` to exclude this browser on the portfolio origin. Use `?analytics_opt_out=0` to re-enable it. Exclusion is browser-specific, so set it in each browser you use. The tracker also respects supported browser privacy signals. An authenticated owner session is excluded from collection when the browser sends that session cookie to the collector.
+Raw events have 180-day application retention, with batched cleanup while the service runs. Database backups are separate and follow the existing hosting policy. Reports operate on stored events, not individual identity profiles. Detailed v2 reporting is capped at 100,000 events per selected range to bound memory on the existing instance. A limited report warns the owner and withholds exits; legacy summary SQL totals remain complete. Choose a shorter date range if limited.
 
-## Verification and operation
+## Historical data and migration
 
-Production was verified on November 8, 2026 at `https://analytics.kristiansalmeron.com`, running source commit `ab5e722`. The API uses the always-on `0.5c-512mb` plan, and the 1 GB database is available with all external database IP access blocked. Both the API and public portfolio deployments reached `live`; the analytics domain has a managed HTTPS certificate. The health and authentication endpoints respond successfully, unauthenticated reports return HTTP 401 with private/no-store caching, fixed assets load, untrusted collection origins return HTTP 403, and a bot-only collector check returns HTTP 204 without creating fake traffic. The public portfolio's nine-route HTTP release audit also passed, and the delivered scripts contain the in-house collector, retry queue, and browser opt-out.
+The migration only adds columns and indexes. Existing events default to schema version 1, Portfolio, and unmeasured new fields. Owner credentials, session tables, stored history, and secrets are preserved. The migration runs idempotently before serving collection or reports. Existing unique event IDs remain the deduplication key.
 
-The free-to-paid hosting transition initially returned a Render gateway error even though the running app and database passed localhost checks. Redeploying the same tested version restored public routing. The verified API deployment is `dep-dbob223rjlhs73att3lg`; the public portfolio deployment is `dep-dboavblfi0pc73b48a8g`. Initial owner password setup is performed directly by the owner on the one-time setup page; no production password is entered or stored by the agent.
+Version 2 adds site, page references, visit scope, active-time snapshots, scroll milestones, approved content/actions, destination categories, and receipt time. Reports separate historical totals from new metrics and display the first observed v2 event timestamp. Timing and paths cannot be reconstructed from old pageview counts. The first observed timestamp reflects currently retained data, not a permanent installation audit.
 
-Run repository type checks, unit/integration tests, the production build, and the static-export validation before releasing. Use a disposable PostgreSQL database for the optional persistent-store integration test. Verify setup access, invalid passwords, blocked unauthenticated reports, session expiry/revocation, origin validation, allowed platform attribution, real collection/reporting, and empty states.
+The migration is tested against a disposable PostgreSQL database containing a legacy schema, event, owner, and active session, then run twice to verify preservation and idempotence. Never point the test environment at production. Additive columns remain after rolling back application code; old clients and old readers remain compatible. A rollback does not undo data already received.
 
-After a Render deploy is `live`, verify the health endpoint, login shell, protected reporting endpoints, HTTPS on the canonical domain, and the deployed collector. Complete the first owner setup yourself. Keep the database independent of the app filesystem so deploys and restarts preserve visitor history. Use Render's database exports/backups for recovery and review resource usage if traffic grows.
+## Owner access and configuration
+
+Every reporting endpoint checks the owner session, including requests through the service's default Render address. Public assets contain no visitor reports or credentials. Responses are private/no-store, and the dashboard remains unavailable when the durable store is unavailable.
+
+Existing required configuration remains:
+
+- `DATABASE_URL`: private Render connection string.
+- `ANALYTICS_OWNER_EMAIL`: the single authorized owner.
+- `ANALYTICS_SETUP_TOKEN`: independent one-time setup secret.
+- `ANALYTICS_HASH_SECRET`: existing hashing secret; do not rotate during this release.
+- `ANALYTICS_ORIGIN`: `https://analytics.kristiansalmeron.com`.
+- `NEXT_PUBLIC_ANALYTICS_ORIGIN`: optional Portfolio build-time collector origin.
+
+Owner passwords use scrypt. Sessions use random opaque tokens with only digests in PostgreSQL, eight-hour expiry, and a host-only Secure HttpOnly `__Host-analytics` cookie with SameSite Strict. Sign-out revokes the session. Origin validation, login limits, and setup closure are preserved. No account migration or password reset is needed.
+
+For a genuinely new installation, the one-time owner setup accepts `/#setup=SETUP_CODE`, removes it from the browser URL, and requires a password of at least 14 characters. Existing installations retain their account. Recovery remains `node apps/api/dist/analytics/reset-owner.js` in the private Render service shell, with the password on standard input, never in command arguments or source.
+
+## Shared links
+
+The six default clean links remain `/facebook`, `/instagram`, `/linkedin`, `/tiktok`, `/whatsapp`, and `/github`. Existing Render redirects expand them to source, medium, and `portfolio` campaign tags. The dashboard can also generate approved `bio`, `launch`, and `winter-update` links. A click is activity on the website, not a platform impression, identity, contact, or conversion.
+
+## Verification and release
+
+Run the repository typecheck, unit/integration tests, production build, and static-export validation. `scripts/test-insights-browser.mjs` exercises the dashboard with explicitly labeled local sample data at desktop, tablet, mobile, and 320px widths, including chart keyboard access, filters, themes, shared links, privacy, empty/error states, and sign-out. It needs Playwright; `PLAYWRIGHT_MODULE` and `PLAYWRIGHT_CHANNEL` can select an installed runtime/browser. No preview data enters production.
+
+Set `ANALYTICS_TEST_DATABASE_URL` only to a disposable test/review database for persistent-store and legacy-migration tests. Check collection validation, opt-outs, session/day rotation, idle/hidden time, duplicate and delayed events, path linkage, unmatched site arrivals, and missing-duration coverage.
+
+After release verify the health endpoint, login shell, unauthenticated report rejection, canonical HTTPS, collector asset, and each public site's script and privacy links. Use a browser opt-out or bot user agent for non-mutating production smoke checks. Observe real collection through the owner dashboard; do not manufacture production visits merely to populate charts. See `STUDIO-INSIGHTS-RELEASE.md` for this change's commits, checks, deployment status, and exact handoff commands.

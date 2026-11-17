@@ -11,6 +11,7 @@ export const CONTENT_ROUTES = [
   '/work/care-iq/',
   '/about/',
   '/contact/',
+  '/privacy/',
   '/field-notes/',
   '/field-notes/the-boundary-is-the-feature/',
   '/field-notes/leave-room-for-the-unknown/',

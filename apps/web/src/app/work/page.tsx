@@ -34,7 +34,11 @@ export default function WorkPage() {
               →
             </span>
           </Link>
-          <a href="https://toolbox.kristiansalmeron.com/" className="editorial-project">
+          <a
+            href="https://toolbox.kristiansalmeron.com/"
+            referrerPolicy="origin"
+            className="editorial-project"
+          >
             <span className="project-number" aria-hidden="true">
               02
             </span>
@@ -44,7 +48,11 @@ export default function WorkPage() {
               ↗
             </span>
           </a>
-          <a href="https://lab.kristiansalmeron.com/" className="editorial-project">
+          <a
+            href="https://lab.kristiansalmeron.com/"
+            referrerPolicy="origin"
+            className="editorial-project"
+          >
             <span className="project-number" aria-hidden="true">
               03
             </span>
