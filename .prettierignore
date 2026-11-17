@@ -6,6 +6,3 @@ pnpm-lock.yaml
 .openai/
 .sites-runtime/
 **/next-env.d.ts
-# Preserved compiled sample app, including its third-party license notice.
-apps/web/public/studio/projects/careiq-preview.js
-apps/web/public/sail-rest.svg

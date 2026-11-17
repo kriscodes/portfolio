@@ -55,7 +55,7 @@ services:
   - type: web
     name: kristian-salmeron-api
     runtime: node
-    # Owner-approved always-on API; retain browser retries for transient failures.
+    # Always-on analytics API; browser retries handle transient failures.
     plan: 0.5c-512mb
     region: oregon
     domains:

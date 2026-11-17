@@ -15,9 +15,7 @@ export default function HomePage() {
         <div className="sail-home-intro">
           <p className="sail-home-eyebrow">Software engineering &amp; architecture</p>
           <h1 id="home-title">
-            <span>Making</span>
-            <span>things</span>
-            <em>work.</em>
+            <span>Making</span> <span>things</span> <em>work.</em>
           </h1>
           <p className="sail-home-deck">
             12+ years building interfaces, shaping systems, and making complex work feel simple.

@@ -1,19 +1,17 @@
-# ADR 001 — Static reading experience, separate API foundation
+# ADR 001 — Static frontend and separate API
 
-Status: accepted for design v1.
+Status: accepted.
 
 ## Context
 
-The portfolio needs memorable UI and credible engineering storytelling now. The user likes CareIQ’s stack and wants frontend and backend API in a monorepo. Reading the portfolio does not require identity, persistence, or a server round trip.
+Reading a portfolio does not require authentication or a server round trip. Interactive examples benefit from React, while analytics and private reports need server-side validation and persistence.
 
 ## Decision
 
-Use CareIQ’s Next/React/Tailwind frontend and Express/TypeScript API in a pnpm workspace. Export the frontend statically. Include a real read-only API with health and project-summary endpoints and shared types. Retain Drizzle/PostgreSQL tooling for the next meaningful data workflow; do not create a database or an authenticated editor in this release.
+Export the Next.js frontend as static HTML and assets. Run Express separately, with shared TypeScript contracts in a pnpm workspace. Keep public content in the repository and private data behind API authorization.
 
 ## Consequences
 
-The visual preview is simple to host and remains readable if the API is unavailable. The API has a clear foundation, but requires its own Node deployment. Structured content is edited in the repository, and some UI copy and public API summaries must be reviewed together. The monorepo keeps that coordination visible.
+The site remains readable when the API is unavailable and can be served from a static host. Content changes require a build. The API has its own deployment and health checks. Browser integrations must tolerate failed requests, and changes to shared contracts must be checked across both packages.
 
-## Revisit when
-
-A real authoring workflow, content scheduling, or persistent user input is required. At that point decide whether static regeneration is still sufficient, define the API contract, implement validation and authorization, and add API-owned migrations. Do not migrate the reading experience to a dynamic runtime without a concrete benefit.
+PostgreSQL now supports analytics as described in [ADR 002](002-first-party-analytics.md). It does not make public-page rendering dependent on the API. Revisit static export if a concrete feature requires request-time content or authenticated public routes.

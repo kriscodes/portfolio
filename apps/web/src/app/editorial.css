@@ -45,8 +45,7 @@
   display: inline-flex;
   align-items: center;
 }
-:root .ip-header nav a[aria-current='page'],
-:root .ip-header nav a.nav-home-work {
+:root .ip-header nav a[aria-current='page'] {
   color: var(--ip-accent);
   text-decoration: none;
 }
@@ -88,64 +87,6 @@
 :root .ip-button:hover {
   background: #0056c4;
   border-color: #0056c4;
-}
-:root .ip-button-outline {
-  background: white;
-  color: var(--ip-accent);
-}
-:root .ip-button-outline:hover {
-  background: var(--ip-soft);
-}
-.editorial-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 245px;
-  gap: 28px;
-  padding: 68px 0 76px;
-  align-items: end;
-}
-:root .editorial-hero h1 {
-  font-size: clamp(60px, 7.2vw, 108px);
-  letter-spacing: -0.048em;
-}
-.editorial-hero h1 > span {
-  display: block;
-}
-.editorial-intro {
-  min-width: 0;
-}
-:root .hero-work-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 28px;
-}
-.editorial-aside {
-  padding-bottom: 26px;
-}
-.editorial-aside p {
-  font-size: 19px;
-  line-height: 1.55;
-  color: var(--ip-muted);
-  margin: 0 0 28px;
-}
-.editorial-work {
-  padding: 0 0 50px;
-  scroll-margin-top: 30px;
-}
-.editorial-section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--ip-muted);
-  margin-bottom: 24px;
-}
-.editorial-section-heading h2,
-.editorial-section-heading > span {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  margin: 0;
 }
 .editorial-projects {
   border-bottom: 1px solid var(--ip-hairline);
@@ -421,16 +362,6 @@
   gap: 24px;
 }
 @media (max-width: 1200px) {
-  .editorial-hero {
-    grid-template-columns: minmax(0, 1fr) 200px;
-    gap: 24px;
-  }
-  :root .editorial-hero h1 {
-    font-size: clamp(60px, 7.1vw, 88px);
-  }
-  .editorial-aside p {
-    font-size: 17px;
-  }
   :root .editorial-project {
     grid-template-columns: 44px 170px minmax(0, 1fr) auto 24px;
     gap: 20px;
@@ -449,24 +380,6 @@
   }
 }
 @media (max-width: 960px) {
-  .editorial-hero {
-    grid-template-columns: 1fr;
-    gap: 30px;
-    padding: 56px 0 64px;
-  }
-  :root .editorial-hero h1 {
-    font-size: clamp(64px, 9vw, 86px);
-  }
-  .editorial-aside {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-    padding: 0;
-  }
-  .editorial-aside p {
-    max-width: 350px;
-    margin: 0;
-  }
   :root .ip-header nav {
     font-size: 15px;
     gap: 24px;
@@ -528,43 +441,14 @@
   :root .ip-header nav a {
     padding: 8px 0;
   }
-  .editorial-hero {
-    padding: 45px 0 56px;
-    gap: 26px;
-  }
-  :root .editorial-hero h1 {
-    font-size: clamp(36px, 9.1vw, 57px);
-    letter-spacing: -0.045em;
-    line-height: 1.09;
-  }
   :root .ip-eyebrow {
     font-size: 10px;
     letter-spacing: 0.15em;
     margin-bottom: 21px;
   }
-  :root .hero-work-link {
-    margin-top: 23px;
-    font-size: 15px;
-  }
-  .editorial-aside {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .editorial-aside p {
-    max-width: 310px;
-    font-size: 17px;
-  }
   :root .ip-button {
     font-size: 15px;
     padding: 10px 15px;
-  }
-  .editorial-section-heading {
-    margin-bottom: 20px;
-  }
-  .editorial-section-heading h2,
-  .editorial-section-heading > span {
-    font-size: 10px;
   }
   :root .editorial-project {
     grid-template-columns: 24px minmax(0, 1fr) 24px;
@@ -598,9 +482,6 @@
   :root .editorial-project:has(.project-status),
   :root .editorial-project:has(.project-note) {
     row-gap: 12px;
-  }
-  .editorial-work {
-    padding-bottom: 36px;
   }
   :root .ip-footer {
     display: flex;
