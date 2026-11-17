@@ -32,6 +32,8 @@ pnpm format:check
 
 Validation runs frontend lint, workspace type checks, tests, production builds, and the static-export audit. ESLint checks all of `apps/web/src`, including the analytics adapter and component. Set `ANALYTICS_TEST_DATABASE_URL` to a disposable PostgreSQL database to include store and migration tests. Browser checks require Playwright; see the deploy guide.
 
+[GitHub Actions](.github/workflows/ci.yml) runs `pnpm validate` on pull requests and pushes to `main`, using a disposable PostgreSQL 18 database so store and migration tests run in CI.
+
 `pnpm build` produces `apps/web/out`, copies it to the root `out`, and compiles the API to `apps/api/dist`. Neither generated output nor retired designs belong in source control.
 
 - [Architecture](docs/ARCHITECTURE.md)
