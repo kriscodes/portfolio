@@ -653,7 +653,7 @@
     $('total-visits').textContent = count(totals.visits);
     $('total-active').textContent = duration(totals.avgActiveSeconds);
     $('measurement-coverage').textContent = insights.measurementStartedAt
-      ? 'New collection observed from ' +
+      ? 'Earliest retained new event ' +
         timeFormat.format(new Date(insights.measurementStartedAt)) +
         ' PT · ' +
         count(coverage.timedPageviews) +
@@ -673,7 +673,7 @@
       );
       card.append(
         title,
-        create('strong', '', count(item?.pageviews) + ' pageviews'),
+        create('strong', '', count(item?.pageviews) + ' new pageviews'),
         create(
           'p',
           '',
@@ -837,7 +837,7 @@
     rows(
       $('page-list'),
       safeArray(report.pages),
-      (item) => item.path || '/',
+      (item) => (item.site ? pageLabel(item.site, item.path) : item.path || '/'),
       (item) => item.views,
       'Pageviews will appear after someone explores your portfolio.',
     );

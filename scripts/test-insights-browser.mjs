@@ -206,6 +206,15 @@ try {
   ]) {
     await tab.setViewportSize({ width, height: 1000 });
     await tab.screenshot({ path: resolve(output, `dashboard-${name}.png`), fullPage: true });
+    if (name === 'mobile') {
+      await tab.screenshot({ path: resolve(output, 'dashboard-mobile-top.png'), fullPage: false });
+      await tab.locator('#engagement-pages').scrollIntoViewIfNeeded();
+      await tab.screenshot({
+        path: resolve(output, 'dashboard-mobile-engagement.png'),
+        fullPage: false,
+      });
+      await tab.evaluate(() => window.scrollTo(0, 0));
+    }
     assert.ok(
       await tab.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
       `${name} has page overflow`,
