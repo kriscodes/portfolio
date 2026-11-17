@@ -6,9 +6,15 @@ export const EVENTS = [
   'outbound_click',
   'studio_ready',
   'studio_fallback',
+  'page_engagement',
+  'scroll_depth',
+  'experiment_open',
+  'tool_open',
+  'tool_action',
 ] as const;
 
 export type AnalyticsEventName = (typeof EVENTS)[number];
+export type AnalyticsSite = 'portfolio' | 'lab' | 'toolbox';
 
 export interface AnalyticsEvent {
   eventId: string;
@@ -26,6 +32,82 @@ export interface AnalyticsEvent {
   target: string;
   device: 'desktop' | 'mobile' | 'tablet' | 'other';
   occurredAt: Date;
+  schemaVersion?: 1 | 2;
+  site?: AnalyticsSite;
+  pageHash?: string;
+  previousPageHash?: string;
+  visitScope?: 'shared' | 'local';
+  activeMs?: number | null;
+  scrollDepth?: 25 | 50 | 75 | 100 | null;
+  content?: string;
+  action?: string;
+  destinationSite?: AnalyticsSite | '';
+  destinationPath?: string;
+  receivedAt?: Date;
+}
+
+export interface AnalyticsInsights {
+  measurementStartedAt: string | null;
+  coverage: {
+    pageviews: number;
+    legacyPageviews: number;
+    timedPageviews: number;
+    sharedVisits: number;
+    localVisits: number;
+    limited: boolean;
+  };
+  totals: {
+    visits: number;
+    completedVisits: number;
+    activeSeconds: number;
+    avgActiveSeconds: number | null;
+  };
+  sites: Array<{
+    site: AnalyticsSite;
+    pageviews: number;
+    visits: number;
+    entries: number;
+    lastEventAt: string | null;
+  }>;
+  pages: Array<{
+    site: AnalyticsSite;
+    path: string;
+    views: number;
+    timedViews: number;
+    avgActiveSeconds: number | null;
+    scroll25: number;
+    scroll50: number;
+    scroll75: number;
+    scroll100: number;
+    entries: number;
+    exits: number;
+    completedViews: number;
+    exitRate: number | null;
+  }>;
+  entries: Array<{ site: AnalyticsSite; path: string; source: string; visits: number }>;
+  paths: Array<{
+    fromSite: AnalyticsSite;
+    fromPath: string;
+    toSite: AnalyticsSite;
+    toPath: string;
+    transitions: number;
+  }>;
+  movement: Array<{
+    fromSite: AnalyticsSite;
+    toSite: AnalyticsSite;
+    arrivals: number;
+    matchedArrivals: number;
+    unmatchedArrivals: number;
+    clicks: number;
+  }>;
+  engagement: Array<{ site: AnalyticsSite; content: string; opens: number; actions: number }>;
+  outbound: Array<{
+    site: AnalyticsSite;
+    target: string;
+    destinationSite: AnalyticsSite | '';
+    destinationPath: string;
+    clicks: number;
+  }>;
 }
 
 export interface Owner {
@@ -46,10 +128,11 @@ export interface AnalyticsOverview {
   sources: Array<{ source: string; visitors: number }>;
   projects: Array<{ project: string; opens: number; previews: number }>;
   sections: Array<{ section: string; opens: number }>;
-  pages: Array<{ path: string; views: number }>;
+  pages: Array<{ site?: AnalyticsSite; path: string; views: number }>;
   devices: Array<{ device: string; visitors: number }>;
   campaigns: Array<{ source: string; campaign: string; visitors: number }>;
   lastEventAt: string | null;
+  insights: AnalyticsInsights;
 }
 
 export interface AnalyticsStore {

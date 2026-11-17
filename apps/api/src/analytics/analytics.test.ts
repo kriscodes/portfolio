@@ -84,11 +84,213 @@ const event = {
   path: '/work/care-iq/?email=private@example.com',
   source: 'whatsapp',
   medium: 'messaging',
-  campaign: 'profile',
+  campaign: 'bio',
   visitorId: 'visitor_123456789abcdefghijklmn',
   sessionId: 'session_123456789abcdefghijklmn',
   referrer: 'l.facebook.com',
 };
+
+const v2Event = {
+  ...event,
+  schemaVersion: 2,
+  site: 'portfolio',
+  visitScope: 'shared',
+  pageId: 'page_123456789abcdefghijklmn',
+  eventId: 'event_123456789abcdefghijklmn',
+  occurredAt: new Date().toISOString(),
+};
+
+test('v2 collector enforces site origins, measurement shape, and fixed sanitized catalogs', async () => {
+  await fixture(async ({ store, call }) => {
+    const send = (body: unknown, site = 'portfolio') => {
+      const request = collect(body);
+      request.headers = {
+        ...request.headers,
+        Origin:
+          site === 'portfolio'
+            ? 'https://kristiansalmeron.com'
+            : `https://${site}.kristiansalmeron.com`,
+      };
+      return call('collect', request);
+    };
+    assert.equal((await send({ ...v2Event, site: 'lab' })).status, 400);
+    assert.equal(
+      (
+        await send(
+          {
+            ...v2Event,
+            site: 'lab',
+            content: 'pdf-rendering',
+            event: 'experiment_open',
+            path: '/experiments/pdf-rendering/?prompt=secret#private',
+            referrer: 'private-person.example.com',
+            campaign: 'private-person',
+          },
+          'lab',
+        )
+      ).status,
+      204,
+    );
+    const recorded = store.events[0];
+    assert.equal(recorded.site, 'lab');
+    assert.equal(recorded.path, '/experiments/pdf-rendering/');
+    assert.equal(recorded.referrer, '');
+    assert.equal(recorded.campaign, '');
+    assert.equal(recorded.content, 'pdf-rendering');
+    assert.match(recorded.pageHash!, /^[a-f0-9]{64}$/);
+    assert.ok(!JSON.stringify(recorded).includes(v2Event.pageId));
+    for (const activeMs of [-1, 0.5, 86_400_001, '100']) {
+      assert.equal((await send({ ...v2Event, event: 'page_engagement', activeMs })).status, 400);
+    }
+    assert.equal((await send({ ...v2Event, event: 'scroll_depth', scrollDepth: 42 })).status, 400);
+    assert.equal((await send({ ...v2Event, event: 'page_engagement' })).status, 400);
+    assert.equal(
+      (
+        await send({
+          ...v2Event,
+          event: 'tool_action',
+          content: 'prompt-builder',
+          action: 'generate',
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await send(
+          {
+            ...v2Event,
+            eventId: 'action_123456789abcdefghijklmn',
+            site: 'toolbox',
+            event: 'tool_action',
+            path: '/tools/prompt-builder/',
+            content: 'prompt-builder',
+            action: 'generate',
+            prompt: 'never store this',
+            form: { email: 'private@example.com' },
+          },
+          'toolbox',
+        )
+      ).status,
+      204,
+    );
+    assert.equal(store.events.at(-1)?.action, 'generate');
+    assert.ok(!JSON.stringify(store.events).includes('never store this'));
+    assert.equal(
+      (
+        await send({
+          ...v2Event,
+          eventId: 'outbound_123456789abcdefghijklmn',
+          event: 'outbound_click',
+          target: 'toolbox',
+          destinationSite: 'toolbox',
+          destinationPath: '/tools/prompt-builder/?value=private#secret',
+        })
+      ).status,
+      204,
+    );
+    assert.equal(store.events.at(-1)?.destinationPath, '/tools/prompt-builder/');
+    assert.equal(
+      (
+        await send({
+          ...v2Event,
+          eventId: 'unknown_123456789abcdefghijklmn',
+          path: '/field-notes/private-person/',
+          source: 'anything',
+          medium: 'anything',
+          campaign: 'winter-update',
+        })
+      ).status,
+      204,
+    );
+    assert.equal(store.events.at(-1)?.path, '/unknown/');
+    assert.equal(store.events.at(-1)?.source, 'unknown');
+    assert.equal(store.events.at(-1)?.campaign, 'winter-update');
+  });
+});
+
+test('v2 shared visits match subdomains; local visits stay separate and day boundaries break linkage', async () => {
+  await fixture(async ({ store, call }) => {
+    const send = (site: string, scope: string, occurredAt: string, id: string) => {
+      const request = collect({
+        ...v2Event,
+        site,
+        visitScope: scope,
+        occurredAt,
+        eventId: id,
+        path: '/',
+      });
+      request.headers = {
+        ...request.headers,
+        Origin:
+          site === 'portfolio'
+            ? 'https://kristiansalmeron.com'
+            : `https://${site}.kristiansalmeron.com`,
+      };
+      return call('collect', request);
+    };
+    const now = new Date().toISOString();
+    for (const [site, scope, id] of [
+      ['portfolio', 'shared', 'shared_1111111111111111'],
+      ['lab', 'shared', 'shared_2222222222222222'],
+      ['portfolio', 'local', 'local_11111111111111111'],
+      ['lab', 'local', 'local_22222222222222222'],
+    ]) {
+      assert.equal((await send(site, scope, now, id)).status, 204);
+    }
+    assert.equal(store.events[0].sessionHash, store.events[1].sessionHash);
+    assert.equal(store.events[0].visitorHash, store.events[1].visitorHash);
+    assert.notEqual(store.events[2].sessionHash, store.events[3].sessionHash);
+    assert.notEqual(store.events[2].visitorHash, store.events[3].visitorHash);
+    const yesterday = new Date(Date.now() - 24 * 60 * 60_000).toISOString();
+    assert.equal(
+      (await send('portfolio', 'shared', yesterday, 'yesterday_11111111111111')).status,
+      204,
+    );
+    assert.notEqual(store.events[0].sessionHash, store.events[4].sessionHash);
+    assert.notEqual(store.events[0].visitorHash, store.events[4].visitorHash);
+  });
+});
+
+test('shared opt-out cookie excludes new and legacy sends without changing owner authentication', async () => {
+  await fixture(async ({ store, call }) => {
+    assert.equal(
+      (await call('collect', collect(v2Event, 'other=value; ks_analytics_opt_out=1'))).status,
+      204,
+    );
+    assert.equal(
+      (await call('collect', collect(event, 'ks_analytics_opt_out=1; other=value'))).status,
+      204,
+    );
+    assert.equal(store.events.length, 0);
+    assert.equal((await call('collect', collect(v2Event, 'ks_analytics_opt_out=0'))).status, 204);
+    assert.equal(store.events.length, 1);
+  });
+});
+
+test('legacy queued events receive the same path, referrer and campaign privacy filtering', async () => {
+  await fixture(async ({ store, call }) => {
+    assert.equal(
+      (
+        await call(
+          'collect',
+          collect({
+            ...event,
+            path: '/field-notes/private-person/',
+            referrer: 'person.example.com',
+            campaign: 'private-person',
+          }),
+        )
+      ).status,
+      204,
+    );
+    assert.equal(store.events[0].schemaVersion, 1);
+    assert.equal(store.events[0].path, '/unknown/');
+    assert.equal(store.events[0].referrer, '');
+    assert.equal(store.events[0].campaign, '');
+    assert.equal(store.events[0].source, 'whatsapp');
+  });
+});
 
 test('password hashes are salted, memory-hard, and do not accept incorrect passwords', async () => {
   const first = await hashPassword(password);
@@ -193,9 +395,7 @@ test('collector validates origins, strips URL queries, hashes identifiers, and c
     assert.equal(overview.totals.visitors, 1);
     assert.equal(overview.totals.projectOpens, 1);
     assert.equal(overview.totals.linkedinClicks, 1);
-    assert.deepEqual(overview.campaigns, [
-      { source: 'whatsapp', campaign: 'profile', visitors: 1 },
-    ]);
+    assert.deepEqual(overview.campaigns, [{ source: 'whatsapp', campaign: 'bio', visitors: 1 }]);
     assert.ok(!JSON.stringify(overview).includes('private@example.com'));
   });
 });

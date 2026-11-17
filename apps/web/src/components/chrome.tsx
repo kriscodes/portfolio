@@ -27,7 +27,9 @@ export function Navigation() {
         {isHome ? (
           <Link href="/field-notes/">Field notes</Link>
         ) : (
-          <a href="https://lab.kristiansalmeron.com/">Lab</a>
+          <a href="https://lab.kristiansalmeron.com/" referrerPolicy="origin">
+            Lab
+          </a>
         )}
         <Link
           href="/contact/"
@@ -54,7 +56,8 @@ export function Footer() {
     return (
       <footer className="sail-home-footer">
         <p>Built with intent.</p>
-        <div className="sail-home-social" aria-label="Social profiles">
+        <div className="sail-home-social" aria-label="Social profiles and privacy">
+          <Link href="/privacy/">Privacy</Link>
           <a href="https://github.com/kriscodes" target="_blank" rel="noopener noreferrer">
             GitHub <span aria-hidden="true">↗</span>
           </a>
@@ -79,7 +82,8 @@ export function Footer() {
           Get in touch <span aria-hidden="true">↗</span>
         </Link>
       </div>
-      <div className="footer-social" aria-label="Social profiles">
+      <div className="footer-social" aria-label="Social profiles and privacy">
+        <Link href="/privacy/">Privacy</Link>
         <a href="https://github.com/kriscodes" target="_blank" rel="noopener noreferrer">
           GitHub <span aria-hidden="true">↗</span>
         </a>

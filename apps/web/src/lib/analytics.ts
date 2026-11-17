@@ -1,5 +1,4 @@
 /** Anonymous, first-party portfolio measurement. No fingerprinting or personal URL data. */
-import { createAnalyticsOutbox } from './analytics-outbox';
 export const ANALYTICS_OPT_OUT_KEY = 'ks_analytics_opt_out';
 const VISITOR_KEY = 'ks_analytics_visitor_v1';
 const SESSION_KEY = 'ks_analytics_session_v1';
@@ -258,17 +257,30 @@ export function createAnalyticsTracker(environment: AnalyticsEnvironment) {
   };
 }
 
-let browserTracker: ReturnType<typeof createAnalyticsTracker> | null = null;
-let browserOutbox: ReturnType<typeof createAnalyticsOutbox> | null = null;
-export function getAnalyticsTracker() {
+type BrowserTracker = {
+  notice: string | null;
+  isEnabled: () => boolean;
+  track: (event: AnalyticsEventName, properties?: AnalyticsProperties) => void;
+  pageview: (pathname?: string) => void;
+};
+declare global {
+  interface Window {
+    StudioInsights?: BrowserTracker;
+  }
+}
+
+let loaderStarted = false;
+const pending: Array<{ event: AnalyticsEventName; properties: AnalyticsProperties }> = [];
+/** The shared runtime owns pageviews and delivery on all three sites. */
+export function getAnalyticsTracker(): BrowserTracker | null {
   if (typeof window === 'undefined') return null;
-  if (browserTracker) return browserTracker;
+  if (window.StudioInsights) return window.StudioInsights;
+  if (loaderStarted) return null;
   const hostname = window.location.hostname;
   const configuredOrigin = process.env.NEXT_PUBLIC_ANALYTICS_ORIGIN;
   if (!['kristiansalmeron.com', 'www.kristiansalmeron.com'].includes(hostname) && !configuredOrigin)
     return null;
   const origin = configuredOrigin || 'https://analytics.kristiansalmeron.com';
-  let endpoint: string;
   try {
     const base = new URL(origin);
     if (
@@ -276,81 +288,41 @@ export function getAnalyticsTracker() {
       !(process.env.NODE_ENV !== 'production' && ['localhost', '127.0.0.1'].includes(base.hostname))
     )
       return null;
-    endpoint = new URL('/api/analytics/collect', base).href;
+    loaderStarted = true;
+    window.addEventListener(
+      'studio-insights-ready',
+      () => {
+        for (const entry of pending.splice(0))
+          window.StudioInsights?.track(entry.event, entry.properties);
+      },
+      { once: true },
+    );
+    const script = document.createElement('script');
+    script.src = new URL('/analytics-assets/tracker.js', base).href;
+    script.async = true;
+    script.dataset.site = 'portfolio';
+    script.referrerPolicy = 'no-referrer';
+    script.addEventListener(
+      'error',
+      () => {
+        pending.length = 0;
+      },
+      { once: true },
+    );
+    document.head.appendChild(script);
   } catch {
-    return null;
+    // A blocked collector must never delay navigation or project interactions.
   }
-  let local: SafeStorage | undefined;
-  let session: SafeStorage | undefined;
-  try {
-    local = window.localStorage;
-  } catch {
-    /* Browsers may block storage. */
-  }
-  try {
-    session = window.sessionStorage;
-  } catch {
-    /* Browsers may block storage. */
-  }
-  browserOutbox = createAnalyticsOutbox({
-    storage: local,
-    now: () => Date.now(),
-    allowed: () => browserTracker?.isEnabled() ?? false,
-    setTimer: (callback, delay) => window.setTimeout(callback, delay),
-    clearTimer: (timer) => window.clearTimeout(timer as number),
-    send: async (payload) => {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 20_000);
-      try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'include',
-          keepalive: true,
-          referrerPolicy: 'no-referrer',
-          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
-        return { status: response.status, retryAfter: response.headers.get('Retry-After') };
-      } finally {
-        window.clearTimeout(timeout);
-      }
-    },
-  });
-  browserTracker = createAnalyticsTracker({
-    location: () => window.location.href,
-    referrer: () => document.referrer,
-    now: () => Date.now(),
-    randomId: () => window.crypto.randomUUID(),
-    privacy: () => ({
-      globalPrivacyControl: (navigator as Navigator & { globalPrivacyControl?: boolean })
-        .globalPrivacyControl,
-      doNotTrack: navigator.doNotTrack,
-    }),
-    local,
-    session,
-    replaceUrl: (url) => window.history.replaceState(window.history.state, '', url),
-    send: (payload) => browserOutbox?.enqueue(payload),
-  });
-  window.addEventListener('online', () => browserOutbox?.wake());
-  window.addEventListener('pagehide', () => browserOutbox?.flushOnExit());
-  window.addEventListener('storage', (event) => {
-    if (event.key === ANALYTICS_OPT_OUT_KEY || event.key === null) browserOutbox?.wake();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) browserOutbox?.flushOnExit();
-    else browserOutbox?.wake();
-  });
-  browserOutbox.wake();
-  return browserTracker;
+  return null;
 }
 export function trackPortfolioEvent(
   event: AnalyticsEventName,
   properties: AnalyticsProperties = {},
 ) {
   try {
-    getAnalyticsTracker()?.track(event, properties);
+    const tracker = getAnalyticsTracker();
+    if (tracker) tracker.track(event, properties);
+    else if (loaderStarted && pending.length < 20) pending.push({ event, properties });
   } catch {
     /* The portfolio works without measurement. */
   }

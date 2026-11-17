@@ -55,10 +55,10 @@ export default function HomePage() {
           </Link>
           <div className="sail-home-more">
             <span>Also exploring</span>
-            <a href="https://toolbox.kristiansalmeron.com/">
+            <a href="https://toolbox.kristiansalmeron.com/" referrerPolicy="origin">
               Toolbox <span aria-hidden="true">↗</span>
             </a>
-            <a href="https://lab.kristiansalmeron.com/">
+            <a href="https://lab.kristiansalmeron.com/" referrerPolicy="origin">
               Lab <span aria-hidden="true">↗</span>
             </a>
           </div>

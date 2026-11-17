@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/work/care-iq/',
     '/about/',
     '/contact/',
+    '/privacy/',
     '/field-notes/',
     ...notes.map((note) => `/field-notes/${note.slug}/`),
   ].map((path) => ({
