@@ -1,6 +1,6 @@
 # Deployment and operations
 
-[`render.yaml`](../render.yaml) defines the deployment from the root of `kriscodes/portfolio`, with automatic deployment on commits. It provisions a static site, an always-on paid API, and PostgreSQL. Keep the repository root as each service's build root because the API depends on the shared workspace package.
+[`render.yaml`](../render.yaml) defines the deployment from the root of `kriscodes/portfolio`, with automatic deployment after CI checks pass. It provisions a static site, an always-on paid API, and PostgreSQL. Keep the repository root as each service's build root because the API depends on the shared workspace package.
 
 | Resource                         | Configuration                                                                         |
 | -------------------------------- | ------------------------------------------------------------------------------------- |
@@ -24,6 +24,14 @@ The Blueprint pins Node 22.23.2 and pnpm 11.22.0. Both builds install with `--fr
 Preserve existing secrets and the database when updating an installation. Changing the hash secret breaks continuity with stored identifier hashes. Never put credentials or database URLs into `NEXT_PUBLIC_*` variables, source files, or build artifacts.
 
 For local analytics development, use the names in [`.env.example`](../.env.example), a local database, and a local collector origin. Load API values into the process environment before starting it. Production requires complete analytics configuration and a reachable database; a missing store prevents startup.
+
+## Release workflow
+
+Use the same process as Lab and Toolbox: create a regular feature branch, open a pull request, wait for CI, then merge into `main`. GitHub Actions runs `pnpm validate` on every pull request and push to `main`, including PostgreSQL-backed tests. Render waits for the deployed commit's checks with `autoDeployTrigger: checksPass`; failing checks or zero detected checks block automatic deployment. Do not add workflow path filters that skip CI on deployable commits.
+
+Each service's build filter includes its app, shared packages, dependency lockfile, runtime and workspace configuration, and scripts. Website-only changes do not deploy the API, and API-only changes do not deploy the website. Documentation-only changes run CI without triggering application deploys. Keep the filters in sync when adding build inputs.
+
+`render.yaml` is the source of truth for service settings. The Blueprint tracks `main` with Auto Sync enabled. Blueprint configuration syncs and manual deploys are separate from commit-triggered deployments. Review configuration changes and merge only after PR checks pass. Manual releases are for recovery after verifying the selected commit's checks. After deploying a specific commit, restore **After CI Checks Pass** if Render disabled auto-deploy. Routine releases do not use deploy hooks.
 
 ## Deployment
 

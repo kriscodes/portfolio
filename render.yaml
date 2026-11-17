@@ -5,7 +5,20 @@ services:
     runtime: static
     buildCommand: npx --yes pnpm@11.22.0 install --frozen-lockfile --prod=false && npx --yes pnpm@11.22.0 --filter @kristian/web build
     staticPublishPath: apps/web/out
-    autoDeployTrigger: commit
+    branch: main
+    autoDeployTrigger: checksPass
+    buildFilter:
+      paths:
+        - apps/web/**
+        - packages/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+        - .node-version
+        - .npmrc
+        - tsconfig*.json
+        - scripts/**
+        - render.yaml
     # Clean bio links expand to the existing attributed portfolio URLs.
     routes:
       - type: redirect
@@ -63,7 +76,20 @@ services:
     buildCommand: npx --yes pnpm@11.22.0 install --frozen-lockfile --prod=false && npx --yes pnpm@11.22.0 --filter @kristian/api... build
     startCommand: node apps/api/dist/server.js
     healthCheckPath: /api/v1/health
-    autoDeployTrigger: commit
+    branch: main
+    autoDeployTrigger: checksPass
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+        - .node-version
+        - .npmrc
+        - tsconfig*.json
+        - scripts/**
+        - render.yaml
     envVars:
       - key: NODE_VERSION
         value: 22.23.2
