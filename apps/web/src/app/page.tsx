@@ -36,6 +36,11 @@ export default function HomePage() {
       >
         <h2 id="selected-work-heading">Selected work</h2>
         <div className="sail-home-projects">
+          <Link href="/work/rule-builder/" className="sail-home-project">
+            <h3>Claims-auditing rule builder</h3>
+            <p>Complex nested logic, validation, and previews. Try a synthetic example.</p>
+            <span className="sail-home-result">~$35M · FY2026</span>
+          </Link>
           <Link href="/work/gen-ui/" className="sail-home-project">
             <h3>Medical document viewer</h3>
             <p>Medical documents, ready in seconds.</p>

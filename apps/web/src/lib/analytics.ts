@@ -8,7 +8,7 @@ export type AnalyticsEventName =
   | 'studio_ready'
   | 'studio_fallback';
 export type AnalyticsProperties = {
-  project?: 'careiq' | 'gen-ui' | 'neon-drift';
+  project?: 'careiq' | 'gen-ui' | 'rule-builder' | 'neon-drift';
   section?: 'work' | 'about' | 'life';
   target?: 'linkedin' | 'instagram' | 'github' | 'website';
   mode?: 'day' | 'night' | '2d' | '3d';

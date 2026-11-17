@@ -32,7 +32,7 @@
     google: 'Google',
     other: 'Other',
   };
-  const projectNames = { careiq: 'Care IQ', 'care-iq': 'Care IQ', 'gen-ui': 'Medical document viewer' };
+  const projectNames = { careiq: 'Care IQ', 'care-iq': 'Care IQ', 'gen-ui': 'Medical document viewer', 'rule-builder': 'Claims-auditing rule builder' };
   const number = new Intl.NumberFormat('en-US');
   const dateFormat = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -607,7 +607,7 @@
   const contentNames = {
     careiq: 'Care IQ',
     'care-iq': 'Care IQ',
-    'gen-ui': 'Medical document viewer',
+    'gen-ui': 'Medical document viewer', 'rule-builder': 'Claims-auditing rule builder',
     'neon-drift': 'Neon Drift',
     'pdf-rendering': 'PDF rendering protocol',
     'prompt-builder': 'Prompt Builder',

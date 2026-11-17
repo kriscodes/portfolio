@@ -41,7 +41,7 @@ const SOURCES = new Set([
   'other',
   'unknown',
 ]);
-const PROJECTS = new Set(['careiq', 'care-iq', 'neon-drift', 'gen-ui']);
+const PROJECTS = new Set(['careiq', 'care-iq', 'neon-drift', 'gen-ui', 'rule-builder']);
 const SECTIONS = new Set(['work', 'about', 'life']);
 const MODES = new Set(['day', 'night', '2d', '3d']);
 const TARGETS = new Set([

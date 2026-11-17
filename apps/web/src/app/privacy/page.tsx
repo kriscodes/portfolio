@@ -95,11 +95,15 @@ export default function PrivacyPage() {
               collector.
             </p>
             <p>
+              {/* A full navigation lets the collector read and apply the new preference. */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a className="ip-text-link" href="/?analytics_opt_out=1">
                 Exclude my visits
               </a>
             </p>
             <p>
+              {/* A full navigation lets the collector read and apply the new preference. */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a className="ip-text-link" href="/?analytics_opt_out=0">
                 Allow measurement again
               </a>

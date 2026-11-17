@@ -25,6 +25,7 @@
       '/work/',
       '/work/care-iq/',
       '/work/gen-ui/',
+    '/work/rule-builder/',
       '/about/',
       '/contact/',
       '/field-notes/',
@@ -86,7 +87,7 @@
     'duckduckgo.com': 'duckduckgo',
   };
   const PROPS = {
-    project: new Set(['careiq', 'care-iq', 'gen-ui', 'neon-drift']),
+    project: new Set(['careiq', 'care-iq', 'gen-ui', 'rule-builder', 'neon-drift']),
     section: new Set(['work', 'about', 'life']),
     target: new Set([
       'linkedin',
@@ -608,6 +609,7 @@
       send('pageview');
       if (path === '/work/care-iq/') send('project_open', { project: 'careiq' });
       if (path === '/work/gen-ui/') send('project_open', { project: 'gen-ui' });
+      if (path === '/work/rule-builder/') send('project_open', { project: 'rule-builder' });
       if (path === '/experiments/pdf-rendering/' && env.site === 'lab')
         send('experiment_open', { content: 'pdf-rendering' });
       if (path === '/tools/prompt-builder/' && env.site === 'toolbox')

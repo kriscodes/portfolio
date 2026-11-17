@@ -8,6 +8,13 @@ export type Project = {
 };
 export const projects: readonly Project[] = [
   {
+    slug: 'rule-builder',
+    name: 'Claims-auditing rule builder',
+    status: 'case-study',
+    summary: 'Complex rule authoring, nested logic, validation, and previews; illustrated with an independent fictional order-review demo.',
+    technologies: ['React', 'TypeScript', 'Frontend architecture'],
+  },
+  {
     slug: 'care-iq',
     name: 'Care IQ',
     status: 'active-development',

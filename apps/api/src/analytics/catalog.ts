@@ -13,6 +13,7 @@ export const SITE_PATHS: Record<AnalyticsSite, ReadonlySet<string>> = {
     '/work/',
     '/work/care-iq/',
     '/work/gen-ui/',
+    '/work/rule-builder/',
     '/about/',
     '/contact/',
     '/privacy/',
@@ -59,6 +60,7 @@ export function safeReferrer(value: unknown): string {
 export function contentFor(site: AnalyticsSite, path: string): string {
   if (site === 'portfolio' && path === '/work/care-iq/') return 'careiq';
   if (site === 'portfolio' && path === '/work/gen-ui/') return 'gen-ui';
+  if (site === 'portfolio' && path === '/work/rule-builder/') return 'rule-builder';
   if (site === 'lab' && path === '/experiments/pdf-rendering/') return 'pdf-rendering';
   if (site === 'toolbox' && path === '/tools/prompt-builder/') return 'prompt-builder';
   return '';

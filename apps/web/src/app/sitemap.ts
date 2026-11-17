@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/',
     '/work/',
     '/work/gen-ui/',
+    '/work/rule-builder/',
     '/work/care-iq/',
     '/about/',
     '/contact/',
