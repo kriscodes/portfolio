@@ -40,12 +40,27 @@ export default function CareIqPage() {
 
         <figure className="careiq-case-preview">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/work/careiq-patient-directory.png" width="1280" height="955" alt="CareIQ’s patient directory: reusable navigation, search, patient rows, and scheduling actions in a synthetic local preview" loading="lazy" />
-          <figcaption className="ip-caption">Patient directory · Synthetic local preview from November 2, 2026. All records are fictional; no live patient data.</figcaption>
+          <img
+            src="/work/careiq-patient-directory.png"
+            width="1280"
+            height="955"
+            alt="CareIQ’s patient directory: reusable navigation, search, patient rows, and scheduling actions in a synthetic local preview"
+            loading="lazy"
+          />
+          <figcaption className="ip-caption">
+            Patient directory · Synthetic local preview from November 2, 2026. All records are
+            fictional; no live patient data.
+          </figcaption>
         </figure>
         <section className="ip-margin-section">
           <h2 className="ip-margin-label">The engineering bar</h2>
-          <div className="ip-prose"><p>CodeQL, secret scanning, and coverage gates support delivery. Staging web, API, and PostgreSQL are isolated from production; a backup-restore rehearsal is recorded, while the hosted rollback drill remains pending.</p></div>
+          <div className="ip-prose">
+            <p>
+              CodeQL, secret scanning, and coverage gates support delivery. Staging web, API, and
+              PostgreSQL are isolated from production; a backup-restore rehearsal is recorded, while
+              the hosted rollback drill remains pending.
+            </p>
+          </div>
         </section>
         <section id="terrain" className="ip-margin-section" aria-labelledby="cq-architecture-title">
           <h2 id="cq-architecture-title" className="ip-margin-label">

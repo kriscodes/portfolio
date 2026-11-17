@@ -24,11 +24,15 @@ export default function WorkPage() {
         </div>
         <div className="editorial-projects">
           <Link href="/work/rule-builder/" className="editorial-project">
-            <span className="project-number" aria-hidden="true">01</span>
+            <span className="project-number" aria-hidden="true">
+              01
+            </span>
             <h3>Claims-auditing rule builder</h3>
             <p>Nested logic, validation, and previews. An interactive synthetic example.</p>
             <span className="project-note">~$35M · FY2026</span>
-            <span className="project-arrow" aria-hidden="true">→</span>
+            <span className="project-arrow" aria-hidden="true">
+              →
+            </span>
           </Link>
           <Link href="/work/care-iq/" className="editorial-project">
             <span className="project-number" aria-hidden="true">

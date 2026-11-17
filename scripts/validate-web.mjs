@@ -386,11 +386,7 @@ export async function validateExport(options = {}) {
 
   if (checkCopy) {
     const homeText = compact(pages.get('/')?.text).replace(/[’‘]/g, "'");
-    if (
-      !/12\+ years making complex interfaces feel simple\./i.test(
-        homeText,
-      )
-    )
+    if (!/12\+ years making complex interfaces feel simple\./i.test(homeText))
       add('/', 'approved supporting line is missing');
     const homeHeading = pages.get('/')?.nodes.find((node) => node.tag === 'h1');
     if (compact(homeHeading?.text) !== 'Making things work.')

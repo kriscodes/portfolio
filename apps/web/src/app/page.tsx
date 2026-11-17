@@ -18,12 +18,15 @@ export default function HomePage() {
             <span>Making</span> <span>things</span> <em>work.</em>
           </h1>
           <p className="sail-home-deck">
-            12+ years making complex interfaces feel simple. React, reusable component systems, and performance.
+            12+ years making complex interfaces feel simple. React, reusable component systems, and
+            performance.
           </p>
           <a href="#selected-work" className="sail-home-work-link">
             Explore selected work <span aria-hidden="true">↓</span>
           </a>
-          <p className="sail-home-role">Lead Software Engineer · Frontend architecture · Los Angeles</p>
+          <p className="sail-home-role">
+            Lead Software Engineer · Frontend architecture · Los Angeles
+          </p>
         </div>
         <div className="sail-home-art">
           <SailStudy />
@@ -60,7 +63,13 @@ export default function HomePage() {
             <Link href="/work/care-iq/" aria-label="Explore CareIQ’s practice workflow case study">
               {/* This local capture is already optimized and served by the static export. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/work/careiq-patient-directory.png" width="1280" height="955" alt="CareIQ patient directory with fictional records in a clearly labeled synthetic preview" loading="lazy" />
+              <img
+                src="/work/careiq-patient-directory.png"
+                width="1280"
+                height="955"
+                alt="CareIQ patient directory with fictional records in a clearly labeled synthetic preview"
+                loading="lazy"
+              />
             </Link>
             <figcaption>Synthetic product preview · In development</figcaption>
           </figure>
