@@ -264,6 +264,20 @@ test('privacy pages process preferences but never create pageviews or engagement
   assert.equal(f.cookies.has(KEYS.visitor), false);
 });
 
+test('a new exclusion wins over an old allow cookie when cookie updates are blocked', () => {
+  const f = fixture();
+  f.navigate('/?analytics_opt_out=1');
+  const tracker = createTracker({
+    ...f.env,
+    cookie: (name: string) => (name === KEYS.preference ? '0' : null),
+  });
+  tracker.pageview();
+  tracker.tick();
+  assert.equal(tracker.isEnabled(), false);
+  assert.equal(f.sent.length, 0);
+  assert.equal(f.local.getItem(KEYS.preference), 'true');
+});
+
 test('a new approved source tag begins a visit, without repeatedly resetting it on heartbeats', () => {
   const f = fixture(),
     tracker = createTracker(f.env);

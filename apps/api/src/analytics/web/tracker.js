@@ -424,6 +424,8 @@
             ? 'Analytics remains off. This browser could not update the shared preference cookie.'
             : 'Analytics is allowed here. Do Not Track and Global Privacy Control still take priority. Browser storage restrictions can require setting the preference on each site.';
     }
+    // An old readable "allow" cookie must not override a new exclusion when its update was blocked.
+    const documentOptOut = transientOptOut && env.cookie(KEYS.preference) !== '1';
     function clearIdentity() {
       visitor = null;
       session = null;
@@ -445,10 +447,11 @@
       const cookie = env.cookie(KEYS.preference);
       const localOptOut = read(env.local, KEYS.preference) === 'true';
       // A shared explicit choice supersedes stale per-origin preferences.
-      if (cookie === '0' && localOptOut) write(env.local, KEYS.preference, null);
+      if (cookie === '0' && localOptOut && !documentOptOut) write(env.local, KEYS.preference, null);
       if (cookie === null && localOptOut) env.cookie(KEYS.preference, '1', 365 * 86400);
       const privacy = env.privacy();
       const allowed =
+        !documentOptOut &&
         cookie !== '1' &&
         !(cookie !== '0' && (localOptOut || transientOptOut)) &&
         !privacy.globalPrivacyControl &&
