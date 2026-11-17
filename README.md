@@ -41,3 +41,5 @@ Validation runs frontend lint, workspace type checks, tests, production builds, 
 - Decisions: [static frontend and separate API](docs/decisions/001-static-ui-separate-api.md), [first-party analytics](docs/decisions/002-first-party-analytics.md), [finite SVG motion](docs/decisions/003-finite-svg-motion.md)
 
 Staging setup and promotion: [docs/STAGING.md](docs/STAGING.md) (prepared; activation pending review).
+
+Review package: [November 17 portfolio and staging changes](docs/REVIEW-2026-11-17.md).
