@@ -95,13 +95,13 @@ export default function PrivacyPage() {
               collector.
             </p>
             <p>
-              <a className="ip-text-link" href="https://kristiansalmeron.com/?analytics_opt_out=1">
-                Exclude my visits ↗
+              <a className="ip-text-link" href="/?analytics_opt_out=1">
+                Exclude my visits
               </a>
             </p>
             <p>
-              <a className="ip-text-link" href="https://kristiansalmeron.com/?analytics_opt_out=0">
-                Allow measurement again ↗
+              <a className="ip-text-link" href="/?analytics_opt_out=0">
+                Allow measurement again
               </a>
             </p>
             <p>

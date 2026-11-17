@@ -48,7 +48,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
         <div className="ip-ending">
           <p className="ip-small-label">End of note / {note.number}</p>
           <Link className="ip-text-link" href="/work/care-iq">
-            Explore the working example ↗
+            Explore the working example →
           </Link>
         </div>
       </article>

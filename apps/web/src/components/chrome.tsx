@@ -38,7 +38,7 @@ export function Navigation() {
         >
           {isHome ? (
             <>
-              Let’s talk <span aria-hidden="true">↗</span>
+              Let’s talk <span aria-hidden="true">→</span>
             </>
           ) : (
             'Contact'
@@ -79,7 +79,7 @@ export function Footer() {
       <div className="footer-invitation">
         <p>Have something in mind? Let’s talk.</p>
         <Link href="/contact/" className="ip-button">
-          Get in touch <span aria-hidden="true">↗</span>
+          Get in touch <span aria-hidden="true">→</span>
         </Link>
       </div>
       <div className="footer-social" aria-label="Social profiles and privacy">

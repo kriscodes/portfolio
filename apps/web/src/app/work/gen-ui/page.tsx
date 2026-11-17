@@ -96,14 +96,14 @@ export default function GenUiPage() {
               result useful beyond a single application.
             </p>
             <Link className="ip-text-link" href="/about#leadership">
-              More about my leadership work ↗
+              More about my leadership work →
             </Link>
           </div>
         </section>
         <Link href="/work/care-iq" className="ip-next">
           <span>Next project</span>
           <strong>Care IQ</strong>
-          <span aria-hidden="true">↗</span>
+          <span aria-hidden="true">→</span>
         </Link>
       </section>
     </main>

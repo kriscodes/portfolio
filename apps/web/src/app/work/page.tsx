@@ -78,7 +78,7 @@ export default function WorkPage() {
         <div className="work-note">
           <p>Notes on architecture, decisions, and the work in between.</p>
           <Link href="/field-notes/" className="ip-text-link">
-            Read the field notes <span aria-hidden="true">↗</span>
+            Read the field notes <span aria-hidden="true">→</span>
           </Link>
         </div>
       </section>

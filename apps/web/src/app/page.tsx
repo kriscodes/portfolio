@@ -21,7 +21,7 @@ export default function HomePage() {
             12+ years making complex interfaces feel simple. React, reusable component systems, and performance.
           </p>
           <a href="#selected-work" className="sail-home-work-link">
-            Explore selected work <span aria-hidden="true">↗</span>
+            Explore selected work <span aria-hidden="true">↓</span>
           </a>
           <p className="sail-home-role">Lead Software Engineer · Frontend architecture · Los Angeles</p>
         </div>
@@ -48,7 +48,7 @@ export default function HomePage() {
             <h3>CareIQ</h3>
             <p>Marketing · Web app · API · Database</p>
             <span className="sail-home-status">
-              In development <span aria-hidden="true">↗</span>
+              In development <span aria-hidden="true">→</span>
             </span>
           </Link>
           <div className="sail-home-more">

@@ -200,7 +200,7 @@ export default function CareIqPage() {
         <Link href="/field-notes/the-boundary-is-the-feature" className="ip-next">
           <span>From the notebook</span>
           <strong>The boundary is the feature.</strong>
-          <span aria-hidden="true">↗</span>
+          <span aria-hidden="true">→</span>
         </Link>
       </section>
     </main>
