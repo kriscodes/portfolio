@@ -3,8 +3,11 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { hashPassword, secretEqual, sessionToken, tokenHash, verifyPassword } from './auth.js';
 import { PostgresAnalyticsStore } from './store.js';
+import { CAMPAIGNS, contentFor, safePath, safeReferrer, siteOfHost } from './catalog.js';
 import {
   EVENTS,
+  reportRange,
+  type AnalyticsSite,
   type AnalyticsEvent,
   type AnalyticsEventName,
   type AnalyticsStore,
@@ -36,15 +39,23 @@ const SOURCES = new Set([
   'direct',
   'referral',
   'other',
+  'unknown',
 ]);
 const PROJECTS = new Set(['careiq', 'care-iq', 'neon-drift', 'gen-ui']);
 const SECTIONS = new Set(['work', 'about', 'life']);
 const MODES = new Set(['day', 'night', '2d', '3d']);
-const TARGETS = new Set(['linkedin', 'instagram', 'github', 'website']);
-const MEDIA = new Set(['social', 'messaging', 'referral', 'direct', 'organic']);
+const TARGETS = new Set([
+  'linkedin',
+  'instagram',
+  'github',
+  'website',
+  'email',
+  'portfolio',
+  'lab',
+  'toolbox',
+]);
+const MEDIA = new Set(['social', 'messaging', 'referral', 'direct', 'organic', 'unknown']);
 const VISITOR_ID = /^[A-Za-z0-9_-]{16,96}$/;
-const PATH =
-  /^\/(?:work\/(?:care-iq\/|gen-ui\/)?|about\/|contact\/|field-notes\/(?:[a-z0-9-]{1,80}\/)?|privacy\/)?$/;
 const SESSION_AGE_MS = 8 * 60 * 60 * 1000;
 const COOKIE_DOMAINLESS = '__Host-analytics';
 const DUMMY_HASH =
@@ -110,6 +121,8 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
   const collectOrigins = new Set([
     'https://kristiansalmeron.com',
     'https://www.kristiansalmeron.com',
+    'https://lab.kristiansalmeron.com',
+    'https://toolbox.kristiansalmeron.com',
     ...authOrigins,
   ]);
   const collectLimits = new Map<string, { count: number; expiresAt: number }>();
@@ -414,7 +427,12 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
       const isBot =
         /bot|spider|crawl|headless|facebookexternalhit|slurp|preview|curl|wget/i.test(agent) ||
         (/whatsapp/i.test(agent) && !/applewebkit|gecko|chrome|safari/i.test(agent));
-      if (isBot || request.get('sec-gpc') === '1' || request.get('dnt') === '1') {
+      if (
+        isBot ||
+        request.get('sec-gpc') === '1' ||
+        request.get('dnt') === '1' ||
+        /(?:^|;)\s*ks_analytics_opt_out=1(?:;|$)/.test(request.headers.cookie ?? '')
+      ) {
         response.sendStatus(204);
         return;
       }
@@ -458,6 +476,42 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         responseError(response, 400, 'INVALID_EVENT', 'This event is invalid.');
         return;
       }
+      const version = body.schemaVersion ?? 1;
+      const originSite = siteOfHost(new URL(request.get('origin')!).hostname);
+      const isV2 = version === 2;
+      const site =
+        originSite ??
+        (isDevelopmentOrigin(request.get('origin')) &&
+        ['portfolio', 'lab', 'toolbox'].includes(String(body.site))
+          ? (body.site as AnalyticsSite)
+          : null);
+      const newEvents = [
+        'page_engagement',
+        'scroll_depth',
+        'experiment_open',
+        'tool_open',
+        'tool_action',
+      ];
+      if (
+        ![1, 2].includes(Number(version)) ||
+        (version !== 1 && version !== 2) ||
+        (!isV2 &&
+          (newEvents.includes(body.event as string) ||
+            (originSite && originSite !== 'portfolio'))) ||
+        (isV2 &&
+          (!site ||
+            body.site !== site ||
+            typeof body.eventId !== 'string' ||
+            typeof body.pageId !== 'string' ||
+            !VISITOR_ID.test(body.pageId) ||
+            (body.previousPageId !== undefined &&
+              body.previousPageId !== '' &&
+              (typeof body.previousPageId !== 'string' || !VISITOR_ID.test(body.previousPageId))) ||
+            !['shared', 'local'].includes(String(body.visitScope))))
+      ) {
+        responseError(response, 400, 'INVALID_EVENT_CONTEXT', 'This event context is invalid.');
+        return;
+      }
       const now = Date.now();
       let occurredAt = new Date(now);
       if (body.occurredAt !== undefined) {
@@ -480,39 +534,84 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         }
         occurredAt = new Date(Math.min(timestamp, now));
       }
-      let path = typeof body.path === 'string' ? body.path.split(/[?#]/, 1)[0].toLowerCase() : '/';
-      if (!path.endsWith('/')) path += '/';
-      if (!PATH.test(path)) path = '/unknown/';
+      const path = safePath(site ?? 'portfolio', body.path);
       const valueFrom = (name: string, allow: Set<string>, fallback = '') =>
         typeof body[name] === 'string' && allow.has(body[name] as string)
           ? (body[name] as string)
           : fallback;
-      let referrer = '';
-      if (typeof body.referrer === 'string' && body.referrer.length <= 253) {
-        const candidate = body.referrer.toLowerCase();
-        if (/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(candidate))
-          referrer = candidate;
-      }
       const campaign =
-        typeof body.campaign === 'string' && /^[a-z0-9_-]{1,64}$/.test(body.campaign)
-          ? body.campaign
+        typeof body.campaign === 'string' && CAMPAIGNS.has(body.campaign) ? body.campaign : '';
+      const content = isV2 ? contentFor(site!, path) : '';
+      const validDepth =
+        [25, 50, 75, 100].includes(Number(body.scrollDepth)) &&
+        typeof body.scrollDepth === 'number';
+      const validActive =
+        typeof body.activeMs === 'number' &&
+        Number.isInteger(body.activeMs) &&
+        body.activeMs >= 0 &&
+        body.activeMs <= 86_400_000;
+      if (
+        isV2 &&
+        ((body.activeMs !== undefined && !validActive) ||
+          (body.scrollDepth !== undefined && !validDepth) ||
+          (body.event === 'page_engagement' && !validActive) ||
+          (body.event === 'scroll_depth' && !validDepth) ||
+          (body.event === 'experiment_open' &&
+            (site !== 'lab' || content !== 'pdf-rendering' || body.content !== content)) ||
+          (['tool_open', 'tool_action'].includes(body.event as string) &&
+            (site !== 'toolbox' || content !== 'prompt-builder' || body.content !== content)) ||
+          (body.event === 'tool_action' && body.action !== 'generate'))
+      ) {
+        responseError(response, 400, 'INVALID_MEASUREMENT', 'This measurement is invalid.');
+        return;
+      }
+      const destinationSite =
+        isV2 &&
+        ['portfolio', 'lab', 'toolbox'].includes(String(body.destinationSite)) &&
+        body.event === 'outbound_click' &&
+        body.target === body.destinationSite
+          ? (body.destinationSite as AnalyticsSite)
           : '';
+      const day = reportRange(1, occurredAt).end;
+      const scope = isV2 && body.visitScope === 'local' ? `:${site}` : '';
       const event: AnalyticsEvent = {
         eventId: typeof body.eventId === 'string' ? body.eventId : randomUUID(),
         event: body.event as AnalyticsEventName,
         path,
-        referrer,
-        source: valueFrom('source', SOURCES, 'direct'),
-        medium: valueFrom('medium', MEDIA, 'direct'),
+        referrer: safeReferrer(body.referrer),
+        source: valueFrom('source', SOURCES, isV2 ? 'unknown' : 'direct'),
+        medium: valueFrom('medium', MEDIA, isV2 ? 'unknown' : 'direct'),
         campaign,
-        visitorHash: hash('visitor', body.visitorId),
-        sessionHash: hash('session', body.sessionId),
+        visitorHash: hash(isV2 ? `visitor-v2:${day}${scope}` : 'visitor', body.visitorId),
+        sessionHash: hash(isV2 ? `session-v2:${day}${scope}` : 'session', body.sessionId),
         project: valueFrom('project', PROJECTS),
         section: valueFrom('section', SECTIONS),
         mode: valueFrom('mode', MODES),
         target: valueFrom('target', TARGETS) || valueFrom('destination', TARGETS),
         device: classification(agent),
         occurredAt,
+        receivedAt: new Date(now),
+        schemaVersion: isV2 ? 2 : 1,
+        site: site ?? 'portfolio',
+        pageHash: isV2 ? hash('page', body.pageId as string) : '',
+        previousPageHash:
+          isV2 && body.previousPageId ? hash('page', body.previousPageId as string) : '',
+        visitScope: isV2 && body.visitScope === 'shared' ? 'shared' : 'local',
+        activeMs: isV2 && body.event === 'page_engagement' ? (body.activeMs as number) : null,
+        scrollDepth:
+          isV2 && ['page_engagement', 'scroll_depth'].includes(body.event as string) && validDepth
+            ? (body.scrollDepth as 25 | 50 | 75 | 100)
+            : null,
+        content: isV2
+          ? content ||
+            (site === 'portfolio' &&
+            ['project_open', 'project_preview_open'].includes(body.event as string)
+              ? valueFrom('project', PROJECTS)
+              : '')
+          : '',
+        action: isV2 && body.event === 'tool_action' ? 'generate' : '',
+        destinationSite,
+        destinationPath: destinationSite ? safePath(destinationSite, body.destinationPath) : '',
       };
       await store!.insertEvent(event);
       response.sendStatus(204);
@@ -541,6 +640,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         );
       };
     router.get('/analytics-assets/app.js', serveFile('app.js'));
+    router.get('/analytics-assets/tracker.js', serveFile('tracker.js'));
     router.get('/analytics-assets/styles.css', serveFile('styles.css'));
     router.get(['/', '/login', '/login/'], serveFile('index.html'));
     router.use('/analytics-assets', (_request, response) => {
