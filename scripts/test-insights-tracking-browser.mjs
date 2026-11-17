@@ -43,7 +43,12 @@ const events = [],
   blocked = [];
 let generationAttempts = 0;
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
-const context = await browser.newContext({ serviceWorkers: 'block', ...(process.env.TRACKER_MOBILE ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : {}) });
+const context = await browser.newContext({
+  serviceWorkers: 'block',
+  ...(process.env.TRACKER_MOBILE
+    ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }
+    : {}),
+});
 await context.route('**/*', async (route) => {
   const request = route.request(),
     url = new URL(request.url());
@@ -112,7 +117,10 @@ try {
   await portfolio.goto(
     origins.portfolio + '/?private_query=never-collect-query#never-collect-fragment',
   );
-  await waitUntil(() => firstView('portfolio'), 'Real built Portfolio did not initialize its tracker.');
+  await waitUntil(
+    () => firstView('portfolio'),
+    'Real built Portfolio did not initialize its tracker.',
+  );
   await portfolio.locator('a[href="https://lab.kristiansalmeron.com/"]').first().click();
   await portfolio.getByRole('heading', { level: 1 }).waitFor();
   await waitUntil(() => firstView('lab'), 'Real built Lab did not initialize its tracker.');
@@ -133,7 +141,13 @@ try {
     'Lab client navigation did not emit a pageview.',
   );
   await waitUntil(
-    () => events.some((event) => event.site === 'lab' && event.event === 'experiment_open' && event.content === 'pdf-rendering'),
+    () =>
+      events.some(
+        (event) =>
+          event.site === 'lab' &&
+          event.event === 'experiment_open' &&
+          event.content === 'pdf-rendering',
+      ),
     'Lab protocol open did not finish sending.',
   );
   const labMethod = events.find(
