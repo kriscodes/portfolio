@@ -17,7 +17,7 @@ export const projects: readonly Project[] = [
   },
   {
     slug: 'gen-ui',
-    name: 'NLP Gen UI',
+    name: 'Medical document viewer',
     status: 'case-study',
     summary:
       'Re-architected PDF delivery and initial rendering for a shared medical coding capability at Highmark Health.',

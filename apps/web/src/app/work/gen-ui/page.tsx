@@ -3,7 +3,7 @@ import { GenUiStages } from '@/components/inner-interactions';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
-  'NLP Gen UI — Medical documents, ready in seconds',
+  'Medical document viewer: 15 minutes to under 5 seconds',
   'How Kristian Salmeron re-architected PDF delivery and initial rendering at Highmark Health, from approximately 15 minutes to under 5 seconds, for a shared medical coding capability.',
   '/work/gen-ui/',
 );
@@ -16,7 +16,7 @@ export default function GenUiPage() {
           <Link href="/work" className="ip-back">
             ← Selected work
           </Link>
-          <p className="ip-eyebrow">NLP Gen UI / Highmark Health</p>
+          <p className="ip-eyebrow">Medical document viewer / Highmark Health</p>
           <h1 id="ip-gen-title">
             Less waiting.
             <br /> More <span className="ip-accent">working.</span>
@@ -83,7 +83,7 @@ export default function GenUiPage() {
             <GenUiStages />
             <p>
               I also managed the technical relationship and implementation of the Apryse solution,
-              and built the shared Gen UI capability for integration into five enterprise
+              and built the shared medical document viewer for integration into five enterprise
               applications.
             </p>
           </div>

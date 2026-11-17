@@ -67,7 +67,7 @@ export default function WorkPage() {
             <span className="project-number" aria-hidden="true">
               04
             </span>
-            <h3>NLP Gen UI</h3>
+            <h3>Medical document viewer</h3>
             <p>Medical documents, ready in seconds. A progressive-rendering case study.</p>
             <span className="project-note">Engineering</span>
             <span className="project-arrow" aria-hidden="true">

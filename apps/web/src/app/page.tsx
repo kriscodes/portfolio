@@ -37,7 +37,7 @@ export default function HomePage() {
         <h2 id="selected-work-heading">Selected work</h2>
         <div className="sail-home-projects">
           <Link href="/work/gen-ui/" className="sail-home-project">
-            <h3>NLP Gen UI</h3>
+            <h3>Medical document viewer</h3>
             <p>Medical documents, ready in seconds.</p>
             <span className="sail-home-result">
               <span className="visually-hidden">Document load time: </span>
