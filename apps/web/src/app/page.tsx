@@ -46,11 +46,19 @@ export default function HomePage() {
           </Link>
           <Link href="/work/care-iq/" className="sail-home-project">
             <h3>CareIQ</h3>
-            <p>Marketing · Web app · API · Database</p>
+            <p>Scheduling, paperwork, and visit readiness for independent practices.</p>
             <span className="sail-home-status">
               In development <span aria-hidden="true">→</span>
             </span>
           </Link>
+          <figure className="careiq-home-preview">
+            <Link href="/work/care-iq/" aria-label="Explore CareIQ’s practice workflow case study">
+              {/* This local capture is already optimized and served by the static export. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/work/careiq-patient-directory.png" width="1280" height="955" alt="CareIQ patient directory with fictional records in a clearly labeled synthetic preview" loading="lazy" />
+            </Link>
+            <figcaption>Synthetic product preview · In development</figcaption>
+          </figure>
           <div className="sail-home-more">
             <span>Also exploring</span>
             <a href="https://toolbox.kristiansalmeron.com/" referrerPolicy="origin">

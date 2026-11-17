@@ -594,3 +594,8 @@
 .case-measurement[open] summary { margin-bottom: 20px; }
 @media (max-width: 800px) { .viewer-flow-pair { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .viewer-flow-panel { padding: 20px; } .viewer-lanes { grid-template-columns: 1fr; } .viewer-analysis-lane { border-left: 0; border-top: 1px dashed #9ab7e2; padding: 18px 0 0; } }
+
+.careiq-case-preview { margin: 0 0 40px; }
+.careiq-case-preview img, .careiq-home-preview img { display: block; max-width: 100%; height: auto; border: 1px solid var(--ip-hairline); border-radius: 8px; }
+.careiq-home-preview { max-width: 680px; margin: 0 0 28px; }
+.careiq-home-preview figcaption { font-size: 12px; color: var(--ip-muted); margin-top: 10px; }
