@@ -6,11 +6,6 @@
   --ip-accent: #0067e8;
   --ip-hairline: #dce6f0;
   --ip-soft: #edf5ff;
-  --ip-study: #f5f9ff;
-  --ip-sheet: #ffffff;
-  --ip-sheet-edge: #c7d9ec;
-  --ip-sheet-mark: #566879;
-  --ip-shadow: #202b3410;
   --ip-sans: 'Instrument Sans', Arial, Helvetica, sans-serif;
   --ip-serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
   --ip-mono: 'IBM Plex Mono', 'Courier New', monospace;
@@ -91,146 +86,6 @@
   line-height: 1.75;
   margin: 29px 0 0;
   letter-spacing: -0.1px;
-}
-:root .ip-work-list {
-  display: grid;
-  gap: 55px;
-}
-:root .ip-work-entry {
-  display: grid;
-  grid-template-columns: 170px 1fr 310px;
-  gap: 40px;
-  padding: 0 0 38px;
-  align-items: start;
-}
-:root .ip-entry-number {
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--ip-muted);
-  padding-top: 7px;
-}
-:root .ip-entry-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-}
-:root .ip-entry-title {
-  display: flex;
-  align-items: center;
-  gap: 17px;
-  font-size: 35px;
-  line-height: 1.1;
-  letter-spacing: -1px;
-}
-:root .ip-entry-title > span {
-  font-size: 21px;
-}
-:root .ip-entry-description {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-top: 19px;
-  color: var(--ip-muted);
-}
-:root .ip-entry-result {
-  font: 11px var(--ip-mono);
-  line-height: 1.6;
-  margin-top: 22px;
-}
-:root .ip-entry-link {
-  font-size: 12px;
-  margin-top: 31px;
-}
-:root .ip-work-entry:hover .ip-entry-link {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-:root .ip-study {
-  height: 258px;
-  display: block;
-  position: relative;
-  background: var(--ip-study);
-  overflow: hidden;
-}
-:root .ip-study-caption {
-  position: absolute;
-  bottom: 15px;
-  left: 18px;
-  color: var(--ip-muted);
-  font: 11px var(--ip-mono);
-}
-:root .ip-paper {
-  display: block;
-  position: absolute;
-  width: 108px;
-  height: 150px;
-  top: 45px;
-  left: 102px;
-  background: var(--ip-sheet);
-  border: 1px solid var(--ip-sheet-edge);
-  box-shadow: 9px 14px 22px var(--ip-shadow);
-}
-:root .ip-paper-back {
-  transform: translate(18px, -10px) rotate(13deg);
-}
-:root .ip-paper-middle {
-  transform: translate(5px, -3px) rotate(3deg);
-}
-:root .ip-paper-front {
-  transform: translate(-13px, 5px) rotate(-9deg);
-  padding: 14px 12px;
-}
-:root .ip-paper-label {
-  display: block;
-  color: var(--ip-sheet-mark);
-  font: 9px var(--ip-mono);
-  margin-bottom: 13px;
-}
-:root .ip-paper-line {
-  display: block;
-  width: 100%;
-  height: 1px;
-  background: var(--ip-sheet-edge);
-  margin-bottom: 7px;
-}
-:root .ip-paper-line.ip-short {
-  width: 60%;
-}
-:root .ip-document-block {
-  display: block;
-  height: 27px;
-  background: var(--ip-sheet-edge);
-  opacity: 0.35;
-  margin: 11px 0;
-}
-:root .ip-orbit {
-  position: absolute;
-  border: 1px solid var(--ip-sheet-edge);
-  left: 50%;
-  top: 44%;
-  width: 190px;
-  height: 124px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) rotate(-30deg);
-}
-:root .ip-orbit-two {
-  width: 137px;
-  height: 88px;
-}
-:root .ip-orbit-three {
-  width: 79px;
-  height: 50px;
-  background: var(--ip-soft);
-}
-:root .ip-orbit-label {
-  position: absolute;
-  top: 44%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-  font: 10px var(--ip-mono);
-  color: var(--ip-muted);
-  background: var(--ip-study);
-  padding: 4px;
 }
 :root .ip-ending {
   margin: 58px 0 78px 210px;
@@ -633,17 +488,6 @@
 :root .ip-footer a {
   color: var(--ip-ink);
 }
-:root .ip-sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
 @media (max-width: 800px) {
   :root .ip-shell {
     padding: 0 32px;
@@ -653,19 +497,6 @@
   }
   :root h1 {
     font-size: 74px;
-  }
-  :root .ip-work-entry {
-    grid-template-columns: 115px minmax(0, 1fr) 235px;
-    gap: 25px;
-  }
-  :root .ip-study {
-    height: 240px;
-  }
-  :root .ip-paper {
-    left: 68px;
-  }
-  :root .ip-entry-title {
-    font-size: 31px;
   }
   :root .ip-margin-section,
   :root .ip-note,
@@ -743,42 +574,6 @@
   }
   :root .ip-deck br {
     display: none;
-  }
-  :root .ip-work-list {
-    gap: 50px;
-  }
-  :root .ip-work-entry {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding-bottom: 8px;
-  }
-  :root .ip-entry-number {
-    padding-top: 0;
-  }
-  :root .ip-entry-title {
-    width: 100%;
-    font-size: 34px;
-    justify-content: space-between;
-  }
-  :root .ip-entry-description br {
-    display: none;
-  }
-  :root .ip-entry-description {
-    font-size: 15px;
-    margin-top: 15px;
-  }
-  :root .ip-entry-result {
-    margin-top: 16px;
-  }
-  :root .ip-entry-link {
-    display: none;
-  }
-  :root .ip-study {
-    height: 235px;
-  }
-  :root .ip-paper {
-    left: calc(50% - 54px);
-    top: 35px;
   }
   :root .ip-ending {
     margin: 55px 0 65px;

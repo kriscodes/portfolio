@@ -6,30 +6,18 @@
     "dev": "next dev --webpack --port 3210 --hostname 127.0.0.1",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/lib/*.test.ts src/components/studio/state.test.ts src/components/studio/scene/*.test.ts src/components/sail-*.test.ts",
-    "lint": "eslint src/app src/components/chrome.tsx \"src/components/sail-*.{ts,tsx}\" --max-warnings 0"
+    "test": "node --import tsx --test src/components/sail-*.test.ts",
+    "lint": "eslint src --max-warnings 0"
   },
   "dependencies": {
-    "@fontsource/ibm-plex-mono": "5.3.0",
-    "@fontsource/ibm-plex-sans": "5.3.0",
-    "@fontsource/rajdhani": "5.3.0",
-    "@react-three/drei": "10.7.9",
-    "@react-three/fiber": "9.8.2",
-    "d3-geo": "3.1.1",
-    "lucide-react": "1.61.0",
     "next": "16.3.3",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "three": "0.159.0"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.3",
-    "@types/d3-geo": "3.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/three": "0.159.0",
-    "tailwindcss": "4.3.3",
     "tsx": "4.23.12",
     "typescript": "5.9.3",
     "eslint": "9.39.5",
