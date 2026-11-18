@@ -2,9 +2,18 @@
 'use strict';
 
 (() => {
+  const RENDER_STAGING_HOSTS = {
+    'kristian-salmeron-web-staging.onrender.com': 'portfolio',
+    'kriscodes-lab-staging.onrender.com': 'lab',
+    'kristian-toolbox-staging.onrender.com': 'toolbox',
+  };
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
   const STAGING =
-    typeof window !== 'undefined' &&
-    /^(?:lab\.|toolbox\.)?staging\.kristiansalmeron\.com$/.test(window.location.hostname);
+    /^(?:lab\.|toolbox\.)?staging\.kristiansalmeron\.com$/.test(hostname) ||
+    Object.hasOwn(RENDER_STAGING_HOSTS, hostname);
+  const COOKIE_SCOPE = Object.hasOwn(RENDER_STAGING_HOSTS, hostname)
+    ? ''
+    : '; Domain=' + (STAGING ? 'staging.kristiansalmeron.com' : 'kristiansalmeron.com');
   const PREFIX = STAGING ? 'ks_staging_' : 'ks_';
   const DAY_MS = 86_400_000;
   const VISIT_MS = 30 * 60_000;
@@ -19,6 +28,7 @@
   };
   const HOSTS = STAGING
     ? {
+        ...RENDER_STAGING_HOSTS,
         'staging.kristiansalmeron.com': 'portfolio',
         'lab.staging.kristiansalmeron.com': 'lab',
         'toolbox.staging.kristiansalmeron.com': 'toolbox',
@@ -729,8 +739,8 @@
             name +
             '=' +
             encodeURIComponent(value) +
-            '; Path=/; Domain=' +
-            (STAGING ? 'staging.kristiansalmeron.com' : 'kristiansalmeron.com') +
+            '; Path=/' +
+            COOKIE_SCOPE +
             '; Secure; SameSite=Lax; Max-Age=' +
             maxAge;
         }
@@ -894,6 +904,7 @@
       attribution,
       day,
       KEYS,
+      COOKIE_SCOPE,
     };
   else if (typeof window !== 'undefined') {
     try {

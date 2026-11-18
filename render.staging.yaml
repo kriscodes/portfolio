@@ -72,7 +72,7 @@ projects:
               - key: SKIP_INSTALL_DEPS
                 value: 'true'
               - key: NEXT_PUBLIC_ANALYTICS_ORIGIN
-                value: https://analytics.staging.kristiansalmeron.com
+                value: https://kristian-salmeron-api-staging.onrender.com
             domains:
               - staging.kristiansalmeron.com
             headers:
@@ -119,7 +119,7 @@ projects:
               - key: ANALYTICS_SETUP_TOKEN
                 generateValue: true
               - key: ANALYTICS_ORIGIN
-                value: https://analytics.staging.kristiansalmeron.com
+                value: https://kristian-salmeron-api-staging.onrender.com
               - key: APP_ENV
                 value: staging
               - key: DATABASE_URL

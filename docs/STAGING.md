@@ -39,3 +39,7 @@ These commits prepare configuration; no resource, DNS record, remote branch, pro
 At activation, create `staging` from the approved source, review the provider's Blueprint plan, confirm workspace/resource names and costs, configure stage-only secrets, and install the exact DNS records Render provides. Set up branch protection separately; workflow files do not create branch protection. Keep Blueprint Auto Sync off during initial wiring and review future configuration syncs explicitly.
 
 Use the custom staging domains for end-to-end checks. `onrender.com` aliases are not automatically included in browser origin allowlists. Staging is public unless separately access-controlled; `X-Robots-Tag: noindex, nofollow, noarchive` discourages indexing but is not authentication. Use synthetic data only.
+
+## Initial Render URL checks
+
+The staging collector uses `https://kristian-salmeron-api-staging.onrender.com` so smoke checks do not depend on custom DNS. Only the three explicitly named staging frontend aliases are accepted. On Render aliases, analytics cookies remain host-only; cross-site visitor continuity is checked after custom staging domains are connected.

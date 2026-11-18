@@ -8,6 +8,9 @@ export const SITE_HOSTS: Record<string, AnalyticsSite> = {
 };
 
 export const STAGING_SITE_HOSTS: Record<string, AnalyticsSite> = {
+  'kristian-salmeron-web-staging.onrender.com': 'portfolio',
+  'kriscodes-lab-staging.onrender.com': 'lab',
+  'kristian-toolbox-staging.onrender.com': 'toolbox',
   'staging.kristiansalmeron.com': 'portfolio',
   'lab.staging.kristiansalmeron.com': 'lab',
   'toolbox.staging.kristiansalmeron.com': 'toolbox',
