@@ -140,7 +140,7 @@ export default function SailStudy() {
         >
           <span className="sail-wind-dot" aria-hidden="true" />
           {reducedMotion ? 'A moment of stillness' : buttonLabel}
-          {!reducedMotion && <span aria-hidden="true">↗</span>}
+          {!reducedMotion && <span aria-hidden="true">→</span>}
         </button>
         <p id="sail-study-description">A study in tension, light, and motion.</p>
         <noscript>

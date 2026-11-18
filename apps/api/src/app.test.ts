@@ -14,8 +14,14 @@ test('public API has stable read contracts and rejects unknown writes', async ()
     assert.equal((await health.json()).status, 'ok');
     const response = await fetch(`${base}/api/v1/projects`);
     const body = await response.json();
-    assert.equal(body.data[0].slug, 'care-iq');
-    assert.equal(body.data[0].status, 'active-development');
+    assert.equal(
+      body.data.find((project: { slug: string }) => project.slug === 'care-iq').status,
+      'active-development',
+    );
+    assert.equal(
+      body.data.find((project: { slug: string }) => project.slug === 'rule-builder').status,
+      'case-study',
+    );
     const invalid = await fetch(`${base}/api/v1/projects`, { method: 'POST' });
     assert.equal(invalid.status, 404);
     assert.equal((await invalid.json()).error.code, 'NOT_FOUND');

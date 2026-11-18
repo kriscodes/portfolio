@@ -1,0 +1,349 @@
+.rb {
+  border: 1px solid #d6e2f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f7f9fc;
+  margin: 36px 0 64px;
+}
+.rb-topbar {
+  padding: 26px 28px;
+  border-bottom: 1px solid #d6e2f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: white;
+}
+.rb .ip-small-label {
+  margin: 0 0 12px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.rb h2 {
+  margin: 0;
+  font-family: var(--ip-sans);
+  font-weight: 500;
+  font-size: 25px;
+  letter-spacing: -0.03em;
+}
+.rb-badge {
+  font-size: 11px;
+  padding: 7px 10px;
+  background: #edf4ff;
+  color: #185aad;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.rb-intro {
+  padding: 22px 28px 0;
+  margin: 0;
+  max-width: 900px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4b5d73;
+}
+.rb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 24px;
+  padding: 26px 28px;
+  align-items: start;
+}
+.rb-editor {
+  min-width: 0;
+}
+.rb fieldset {
+  min-width: 0;
+}
+.rb-group {
+  border: 1px solid #bed2eb;
+  border-left: 3px solid #83afea;
+  border-radius: 7px;
+  padding: 14px;
+  margin: 12px 0 0;
+  background: #eef4fc;
+}
+.rb-root {
+  margin: 0;
+  background: white;
+}
+.rb-group legend {
+  padding: 0 7px;
+  font-size: 12px;
+  color: #426588;
+}
+.rb-group-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+.rb-group-heading > label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.rb-children {
+  padding-top: 4px;
+}
+.rb-condition {
+  border: 1px solid #d9e3ee;
+  border-radius: 6px;
+  background: white;
+  padding: 12px;
+  margin-top: 12px;
+}
+.rb-condition-fields {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: end;
+}
+.rb-condition-fields label {
+  min-width: 0;
+}
+.rb-condition-fields label > span {
+  display: block;
+  font-size: 10px;
+  color: #52667e;
+  margin-bottom: 6px;
+}
+.rb select,
+.rb input,
+.rb button {
+  font: inherit;
+  font-size: 12px;
+  color: #22374d;
+  border: 1px solid #c8d5e5;
+  background: white;
+  border-radius: 5px;
+  padding: 9px 8px;
+  min-height: 40px;
+}
+.rb select,
+.rb input {
+  max-width: 100%;
+}
+.rb-condition-fields select,
+.rb-condition-fields input {
+  width: 100%;
+}
+.rb input[aria-invalid='true'] {
+  border-color: #bc3c31;
+}
+.rb button {
+  cursor: pointer;
+}
+.rb button:hover:not(:disabled) {
+  background: #edf4ff;
+  border-color: #7aa9e8;
+}
+.rb :focus-visible {
+  outline: 3px solid #0067e8;
+  outline-offset: 3px;
+}
+.rb button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.rb-move-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0 0;
+}
+.rb-move-controls button,
+.rb-move-controls select {
+  min-height: 36px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+.rb-drag {
+  cursor: grab;
+  font-size: 24px;
+  color: #6889ad;
+  line-height: 40px;
+}
+.rb-drag:active {
+  cursor: grabbing;
+}
+.rb-drop-ready {
+  border-style: dashed;
+}
+.rb-add {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.rb-add button {
+  color: #0056c4;
+}
+.rb-add span {
+  font-size: 10px;
+  color: #687a8d;
+}
+.rb-error {
+  font-size: 12px;
+  color: #a52c22;
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+.rb-limit {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #5d6d7f;
+  margin: 14px 0 0;
+}
+.rb-summary {
+  padding: 20px;
+  background: white;
+  border: 1px solid #dae3ef;
+  border-radius: 7px;
+}
+:root .rb h3 {
+  font-family: var(--ip-sans);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.rb-summary > p:not(.ip-small-label) {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0 0 20px;
+}
+.rb-expression {
+  overflow-wrap: anywhere;
+  padding: 12px;
+  background: #f3f6fb;
+  border-radius: 5px;
+  font-family: monospace;
+}
+.rb-summary > button {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.rb button.rb-primary {
+  background: #0067e8;
+  border-color: #0067e8;
+  color: white;
+}
+.rb button.rb-primary:hover:not(:disabled) {
+  background: #0054bf;
+}
+.rb-summary p.rb-notice {
+  margin: 12px 0 0;
+  color: #365d8d;
+}
+.rb-results {
+  border-top: 1px solid #d6e2f0;
+  background: white;
+  padding: 24px 28px;
+}
+.rb-results-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rb-results-title > span {
+  font-size: 12px;
+  color: #52667e;
+}
+.rb-table-scroll {
+  overflow-x: auto;
+}
+.rb table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.rb th,
+.rb td {
+  padding: 12px;
+  border-bottom: 1px solid #e6ecf3;
+}
+.rb th {
+  font-weight: 500;
+}
+.rb thead {
+  color: #566e88;
+  background: #f7f9fc;
+}
+.rb caption {
+  text-align: left;
+  color: #52667e;
+  font-size: 11px;
+  padding: 6px 0 14px;
+}
+.rb-match {
+  color: #176747;
+  background: #edf8f2;
+  padding: 4px 7px;
+  border-radius: 4px;
+}
+.rb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 1000px) {
+  .rb-layout {
+    grid-template-columns: 1fr;
+  }
+  .rb-summary {
+    max-width: none;
+  }
+}
+@media (max-width: 600px) {
+  .rb-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .rb-topbar,
+  .rb-results {
+    padding: 20px 14px;
+  }
+  .rb-intro {
+    padding: 18px 14px 0;
+  }
+  .rb-layout {
+    padding: 20px 10px;
+    gap: 16px;
+  }
+  .rb-group {
+    padding: 10px 7px;
+  }
+  .rb-condition {
+    padding: 10px 7px;
+  }
+  .rb-condition-fields {
+    grid-template-columns: 16px minmax(0, 1fr);
+  }
+  .rb-condition-fields > label {
+    grid-column: 2;
+  }
+  .rb-condition-fields > .rb-drag {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .rb-move-controls {
+    gap: 4px;
+  }
+  .rb-move-controls select {
+    max-width: 115px;
+  }
+}

@@ -34,7 +34,7 @@ export default function FieldNotesPage() {
               <p>Why practice context belongs inside the transaction.</p>
             </span>
             <span className="ip-note-arrow" aria-hidden="true">
-              ↗
+              →
             </span>
           </Link>
           <Link href="/field-notes/leave-room-for-the-unknown" className="ip-note">
@@ -48,13 +48,13 @@ export default function FieldNotesPage() {
               <p>A direction can be clear without pretending the whole route is known.</p>
             </span>
             <span className="ip-note-arrow" aria-hidden="true">
-              ↗
+              →
             </span>
           </Link>
         </div>
         <div className="ip-ending">
           <p>Interesting questions tend to lead somewhere.</p>
-          <Link href="/contact">Start a conversation ↗</Link>
+          <Link href="/contact">Start a conversation →</Link>
         </div>
       </section>
     </main>

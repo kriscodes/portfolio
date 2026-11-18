@@ -23,9 +23,20 @@ export default function WorkPage() {
           </p>
         </div>
         <div className="editorial-projects">
-          <Link href="/work/care-iq/" className="editorial-project">
+          <Link href="/work/rule-builder/" className="editorial-project">
             <span className="project-number" aria-hidden="true">
               01
+            </span>
+            <h3>Claims-auditing rule builder</h3>
+            <p>Nested logic, validation, and previews. An interactive synthetic example.</p>
+            <span className="project-note">~$35M · FY2026</span>
+            <span className="project-arrow" aria-hidden="true">
+              →
+            </span>
+          </Link>
+          <Link href="/work/care-iq/" className="editorial-project">
+            <span className="project-number" aria-hidden="true">
+              02
             </span>
             <h3>CareIQ</h3>
             <p>A healthcare product, from architecture to front-desk workflows.</p>
@@ -40,7 +51,7 @@ export default function WorkPage() {
             className="editorial-project"
           >
             <span className="project-number" aria-hidden="true">
-              02
+              03
             </span>
             <h3>Toolbox</h3>
             <p>Practical tools for everyday work.</p>
@@ -54,7 +65,7 @@ export default function WorkPage() {
             className="editorial-project"
           >
             <span className="project-number" aria-hidden="true">
-              03
+              04
             </span>
             <h3>Lab</h3>
             <p>Experiments in frontend performance and rendering.</p>
@@ -65,9 +76,9 @@ export default function WorkPage() {
           </a>
           <Link href="/work/gen-ui/" className="editorial-project">
             <span className="project-number" aria-hidden="true">
-              04
+              05
             </span>
-            <h3>NLP Gen UI</h3>
+            <h3>Medical document viewer</h3>
             <p>Medical documents, ready in seconds. A progressive-rendering case study.</p>
             <span className="project-note">Engineering</span>
             <span className="project-arrow" aria-hidden="true">
@@ -78,7 +89,7 @@ export default function WorkPage() {
         <div className="work-note">
           <p>Notes on architecture, decisions, and the work in between.</p>
           <Link href="/field-notes/" className="ip-text-link">
-            Read the field notes <span aria-hidden="true">↗</span>
+            Read the field notes <span aria-hidden="true">→</span>
           </Link>
         </div>
       </section>

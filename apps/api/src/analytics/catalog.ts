@@ -7,12 +7,22 @@ export const SITE_HOSTS: Record<string, AnalyticsSite> = {
   'toolbox.kristiansalmeron.com': 'toolbox',
 };
 
+export const STAGING_SITE_HOSTS: Record<string, AnalyticsSite> = {
+  'kristian-salmeron-web-staging.onrender.com': 'portfolio',
+  'kriscodes-lab-staging.onrender.com': 'lab',
+  'kristian-toolbox-staging.onrender.com': 'toolbox',
+  'staging.kristiansalmeron.com': 'portfolio',
+  'lab.staging.kristiansalmeron.com': 'lab',
+  'toolbox.staging.kristiansalmeron.com': 'toolbox',
+};
+
 export const SITE_PATHS: Record<AnalyticsSite, ReadonlySet<string>> = {
   portfolio: new Set([
     '/',
     '/work/',
     '/work/care-iq/',
     '/work/gen-ui/',
+    '/work/rule-builder/',
     '/about/',
     '/contact/',
     '/privacy/',
@@ -38,8 +48,8 @@ const REFERRERS = [
   'duckduckgo.com',
 ];
 
-export function siteOfHost(host: string): AnalyticsSite | null {
-  return SITE_HOSTS[host.toLowerCase()] ?? null;
+export function siteOfHost(host: string, hosts = SITE_HOSTS): AnalyticsSite | null {
+  return hosts[host.toLowerCase()] ?? null;
 }
 
 export function safePath(site: AnalyticsSite, value: unknown): string {
@@ -48,10 +58,10 @@ export function safePath(site: AnalyticsSite, value: unknown): string {
   return SITE_PATHS[site].has(path) ? path : '/unknown/';
 }
 
-export function safeReferrer(value: unknown): string {
+export function safeReferrer(value: unknown, hosts = SITE_HOSTS): string {
   if (typeof value !== 'string' || value.length > 253) return '';
   const host = value.toLowerCase();
-  if (siteOfHost(host)) return host;
+  if (siteOfHost(host, hosts)) return host;
   // Store only the known domain, never an arbitrary host or a potentially identifying subdomain.
   return REFERRERS.find((domain) => host === domain || host.endsWith('.' + domain)) ?? '';
 }
@@ -59,6 +69,7 @@ export function safeReferrer(value: unknown): string {
 export function contentFor(site: AnalyticsSite, path: string): string {
   if (site === 'portfolio' && path === '/work/care-iq/') return 'careiq';
   if (site === 'portfolio' && path === '/work/gen-ui/') return 'gen-ui';
+  if (site === 'portfolio' && path === '/work/rule-builder/') return 'rule-builder';
   if (site === 'lab' && path === '/experiments/pdf-rendering/') return 'pdf-rendering';
   if (site === 'toolbox' && path === '/tools/prompt-builder/') return 'prompt-builder';
   return '';

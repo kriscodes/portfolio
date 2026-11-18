@@ -2,29 +2,50 @@
 'use strict';
 
 (() => {
+  const RENDER_STAGING_HOSTS = {
+    'kristian-salmeron-web-staging.onrender.com': 'portfolio',
+    'kriscodes-lab-staging.onrender.com': 'lab',
+    'kristian-toolbox-staging.onrender.com': 'toolbox',
+  };
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const STAGING =
+    /^(?:lab\.|toolbox\.)?staging\.kristiansalmeron\.com$/.test(hostname) ||
+    Object.hasOwn(RENDER_STAGING_HOSTS, hostname);
+  const COOKIE_SCOPE = Object.hasOwn(RENDER_STAGING_HOSTS, hostname)
+    ? ''
+    : '; Domain=' + (STAGING ? 'staging.kristiansalmeron.com' : 'kristiansalmeron.com');
+  const PREFIX = STAGING ? 'ks_staging_' : 'ks_';
   const DAY_MS = 86_400_000;
   const VISIT_MS = 30 * 60_000;
   const IDLE_MS = 60_000;
   const ID = /^[A-Za-z0-9_-]{16,96}$/;
   const KEYS = {
-    preference: 'ks_analytics_opt_out',
-    visitor: 'ks_insights_visitor_v2',
-    session: 'ks_insights_session_v2',
-    outbox: 'ks_insights_outbox_v2',
-    previous: 'ks_insights_previous_v2',
+    preference: PREFIX + 'analytics_opt_out',
+    visitor: PREFIX + 'insights_visitor_v2',
+    session: PREFIX + 'insights_session_v2',
+    outbox: PREFIX + 'insights_outbox_v2',
+    previous: PREFIX + 'insights_previous_v2',
   };
-  const HOSTS = {
-    'kristiansalmeron.com': 'portfolio',
-    'www.kristiansalmeron.com': 'portfolio',
-    'lab.kristiansalmeron.com': 'lab',
-    'toolbox.kristiansalmeron.com': 'toolbox',
-  };
+  const HOSTS = STAGING
+    ? {
+        ...RENDER_STAGING_HOSTS,
+        'staging.kristiansalmeron.com': 'portfolio',
+        'lab.staging.kristiansalmeron.com': 'lab',
+        'toolbox.staging.kristiansalmeron.com': 'toolbox',
+      }
+    : {
+        'kristiansalmeron.com': 'portfolio',
+        'www.kristiansalmeron.com': 'portfolio',
+        'lab.kristiansalmeron.com': 'lab',
+        'toolbox.kristiansalmeron.com': 'toolbox',
+      };
   const PATHS = {
     portfolio: new Set([
       '/',
       '/work/',
       '/work/care-iq/',
       '/work/gen-ui/',
+      '/work/rule-builder/',
       '/about/',
       '/contact/',
       '/field-notes/',
@@ -86,7 +107,7 @@
     'duckduckgo.com': 'duckduckgo',
   };
   const PROPS = {
-    project: new Set(['careiq', 'care-iq', 'gen-ui', 'neon-drift']),
+    project: new Set(['careiq', 'care-iq', 'gen-ui', 'rule-builder', 'neon-drift']),
     section: new Set(['work', 'about', 'life']),
     target: new Set([
       'linkedin',
@@ -608,6 +629,7 @@
       send('pageview');
       if (path === '/work/care-iq/') send('project_open', { project: 'careiq' });
       if (path === '/work/gen-ui/') send('project_open', { project: 'gen-ui' });
+      if (path === '/work/rule-builder/') send('project_open', { project: 'rule-builder' });
       if (path === '/experiments/pdf-rendering/' && env.site === 'lab')
         send('experiment_open', { content: 'pdf-rendering' });
       if (path === '/tools/prompt-builder/' && env.site === 'toolbox')
@@ -717,7 +739,9 @@
             name +
             '=' +
             encodeURIComponent(value) +
-            '; Path=/; Domain=kristiansalmeron.com; Secure; SameSite=Lax; Max-Age=' +
+            '; Path=/' +
+            COOKIE_SCOPE +
+            '; Secure; SameSite=Lax; Max-Age=' +
             maxAge;
         }
         const part = document.cookie.split('; ').find((item) => item.startsWith(name + '='));
@@ -880,6 +904,7 @@
       attribution,
       day,
       KEYS,
+      COOKIE_SCOPE,
     };
   else if (typeof window !== 'undefined') {
     try {

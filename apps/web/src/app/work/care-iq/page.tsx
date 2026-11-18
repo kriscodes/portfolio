@@ -3,8 +3,8 @@ import { CareIqStages } from '@/components/inner-interactions';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
-  'CareIQ — Architecture & product',
-  'Inside CareIQ: a separate marketing site, authenticated web app, Express API, and PostgreSQL database supporting front-office workflows for independent medical practices.',
+  'CareIQ — Practice workflows',
+  'CareIQ helps independent practices coordinate scheduling, patient paperwork, and visit readiness. A synthetic product preview, frontend architecture, and delivery safeguards.',
   '/work/care-iq/',
 );
 
@@ -38,6 +38,30 @@ export default function CareIqPage() {
           </div>
         </div>
 
+        <figure className="careiq-case-preview">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/work/careiq-patient-directory.png"
+            width="1280"
+            height="955"
+            alt="CareIQ’s patient directory: reusable navigation, search, patient rows, and scheduling actions in a synthetic local preview"
+            loading="lazy"
+          />
+          <figcaption className="ip-caption">
+            Patient directory · Synthetic local preview from November 2, 2026. All records are
+            fictional; no live patient data.
+          </figcaption>
+        </figure>
+        <section className="ip-margin-section">
+          <h2 className="ip-margin-label">The engineering bar</h2>
+          <div className="ip-prose">
+            <p>
+              CodeQL, secret scanning, and coverage gates support delivery. Staging web, API, and
+              PostgreSQL are isolated from production; a backup-restore rehearsal is recorded, while
+              the hosted rollback drill remains pending.
+            </p>
+          </div>
+        </section>
         <section id="terrain" className="ip-margin-section" aria-labelledby="cq-architecture-title">
           <h2 id="cq-architecture-title" className="ip-margin-label">
             01 / The architecture
@@ -200,7 +224,7 @@ export default function CareIqPage() {
         <Link href="/field-notes/the-boundary-is-the-feature" className="ip-next">
           <span>From the notebook</span>
           <strong>The boundary is the feature.</strong>
-          <span aria-hidden="true">↗</span>
+          <span aria-hidden="true">→</span>
         </Link>
       </section>
     </main>

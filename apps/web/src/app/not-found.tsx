@@ -10,7 +10,7 @@ export default function NotFound() {
       </h1>
       <p className="ip-deck">This page isn’t here. There’s more to explore in the work.</p>
       <Link className="ip-text-link" href="/work/">
-        Explore the work ↗
+        Explore the work →
       </Link>
     </main>
   );

@@ -79,7 +79,7 @@ export default function AboutPage() {
               delivery.
             </p>
             <Link href="/work/gen-ui" className="ip-text-link">
-              See the approach in practice ↗
+              See the approach in practice →
             </Link>
           </div>
         </section>
@@ -103,7 +103,7 @@ export default function AboutPage() {
         </section>
         <div className="ip-ending">
           <p>The work matters. So does how we work together.</p>
-          <Link href="/contact">Let’s talk ↗</Link>
+          <Link href="/contact">Let’s talk →</Link>
         </div>
       </section>
     </main>

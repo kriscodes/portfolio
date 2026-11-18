@@ -27,7 +27,7 @@ For local analytics development, use the names in [`.env.example`](../.env.examp
 
 ## Release workflow
 
-Use the same process as Lab and Toolbox: create a regular feature branch, open a pull request, wait for CI, then merge into `main`. GitHub Actions runs `pnpm validate` on every pull request and push to `main`, including PostgreSQL-backed tests. Render waits for the deployed commit's checks with `autoDeployTrigger: checksPass`; failing checks or zero detected checks block automatic deployment. Do not add workflow path filters that skip CI on deployable commits.
+Use the same process as Lab and Toolbox: create a regular feature branch, review it through `staging`, then promote the tested changes to `main`. See [staging setup and promotion](STAGING.md); the new environment is prepared but not activated. GitHub Actions runs `pnpm validate` on every pull request and push to `main` or `staging`, including PostgreSQL-backed tests. Render waits for the deployed commit's checks with `autoDeployTrigger: checksPass`; failing checks or zero detected checks block automatic deployment. Do not add workflow path filters that skip CI on deployable commits.
 
 Each service's build filter includes its app, shared packages, dependency lockfile, runtime and workspace configuration, and scripts. Website-only changes do not deploy the API, and API-only changes do not deploy the website. Documentation-only changes run CI without triggering application deploys. Keep the filters in sync when adding build inputs.
 
