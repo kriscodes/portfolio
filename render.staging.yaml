@@ -1,4 +1,3 @@
-# Prepared for review only. Importing this Blueprint creates and deploys resources.
 # yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 previews:
   generation: 'off'
