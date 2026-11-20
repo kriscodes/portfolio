@@ -391,7 +391,6 @@ export async function validateExport(options = {}) {
     const homeHeading = pages.get('/')?.nodes.find((node) => node.tag === 'h1');
     if (compact(homeHeading?.text) !== 'Making things work.')
       add('/', 'homepage heading must preserve the words: Making things work.');
-    if (/R[eé]sum[eé]/i.test(homeText)) add('/', 'removed résumé link is still present');
     const genText = compact(pages.get('/work/gen-ui/')?.text);
     if (
       !/(?:15|fifteen)\s*(?:min(?:ute)?s?)/i.test(genText) ||

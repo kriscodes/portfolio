@@ -1,4 +1,5 @@
 import { pageMetadata } from '@/lib/metadata';
+import { CONTACT_EMAIL, RESUME_PDF_URL } from '@/lib/contact';
 
 export const metadata = pageMetadata(
   'Let’s talk',
@@ -24,14 +25,27 @@ export default function ContactPage() {
               Tell me what you’re building, where the hard part is, and what kind of engineering
               leadership would help.
             </p>
-            <a
-              className="ip-contact-action"
-              href="https://www.linkedin.com/in/kristian-salmeron-46295664"
-              target="_blank"
-              rel="noopener"
-            >
-              Connect on LinkedIn <span aria-hidden="true">↗</span>
-            </a>
+            <div className="ip-contact-actions">
+              <a className="ip-contact-action" href={`mailto:${CONTACT_EMAIL}`}>
+                {CONTACT_EMAIL}
+              </a>
+              <a
+                className="ip-contact-action"
+                href={RESUME_PDF_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download résumé (PDF)
+              </a>
+              <a
+                className="ip-contact-action"
+                href="https://www.linkedin.com/in/kristian-salmeron-46295664"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Connect on LinkedIn
+              </a>
+            </div>
             <p className="ip-contact-note">
               The work matters.
               <br /> So does how we work together.
