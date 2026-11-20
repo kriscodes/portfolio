@@ -27,7 +27,7 @@ For local analytics development, use the names in [`.env.example`](../.env.examp
 
 ## Release workflow
 
-Use the same process as Lab and Toolbox: create a regular feature branch, review it through `staging`, then promote the tested changes to `main`. See [staging setup and promotion](STAGING.md); the new environment is prepared but not activated. GitHub Actions runs `pnpm validate` on every pull request and push to `main` or `staging`, including PostgreSQL-backed tests. Render waits for the deployed commit's checks with `autoDeployTrigger: checksPass`; failing checks or zero detected checks block automatic deployment. Do not add workflow path filters that skip CI on deployable commits.
+Use the same process as Lab and Toolbox: create a regular feature branch, review it through `staging`, then promote the tested changes to `main`. GitHub Actions runs `pnpm validate` on every pull request and push to `main` or `staging`, including PostgreSQL-backed tests. Render waits for the deployed commit's checks with `autoDeployTrigger: checksPass`; failing checks or zero detected checks block automatic deployment. Do not add workflow path filters that skip CI on deployable commits.
 
 Each service's build filter includes its app, shared packages, dependency lockfile, runtime and workspace configuration, and scripts. Website-only changes do not deploy the API, and API-only changes do not deploy the website. Documentation-only changes run CI without triggering application deploys. Keep the filters in sync when adding build inputs.
 
@@ -69,3 +69,14 @@ Use Render deployment history to roll back application code after checking schem
 For owner-password recovery, run `node apps/api/dist/analytics/reset-owner.js` in the private API service shell with the new password on standard input. Do not pass it as an argument. The command requires `DATABASE_URL` and `ANALYTICS_OWNER_EMAIL`, updates the existing owner, and revokes all sessions.
 
 A 503 health response points to analytics configuration or database readiness. For failed builds, check the pinned runtimes, repository-root build directory, frozen lockfile, and installation of build-time dependencies. For incomplete reports, check privacy exclusions, collector requests, date ranges, and coverage indicators before treating missing data as zero activity.
+
+## Environments
+
+| Service                       | Branch    | Render URL                                         |
+| ----------------------------- | --------- | -------------------------------------------------- |
+| kristian-salmeron-api-staging | `staging` | https://kristian-salmeron-api-staging.onrender.com |
+| kristian-salmeron-web-staging | `staging` | https://kristian-salmeron-web-staging.onrender.com |
+| kristian-salmeron-api         | `main`    | https://kristian-salmeron-api.onrender.com         |
+| kristian-salmeron-web         | `main`    | https://kristian-salmeron-web.onrender.com         |
+
+Production and staging use separate services. Keep staging credentials and data isolated. Run CI on each release candidate, verify the deployed source revision and health endpoints, and retain the previous working deployment for recovery. Documentation-only commits can be excluded by build filters; deploy the checked revision manually when a rebuild is required.
