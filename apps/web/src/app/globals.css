@@ -448,18 +448,20 @@
   margin: 0;
   max-width: 310px;
 }
+:root .ip-contact-actions {
+  display: grid;
+  gap: 4px;
+  margin-top: 24px;
+  max-width: 310px;
+}
 :root .ip-contact-action {
   display: flex;
   justify-content: space-between;
   gap: 20px;
   align-items: center;
   font-size: 16px;
-  margin-top: 32px;
-  max-width: 310px;
   padding: 12px 0;
-}
-:root .ip-contact-action > span {
-  font-size: 24px;
+  overflow-wrap: anywhere;
 }
 :root .ip-contact-copy > p.ip-contact-note {
   font-size: 12px;

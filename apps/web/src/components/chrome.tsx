@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { CONTACT_EMAIL, RESUME_PDF_URL } from '@/lib/contact';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -56,7 +57,11 @@ export function Footer() {
     return (
       <footer className="sail-home-footer">
         <p>Built with intent.</p>
-        <div className="sail-home-social" aria-label="Social profiles and privacy">
+        <div className="sail-home-social" aria-label="Contact, résumé, social profiles and privacy">
+          <a href={`mailto:${CONTACT_EMAIL}`}>Email</a>
+          <a href={RESUME_PDF_URL} target="_blank" rel="noopener noreferrer">
+            Download résumé (PDF)
+          </a>
           <Link href="/privacy/">Privacy</Link>
           <a href="https://github.com/kriscodes" target="_blank" rel="noopener noreferrer">
             GitHub <span aria-hidden="true">↗</span>
@@ -82,7 +87,11 @@ export function Footer() {
           Get in touch <span aria-hidden="true">→</span>
         </Link>
       </div>
-      <div className="footer-social" aria-label="Social profiles and privacy">
+      <div className="footer-social" aria-label="Contact, résumé, social profiles and privacy">
+        <a href={`mailto:${CONTACT_EMAIL}`}>Email</a>
+        <a href={RESUME_PDF_URL} target="_blank" rel="noopener noreferrer">
+          Download résumé (PDF)
+        </a>
         <Link href="/privacy/">Privacy</Link>
         <a href="https://github.com/kriscodes" target="_blank" rel="noopener noreferrer">
           GitHub <span aria-hidden="true">↗</span>
