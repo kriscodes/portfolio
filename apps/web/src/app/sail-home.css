@@ -218,6 +218,7 @@
 
 .sail-home-social {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 20px;
   margin-left: 12px;
