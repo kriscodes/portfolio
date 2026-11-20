@@ -1,5 +1,4 @@
 # Prepared for review only. Importing this Blueprint creates and deploys resources.
-# Activate only after reviewing docs/STAGING.md. No production resources are defined here.
 # yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 previews:
   generation: 'off'

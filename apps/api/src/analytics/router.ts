@@ -635,7 +635,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
     const serveFile =
       (filename: string) => (_request: Request, response: Response, next: NextFunction) => {
         // Keep the fixed filename relative to an explicit root. Absolute filenames can
-        // otherwise be rejected when this checkout lives below a hidden .codex folder.
+        // otherwise be rejected when a parent directory is hidden.
         response.sendFile(
           filename,
           { root: web, cacheControl: false },
