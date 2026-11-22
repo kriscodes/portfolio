@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { analyticsDemoUrl } from '@/lib/analytics';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
@@ -85,6 +86,17 @@ export default function WorkPage() {
               →
             </span>
           </Link>
+          <a href={analyticsDemoUrl()} className="editorial-project">
+            <span className="project-number" aria-hidden="true">
+              06
+            </span>
+            <h3>Studio Insights</h3>
+            <p>An analytics dashboard for three sites. Explore with synthetic data.</p>
+            <span className="project-note">Interactive demo</span>
+            <span className="project-arrow" aria-hidden="true">
+              ↗
+            </span>
+          </a>
         </div>
         <div className="work-note">
           <p>Notes on architecture, decisions, and the work in between.</p>

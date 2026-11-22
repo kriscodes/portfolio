@@ -814,3 +814,53 @@ test('staging collection accepts staging origins and refuses production origins'
     assert.equal(response.status, 403);
   });
 });
+
+test('public demo serves one synthetic dataset across all periods without an owner or a store', async () => {
+  await fixture(
+    async ({ base, store }) => {
+      store.ready = async () => assert.fail('The demo must not initialize the analytics store.');
+      const shell = await fetch(base + '/demo/');
+      assert.equal(shell.status, 200);
+      assert.equal(shell.headers.get('set-cookie'), null);
+      const policy = shell.headers.get('content-security-policy') ?? '';
+      assert.match(policy, /connect-src 'none'/);
+      assert.match(policy, /form-action 'none'/);
+      const html = await shell.text();
+      assert.match(html, /All figures in this demo are synthetic/);
+      assert.doesNotMatch(
+        html,
+        /login-form|setup-form|analytics-assets\/tracker\.js|id="refresh-data"/,
+      );
+
+      const json = html.match(
+        /<script id="demo-reports" type="application\/json">(.+?)<\/script>/,
+      )?.[1];
+      assert.ok(json, 'The demo should include the reports in the page.');
+      const reports = JSON.parse(json);
+      for (const days of [7, 30, 90]) {
+        const report = reports[days];
+        assert.equal(report.range.days, days);
+        assert.equal(report.daily.length, days);
+        assert.equal(
+          report.totals.visitors,
+          report.daily.reduce(
+            (total: number, row: { visitors: number }) => total + row.visitors,
+            0,
+          ),
+        );
+        assert.equal(report.insights.coverage.pageviews, report.totals.pageviews);
+        assert.ok(
+          report.insights.movement.some(
+            (row: { matchedArrivals: number }) => row.matchedArrivals > 0,
+          ),
+        );
+      }
+      assert.deepEqual(reports[7].daily, reports[30].daily.slice(-7));
+      assert.deepEqual(reports[30].daily, reports[90].daily.slice(-30));
+
+      const owner = await fetch(base + '/');
+      assert.doesNotMatch(await owner.text(), /id="demo-reports"/);
+    },
+    { serveWeb: true, hashSecret: '' },
+  );
+});

@@ -3,6 +3,8 @@
 (() => {
   const API = '/api/analytics';
   const $ = (id) => document.getElementById(id);
+  const demoReports = $('demo-reports');
+  const themeKey = demoReports ? 'ks-insights-demo-theme' : 'ks-insights-theme';
   const state = {
     authenticated: false,
     days: 7,
@@ -55,7 +57,7 @@
   let setupToken = '';
   let restoredTheme = '';
   try {
-    restoredTheme = localStorage.getItem('ks-insights-theme') || '';
+    restoredTheme = localStorage.getItem(themeKey) || '';
   } catch {}
   let theme = restoredTheme === 'dark' || restoredTheme === 'light' ? restoredTheme : 'light';
 
@@ -78,20 +80,22 @@
     theme = theme === 'dark' ? 'light' : 'dark';
     setTheme();
     try {
-      localStorage.setItem('ks-insights-theme', theme);
+      localStorage.setItem(themeKey, theme);
     } catch {}
   });
 
-  try {
-    const hash = new URLSearchParams(location.hash.slice(1));
-    if (hash.has('setup')) {
-      setupToken = (hash.get('setup') || '').slice(0, 256);
-      history.replaceState(null, '', location.pathname + location.search);
+  if (!demoReports) {
+    try {
+      const hash = new URLSearchParams(location.hash.slice(1));
+      if (hash.has('setup')) {
+        setupToken = (hash.get('setup') || '').slice(0, 256);
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    } catch {}
+    if (setupToken) {
+      $('setup-code-field').hidden = true;
+      $('setup-code-confirmed').hidden = false;
     }
-  } catch {}
-  if (setupToken) {
-    $('setup-code-field').hidden = true;
-    $('setup-code-confirmed').hidden = false;
   }
 
   function create(tag, className, text) {
@@ -126,6 +130,7 @@
   }
 
   async function request(path, options = {}) {
+    if (demoReports) throw new Error('Private requests are unavailable in the demo.');
     const response = await fetch(API + path, {
       credentials: 'same-origin',
       cache: 'no-store',
@@ -242,13 +247,13 @@
       );
     }
   }
-  $('retry-auth').addEventListener('click', bootstrap);
+  $('retry-auth')?.addEventListener('click', bootstrap);
 
   function setFormBusy(form, busy) {
     form.setAttribute('aria-busy', String(busy));
     for (const input of form.querySelectorAll('input, button')) input.disabled = busy;
   }
-  $('login-form').addEventListener('submit', async (event) => {
+  $('login-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     $('login-status').textContent = '';
@@ -269,7 +274,7 @@
       setFormBusy(form, false);
     }
   });
-  $('setup-form').addEventListener('submit', async (event) => {
+  $('setup-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const password = $('setup-password').value;
@@ -322,8 +327,8 @@
       $('privacy-logout').disabled = false;
     }
   }
-  $('logout').addEventListener('click', signOut);
-  $('privacy-logout').addEventListener('click', signOut);
+  $('logout')?.addEventListener('click', signOut);
+  $('privacy-logout')?.addEventListener('click', signOut);
 
   function setView(view) {
     if (!['overview', 'links', 'privacy'].includes(view)) view = 'overview';
@@ -357,9 +362,21 @@
       loadReport();
     }),
   );
-  $('refresh-data').addEventListener('click', loadReport);
+  $('refresh-data')?.addEventListener('click', loadReport);
 
   async function loadReport() {
+    if (demoReports) {
+      try {
+        const report = JSON.parse(demoReports.textContent)[state.days];
+        if (!report) throw new Error('Sample report missing.');
+        renderReport(report);
+        state.report = report;
+      } catch {
+        $('report-error').textContent = 'The sample report could not load. Try reloading the page.';
+        $('report-error').hidden = false;
+      }
+      return;
+    }
     if (!state.authenticated) return;
     const requestId = ++state.request;
     state.controller?.abort();
@@ -658,15 +675,20 @@
     $('coverage-warning').hidden = !coverage.limited;
     $('total-visits').textContent = count(totals.visits);
     $('total-active').textContent = duration(totals.avgActiveSeconds);
-    $('measurement-coverage').textContent = insights.measurementStartedAt
-      ? 'Earliest retained new event ' +
-        timeFormat.format(new Date(insights.measurementStartedAt)) +
-        ' PT · ' +
-        count(coverage.timedPageviews) +
-        ' timed / ' +
+    $('measurement-coverage').textContent = demoReports
+      ? count(coverage.timedPageviews) +
+        ' of ' +
         count(coverage.pageviews) +
-        ' new pageviews'
-      : 'No new measurements yet. Historical traffic remains available below.';
+        ' sample pageviews include active time'
+      : insights.measurementStartedAt
+        ? 'Earliest retained new event ' +
+          timeFormat.format(new Date(insights.measurementStartedAt)) +
+          ' PT · ' +
+          count(coverage.timedPageviews) +
+          ' timed / ' +
+          count(coverage.pageviews) +
+          ' new pageviews'
+        : 'No new measurements yet. Historical traffic remains available below.';
     const sites = $('site-cards');
     sites.replaceChildren();
     for (const site of ['portfolio', 'lab', 'toolbox']) {
@@ -831,7 +853,6 @@
     $('total-visitors').textContent = count(totals.visitors);
     $('total-projects').textContent = count(totals.projectOpens);
     $('total-linkedin').textContent = count(totals.linkedinClicks);
-    $('no-data-notice').hidden = Number(totals.pageviews) > 0 || Number(totals.visitors) > 0;
     const range = report.range || {};
     const label = [date(range.start), date(range.end)].filter(Boolean).join(' – ');
     $('chart-range').textContent = label
@@ -860,6 +881,9 @@
       'Device information will appear after the first visit.',
     );
     renderCampaigns(safeArray(report.campaigns));
+    if (demoReports) return;
+
+    $('no-data-notice').hidden = Number(totals.pageviews) > 0 || Number(totals.visitors) > 0;
     $('recent-visitors').textContent =
       count(totals.recentVisitors) +
       (Number(totals.recentVisitors) === 1 ? ' visitor' : ' visitors') +
@@ -927,11 +951,11 @@
       target.appendChild(row);
     }
   }
-  $('campaign-name').addEventListener('input', buildShareLinks);
-  $('campaign-name').addEventListener('blur', () => {
+  $('campaign-name')?.addEventListener('input', buildShareLinks);
+  $('campaign-name')?.addEventListener('blur', () => {
     $('campaign-name').value = campaignName();
   });
-  buildShareLinks();
+  if (!demoReports) buildShareLinks();
 
   if (typeof ResizeObserver !== 'undefined') {
     let lastWidth = 0;
@@ -939,20 +963,28 @@
       const width = entries[0]?.contentRect.width || 0;
       if (width > 0 && Math.abs(width - lastWidth) > 2) {
         lastWidth = width;
-        if (state.authenticated && state.report) renderChart(safeArray(state.report.daily));
+        if (state.report) renderChart(safeArray(state.report.daily));
       }
     });
     observer.observe($('visitor-chart'));
   }
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) bootstrap();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && state.authenticated) loadReport();
-  });
-  setInterval(() => {
-    if (state.authenticated && state.view === 'overview' && document.visibilityState === 'visible')
-      loadReport();
-  }, 60000);
-  bootstrap();
+  if (demoReports) {
+    loadReport();
+  } else {
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) bootstrap();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && state.authenticated) loadReport();
+    });
+    setInterval(() => {
+      if (
+        state.authenticated &&
+        state.view === 'overview' &&
+        document.visibilityState === 'visible'
+      )
+        loadReport();
+    }, 60000);
+    bootstrap();
+  }
 })();
