@@ -158,14 +158,18 @@
         </aside>
 
         <main class="dashboard-main" id="dashboard-main">
+          <!-- report:start -->
           <section id="overview-view" class="workspace-view" aria-labelledby="overview-heading">
             <div class="page-heading">
               <div>
                 <p class="eyebrow">PORTFOLIO · LAB · TOOLBOX</p>
+                <!-- owner:start -->
                 <h1 id="overview-heading">Small signals. A clearer picture.</h1>
                 <p>
                   Understand how visitors find your work, explore it, and move between your sites.
                 </p>
+                <!-- owner:end -->
+                <!-- demo:intro -->
               </div>
               <div class="report-controls">
                 <div class="period" role="group" aria-label="Reporting period">
@@ -173,6 +177,7 @@
                   ><button type="button" data-days="30" aria-pressed="false">30 days</button
                   ><button type="button" data-days="90" aria-pressed="false">90 days</button>
                 </div>
+                <!-- owner:start -->
                 <button
                   class="refresh-button"
                   type="button"
@@ -181,9 +186,11 @@
                 >
                   ↻
                 </button>
+                <!-- owner:end -->
               </div>
             </div>
             <div class="notice" id="report-error" role="alert" hidden></div>
+            <!-- owner:start -->
             <div class="first-visit" id="no-data-notice" hidden>
               <strong>Your studio is ready for its first visitor.</strong>
               <p>
@@ -191,14 +198,18 @@
                 visits with tracking enabled.
               </p>
             </div>
+            <!-- owner:end -->
             <p class="notice" id="coverage-warning" role="status" hidden>
               This range exceeds the detailed-report limit. Engagement and navigation show partial
               coverage; exits are withheld. Choose a shorter date range. Historical totals below
               remain complete.
             </p>
             <div class="report-context">
+              <!-- owner:start -->
               <span class="access-pill">First-party analytics</span
               ><span>Estimated activity · Pacific time</span>
+              <!-- owner:end -->
+              <!-- demo:context -->
             </div>
             <div class="stats" aria-label="Traffic summary" aria-live="polite" aria-atomic="true">
               <section class="stat stat-featured">
@@ -360,9 +371,11 @@
             <div class="section-heading">
               <div>
                 <p class="eyebrow">CONTINUITY</p>
-                <h2>Your historical picture</h2>
+                <h2>Traffic details</h2>
               </div>
+              <!-- owner:start -->
               <p class="secondary">Includes legacy collection</p>
+              <!-- owner:end -->
             </div>
             <div class="legacy-summary">
               <span>Project opens <strong id="total-projects">—</strong></span
@@ -405,16 +418,20 @@
               </div>
               <div id="campaign-list"></div>
             </section>
+            <!-- owner:start -->
             <div class="report-footer">
               <span id="recent-visitors">Recent visitors: —</span
               ><span id="last-updated">Waiting for activity</span>
             </div>
+            <!-- owner:end -->
             <p class="measurement-note">
               Visitors are estimates, not identified people. Daily rotation and the collector
               upgrade can count the same browser again. Ad blockers, privacy settings, and bots can
               affect totals. All report dates use Pacific time.
             </p>
           </section>
+
+          <!-- report:end -->
 
           <section id="links-view" class="workspace-view" aria-labelledby="links-heading" hidden>
             <div class="page-heading">
