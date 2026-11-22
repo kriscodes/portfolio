@@ -3,6 +3,7 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { hashPassword, secretEqual, sessionToken, tokenHash, verifyPassword } from './auth.js';
 import { PostgresAnalyticsStore } from './store.js';
+import { renderDemoPage } from './demo-page.js';
 import {
   CAMPAIGNS,
   contentFor,
@@ -163,18 +164,23 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
     );
   };
 
-  const noStore = (_request: Request, response: Response, next: NextFunction) => {
+  function setPageHeaders(response: Response, demo = false) {
+    const connectSources = demo ? "'none'" : "'self'";
+    const formTargets = demo ? "'none'" : "'self'";
     response.set({
       'Cache-Control': 'no-store, private',
-      'X-Robots-Tag': 'noindex, nofollow, noarchive',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
       'X-Frame-Options': 'DENY',
-      'Content-Security-Policy':
-        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'none'; object-src 'none'",
+      'Content-Security-Policy': `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src ${connectSources}; frame-ancestors 'none'; form-action ${formTargets}; base-uri 'none'; object-src 'none'`,
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
     });
+    if (!demo) response.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
     if (production) response.set('Strict-Transport-Security', 'max-age=31536000');
+  }
+
+  const noStore = (_request: Request, response: Response, next: NextFunction) => {
+    setPageHeaders(response);
     next();
   };
 
@@ -216,6 +222,13 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
       maxAge: SESSION_AGE_MS,
     });
     return true;
+  }
+
+  if (options.serveWeb !== false) {
+    router.get('/demo/', async (_request, response) => {
+      setPageHeaders(response, true);
+      response.type('html').send(await renderDemoPage());
+    });
   }
 
   router.use(['/api/analytics', '/analytics-assets', '/'], noStore);

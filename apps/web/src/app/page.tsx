@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import SailStudy from '@/components/sail-study';
+import { analyticsDemoUrl } from '@/lib/analytics';
 import { pageMetadata } from '@/lib/metadata';
 
 export const metadata = pageMetadata(
@@ -52,6 +53,13 @@ export default function HomePage() {
               ~15 min → &lt;5 sec
             </span>
           </Link>
+          <a href={analyticsDemoUrl()} className="sail-home-project">
+            <h3>Studio Insights</h3>
+            <p>Explore traffic, page engagement, and journeys across three sites.</p>
+            <span className="sail-home-status">
+              Interactive demo <span aria-hidden="true">↗</span>
+            </span>
+          </a>
           <Link href="/work/care-iq/" className="sail-home-project">
             <h3>CareIQ</h3>
             <p>Scheduling, paperwork, and visit readiness for independent practices.</p>
