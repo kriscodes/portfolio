@@ -25,6 +25,12 @@ declare global {
   }
 }
 
+const defaultAnalyticsOrigin = 'https://analytics.kristiansalmeron.com';
+
+export function analyticsDemoUrl() {
+  return new URL('/demo/', process.env.NEXT_PUBLIC_ANALYTICS_ORIGIN || defaultAnalyticsOrigin).href;
+}
+
 let loaderStarted = false;
 const pending: Array<{ event: AnalyticsEventName; properties: AnalyticsProperties }> = [];
 /** The shared runtime owns pageviews and delivery on all three sites. */
@@ -36,7 +42,7 @@ export function getAnalyticsTracker(): BrowserTracker | null {
   const configuredOrigin = process.env.NEXT_PUBLIC_ANALYTICS_ORIGIN;
   if (!['kristiansalmeron.com', 'www.kristiansalmeron.com'].includes(hostname) && !configuredOrigin)
     return null;
-  const origin = configuredOrigin || 'https://analytics.kristiansalmeron.com';
+  const origin = configuredOrigin || defaultAnalyticsOrigin;
   try {
     const base = new URL(origin);
     if (
