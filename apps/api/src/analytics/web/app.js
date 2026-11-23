@@ -867,7 +867,16 @@
     $('total-visitors').textContent = count(totals.visitors);
     $('total-projects').textContent = count(totals.projectOpens);
     $('total-linkedin').textContent = count(totals.linkedinClicks);
-    $('no-data-notice').hidden = Number(totals.pageviews) > 0 || Number(totals.visitors) > 0;
+    const noData = Number(totals.pageviews) === 0 && Number(totals.visitors) === 0;
+    $('no-data-notice').hidden = !noData;
+    if (noData) {
+      $('no-data-heading').textContent = state.site
+        ? 'No traffic for ' + siteName(state.site) + ' in this range.'
+        : 'Your studio is ready for its first visitor.';
+      $('no-data-help').textContent = state.site
+        ? 'Activity appears here when someone visits with analytics enabled.'
+        : 'Share a tagged link from Shared links. Activity will appear here after someone visits with tracking enabled.';
+    }
     const range = report.range || {};
     const label = [date(range.start), date(range.end)].filter(Boolean).join(' – ');
     $('chart-range').textContent = label
