@@ -136,6 +136,7 @@ export interface AnalyticsOverview {
     recentVisitors: number;
   };
   daily: Array<{ date: string; visitors: number }>;
+  hourly?: Array<{ hour: string; visitors: number }>;
   sources: Array<{ source: string; visitors: number }>;
   projects: Array<{ project: string; opens: number; previews: number }>;
   sections: Array<{ section: string; opens: number }>;
@@ -155,7 +156,7 @@ export interface AnalyticsStore {
   deleteSession(tokenHash: string): Promise<void>;
   consumeRateLimit(key: string, limit: number, windowMs: number): Promise<boolean>;
   insertEvent(event: AnalyticsEvent): Promise<void>;
-  overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview>;
+  overview(days: number, site?: AnalyticsSite, day?: string): Promise<AnalyticsOverview>;
   cleanup(): Promise<void>;
   close(): Promise<void>;
 }
@@ -172,6 +173,41 @@ export function reportRange(days: number, now = new Date()): AnalyticsOverview['
   const first = new Date(`${end}T12:00:00Z`);
   first.setUTCDate(first.getUTCDate() - days + 1);
   return { days, start: first.toISOString().slice(0, 10), end, timezone: 'America/Los_Angeles' };
+}
+
+export function parseReportDay(value: unknown, now = new Date()): string | null {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T12:00:00Z`);
+  const allowed = reportRange(180, now);
+  if (
+    !Number.isFinite(date.getTime()) ||
+    date.toISOString().slice(0, 10) !== value ||
+    value < allowed.start ||
+    value > allowed.end
+  )
+    return null;
+  return value;
+}
+
+export function overviewRange(days: number, day?: string, now = new Date()) {
+  return day ? reportRange(1, new Date(`${day}T12:00:00Z`)) : reportRange(days, now);
+}
+
+const HOUR = 60 * 60_000;
+
+/** UTC bucket labels distinguish the repeated Pacific hour on the fall clock change. */
+export function emptyHourly(day: string): NonNullable<AnalyticsOverview['hourly']> {
+  let stamp = Date.parse(`${day}T00:00:00Z`);
+  while (reportDate.format(stamp) < day) stamp += HOUR;
+  const hours: NonNullable<AnalyticsOverview['hourly']> = [];
+  for (; reportDate.format(stamp) === day; stamp += HOUR) {
+    hours.push({ hour: new Date(stamp).toISOString(), visitors: 0 });
+  }
+  return hours;
+}
+
+export function eventHour(time: Date) {
+  return new Date(Math.floor(time.getTime() / HOUR) * HOUR).toISOString();
 }
 
 export function emptyDaily(range: AnalyticsOverview['range']) {
