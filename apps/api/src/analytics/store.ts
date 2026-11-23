@@ -1,5 +1,12 @@
 import { Pool } from 'pg';
-import type { AnalyticsEvent, AnalyticsOverview, AnalyticsStore, Owner } from './types.js';
+import { isCareIqSite } from './catalog.js';
+import type {
+  AnalyticsEvent,
+  AnalyticsOverview,
+  AnalyticsSite,
+  AnalyticsStore,
+  Owner,
+} from './types.js';
 import { emptyDaily, reportRange } from './types.js';
 import { buildInsights, INSIGHTS_EVENT_LIMIT } from './insights.js';
 
@@ -44,6 +51,7 @@ CREATE INDEX IF NOT EXISTS analytics_events_time_idx ON analytics_events (occurr
 CREATE INDEX IF NOT EXISTS analytics_events_visitor_time_idx ON analytics_events (visitor_hash, occurred_at);
 ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS schema_version SMALLINT NOT NULL DEFAULT 1;
 ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS site TEXT NOT NULL DEFAULT 'portfolio';
+CREATE INDEX IF NOT EXISTS analytics_events_site_time_idx ON analytics_events (site, occurred_at);
 ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS page_hash TEXT NOT NULL DEFAULT '';
 ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS previous_page_hash TEXT NOT NULL DEFAULT '';
 ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS visit_scope TEXT NOT NULL DEFAULT 'local';
@@ -209,11 +217,12 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
     );
   }
 
-  async overview(days: number): Promise<AnalyticsOverview> {
+  async overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview> {
     const range = reportRange(days);
     const where = `WHERE occurred_at >= ($1::date::timestamp AT TIME ZONE 'America/Los_Angeles')
-      AND occurred_at < (($2::date + 1)::timestamp AT TIME ZONE 'America/Los_Angeles')`;
-    const values = [range.start, range.end];
+      AND occurred_at < (($2::date + 1)::timestamp AT TIME ZONE 'America/Los_Angeles')
+      AND ($3::text IS NULL OR site = $3)`;
+    const values = [range.start, range.end, site ?? null];
     const [totals, daily, sources, projects, sections, pages, devices, campaigns, last] =
       await Promise.all([
         this.pool.query(
@@ -262,7 +271,10 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
         AND campaign <> '' GROUP BY source, campaign ORDER BY visitors DESC, campaign LIMIT 30`,
           values,
         ),
-        this.pool.query('SELECT MAX(occurred_at) AS last_event_at FROM analytics_events'),
+        this.pool.query(
+          'SELECT MAX(occurred_at) AS last_event_at FROM analytics_events WHERE ($1::text IS NULL OR site = $1)',
+          [site ?? null],
+        ),
       ]);
     const dailyCounts = new Map(
       daily.rows.map((row) => [row.date as string, Number(row.visitors)]),
@@ -275,8 +287,14 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
         `SELECT * FROM analytics_events WHERE schema_version = 2
         AND occurred_at >= (($1::date - 1)::timestamp AT TIME ZONE 'America/Los_Angeles')
         AND occurred_at < (($2::date + 1)::timestamp AT TIME ZONE 'America/Los_Angeles')
-        ORDER BY occurred_at, id LIMIT $3`,
-        [...values, INSIGHTS_EVENT_LIMIT + 1],
+        AND ($3::text IS NULL OR site = $3)
+        ORDER BY occurred_at, id LIMIT $4`,
+        [
+          range.start,
+          range.end,
+          isCareIqSite(site ?? null) ? site : null,
+          INSIGHTS_EVENT_LIMIT + 1,
+        ],
       ),
       this.pool.query(
         `SELECT site, MAX(occurred_at) AS last_seen,
@@ -284,7 +302,7 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
         COUNT(*) FILTER (WHERE schema_version = 1 AND event = 'pageview'
           AND occurred_at >= ($1::date::timestamp AT TIME ZONE 'America/Los_Angeles')
           AND occurred_at < (($2::date + 1)::timestamp AT TIME ZONE 'America/Los_Angeles')) AS legacy
-        FROM analytics_events GROUP BY site`,
+        FROM analytics_events WHERE ($3::text IS NULL OR site = $3) GROUP BY site`,
         values,
       ),
     ]);
@@ -296,6 +314,7 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
       range,
       new Date(),
       {
+        site,
         measurementStartedAt: measuredStarts.length
           ? new Date(Math.min(...measuredStarts.map((date) => date.getTime()))).toISOString()
           : null,
@@ -431,10 +450,13 @@ export class MemoryAnalyticsStore implements AnalyticsStore {
     this.eventIds.add(event.eventId);
     this.events.push(event);
   }
-  async overview(days: number): Promise<AnalyticsOverview> {
+  async overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview> {
     const range = reportRange(days);
     const dateOf = (event: AnalyticsEvent) => reportRange(1, event.occurredAt).end;
-    const events = this.events.filter(
+    const siteEvents = site
+      ? this.events.filter((event) => (event.site ?? 'portfolio') === site)
+      : this.events;
+    const events = siteEvents.filter(
       (event) => dateOf(event) >= range.start && dateOf(event) <= range.end,
     );
     const unique = (rows: AnalyticsEvent[]) => new Set(rows.map((event) => event.visitorHash)).size;
@@ -449,7 +471,7 @@ export class MemoryAnalyticsStore implements AnalyticsStore {
       ),
     ];
     return {
-      insights: buildInsights(this.events, range),
+      insights: buildInsights(this.events, range, new Date(), { site }),
       range,
       totals: {
         visitors: unique(events),
@@ -523,10 +545,8 @@ export class MemoryAnalyticsStore implements AnalyticsStore {
           ),
         };
       }),
-      lastEventAt: this.events.length
-        ? new Date(
-            Math.max(...this.events.map((event) => event.occurredAt.getTime())),
-          ).toISOString()
+      lastEventAt: siteEvents.length
+        ? new Date(Math.max(...siteEvents.map((event) => event.occurredAt.getTime()))).toISOString()
         : null,
     };
   }

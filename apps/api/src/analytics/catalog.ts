@@ -5,6 +5,11 @@ export const SITE_HOSTS: Record<string, AnalyticsSite> = {
   'www.kristiansalmeron.com': 'portfolio',
   'lab.kristiansalmeron.com': 'lab',
   'toolbox.kristiansalmeron.com': 'toolbox',
+  'app.careiqlabs.com': 'careiq-web',
+  'careiq-web.onrender.com': 'careiq-web',
+  'careiqlabs.com': 'careiq-marketing',
+  'www.careiqlabs.com': 'careiq-marketing',
+  'careiq-marketing.onrender.com': 'careiq-marketing',
 };
 
 export const STAGING_SITE_HOSTS: Record<string, AnalyticsSite> = {
@@ -14,6 +19,10 @@ export const STAGING_SITE_HOSTS: Record<string, AnalyticsSite> = {
   'staging.kristiansalmeron.com': 'portfolio',
   'lab.staging.kristiansalmeron.com': 'lab',
   'toolbox.staging.kristiansalmeron.com': 'toolbox',
+  'staging.careiqlabs.com': 'careiq-web',
+  'careiq-staging-web.onrender.com': 'careiq-web',
+  'marketing-staging.careiqlabs.com': 'careiq-marketing',
+  'careiq-staging-marketing.onrender.com': 'careiq-marketing',
 };
 
 export const SITE_PATHS: Record<AnalyticsSite, ReadonlySet<string>> = {
@@ -32,6 +41,8 @@ export const SITE_PATHS: Record<AnalyticsSite, ReadonlySet<string>> = {
   ]),
   lab: new Set(['/', '/experiments/', '/experiments/pdf-rendering/', '/methodology/', '/privacy/']),
   toolbox: new Set(['/', '/tools/prompt-builder/', '/privacy/']),
+  'careiq-web': new Set(['/']),
+  'careiq-marketing': new Set(['/', '/research/', '/privacy/']),
 };
 export const CAMPAIGNS = new Set(['portfolio', 'bio', 'launch', 'winter-update']);
 const REFERRERS = [
@@ -49,7 +60,14 @@ const REFERRERS = [
 ];
 
 export function siteOfHost(host: string, hosts = SITE_HOSTS): AnalyticsSite | null {
-  return hosts[host.toLowerCase()] ?? null;
+  const normalized = host.toLowerCase();
+  return Object.hasOwn(hosts, normalized) ? hosts[normalized] : null;
+}
+
+export function isCareIqSite(
+  site: AnalyticsSite | null,
+): site is 'careiq-web' | 'careiq-marketing' {
+  return site === 'careiq-web' || site === 'careiq-marketing';
 }
 
 export function safePath(site: AnalyticsSite, value: unknown): string {
