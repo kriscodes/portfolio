@@ -19,6 +19,7 @@ import {
   EVENTS,
   isAnalyticsSite,
   reportRange,
+  parseReportDay,
   type AnalyticsSite,
   type AnalyticsEvent,
   type AnalyticsEventName,
@@ -410,8 +411,19 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
   );
 
   router.get('/api/analytics/overview', requireReady, requireOwner, async (request, response) => {
-    const days = Number(request.query.days ?? '7');
-    if (![7, 30, 90].includes(days)) {
+    const selectedDate = request.query.date;
+    const day = parseReportDay(selectedDate);
+    if (selectedDate !== undefined && (!day || request.query.days !== undefined)) {
+      responseError(
+        response,
+        400,
+        'INVALID_DATE',
+        'Choose one Pacific date from the last 180 days.',
+      );
+      return;
+    }
+    const days = day ? 1 : Number(request.query.days ?? '7');
+    if (!day && ![7, 30, 90].includes(days)) {
       responseError(response, 400, 'INVALID_RANGE', 'Choose 7, 30, or 90 days.');
       return;
     }
@@ -420,7 +432,7 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
       responseError(response, 400, 'INVALID_SITE', 'Choose a connected website.');
       return;
     }
-    response.json(await store!.overview(days, site));
+    response.json(await store!.overview(days, site, day ?? undefined));
   });
 
   function collectorCORS(request: Request, response: Response, next: NextFunction) {

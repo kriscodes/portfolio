@@ -1,6 +1,9 @@
 import { buildInsights } from './insights.js';
 import {
   emptyDaily,
+  emptyHourly,
+  eventHour,
+  overviewRange,
   reportRange,
   type AnalyticsEvent,
   type AnalyticsOverview,
@@ -12,8 +15,9 @@ export function summarizeEvents(
   days: number,
   now = new Date(),
   site?: AnalyticsSite,
+  day?: string,
 ): AnalyticsOverview {
-  const range = reportRange(days, now);
+  const range = overviewRange(days, day, now);
   const siteEvents = site
     ? history.filter((event) => (event.site ?? 'portfolio') === site)
     : history;
@@ -51,6 +55,14 @@ export function summarizeEvents(
       ...row,
       visitors: unique(events.filter((event) => dateOf(event) === row.date)),
     })),
+    ...(day
+      ? {
+          hourly: emptyHourly(day).map((row) => ({
+            ...row,
+            visitors: unique(events.filter((event) => eventHour(event.occurredAt) === row.hour)),
+          })),
+        }
+      : {}),
     sources: grouped('source').map((source) => ({
       source,
       visitors: unique(events.filter((event) => event.source === source)),
