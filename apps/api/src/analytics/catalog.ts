@@ -42,7 +42,7 @@ export const SITE_PATHS: Record<AnalyticsSite, ReadonlySet<string>> = {
   lab: new Set(['/', '/experiments/', '/experiments/pdf-rendering/', '/methodology/', '/privacy/']),
   toolbox: new Set(['/', '/tools/prompt-builder/', '/privacy/']),
   'careiq-web': new Set(['/']),
-  'careiq-marketing': new Set(['/', '/research/', '/privacy/']),
+  'careiq-marketing': new Set(['/', '/research/']),
 };
 export const CAMPAIGNS = new Set(['portfolio', 'bio', 'launch', 'winter-update']);
 const REFERRERS = [

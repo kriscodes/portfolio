@@ -1035,6 +1035,32 @@ select {
 .stat-value {
   font-size: clamp(27px, 3vw, 40px);
 }
+.site-scope {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.site-scope button {
+  min-height: 44px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.site-scope button[aria-pressed='true'] {
+  background: var(--soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+#overview-view[data-scope-pending] > .scope-status ~ * {
+  display: none;
+}
+.scope-status {
+  margin-bottom: 16px;
+}
 .site-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

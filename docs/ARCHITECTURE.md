@@ -34,4 +34,6 @@ Every reporting endpoint requires the owner session. Passwords use scrypt; Postg
 
 `pnpm validate` checks frontend lint, workspace types, API/collector/report behavior, sail motion, production builds, and exported pages. The export audit checks document structure, links, assets, canonical metadata, and homepage heading word boundaries. PostgreSQL migration tests require `ANALYTICS_TEST_DATABASE_URL`; browser checks exercise the dashboard and privacy controls with local sample data. Test coverage does not establish production traffic completeness or accessibility certification.
 
+CareIQ Web and CareIQ Marketing use a bundled client in the CareIQ repository with the same collector endpoint. Both use site-local identity and exact origins for their environment. Web emits an aggregate entry pageview only. Marketing can also emit active time and scroll milestones on its public home and research pages. The collector rejects other paths and event types for those sites. Each can be viewed separately from the website selector.
+
 See [deployment](DEPLOYMENT-RENDER.md) for service configuration and recovery, and [ADR 002](decisions/002-first-party-analytics.md) for analytics tradeoffs.

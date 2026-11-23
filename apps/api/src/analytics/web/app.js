@@ -6,6 +6,7 @@
   const state = {
     authenticated: false,
     days: 7,
+    site: '',
     view: 'overview',
     report: null,
     ownerEmail: '',
@@ -199,6 +200,8 @@
     $('chart-selection').textContent = '';
     $('no-data-notice').hidden = true;
     $('report-error').hidden = true;
+    $('scope-status').hidden = true;
+    $('overview-view').removeAttribute('aria-busy');
     ['login', 'setup', 'unavailable'].forEach((name) => {
       $(name + '-view').hidden = name !== view;
     });
@@ -357,6 +360,19 @@
       loadReport();
     }),
   );
+  const siteControls = document.querySelectorAll('[data-site-scope]');
+  siteControls.forEach((button) =>
+    button.addEventListener('click', () => {
+      const site = button.dataset.siteScope;
+      if (state.site === site) return;
+      state.site = site;
+      state.report = null;
+      siteControls.forEach((control) =>
+        control.setAttribute('aria-pressed', String(control.dataset.siteScope === site)),
+      );
+      loadReport();
+    }),
+  );
   $('refresh-data').addEventListener('click', loadReport);
 
   async function loadReport() {
@@ -368,10 +384,20 @@
     $('refresh-data').disabled = true;
     $('overview-view').setAttribute('aria-busy', 'true');
     $('report-error').hidden = true;
+    const scopeStatus = $('scope-status');
+    if (!state.report) {
+      $('overview-view').setAttribute('data-scope-pending', '');
+      scopeStatus.textContent =
+        'Loading ' + (state.site ? siteName(state.site) : 'all sites') + '…';
+      scopeStatus.hidden = false;
+    }
     try {
-      const report = await request('/overview?days=' + state.days, { signal: controller.signal });
+      const params = new URLSearchParams({ days: String(state.days) });
+      if (state.site) params.set('site', state.site);
+      const report = await request('/overview?' + params, { signal: controller.signal });
       if (requestId !== state.request || !state.authenticated) return;
       state.report = report;
+      $('overview-view').removeAttribute('data-scope-pending');
       renderReport(report);
     } catch (error) {
       if (error.name === 'AbortError' || requestId !== state.request) return;
@@ -387,6 +413,7 @@
       }
     } finally {
       if (requestId === state.request) {
+        scopeStatus.hidden = true;
         $('refresh-data').disabled = false;
         $('overview-view').setAttribute('aria-busy', 'false');
       }
@@ -608,7 +635,13 @@
     $('daily-table').appendChild(table);
   }
 
-  const siteNames = { portfolio: 'Portfolio', lab: 'Lab', toolbox: 'Toolbox' };
+  const siteNames = {
+    portfolio: 'Portfolio',
+    lab: 'Lab',
+    toolbox: 'Toolbox',
+    'careiq-web': 'CareIQ Web',
+    'careiq-marketing': 'CareIQ Marketing',
+  };
   const contentNames = {
     careiq: 'Care IQ',
     'care-iq': 'Care IQ',
@@ -669,7 +702,7 @@
       : 'No new measurements yet. Historical traffic remains available below.';
     const sites = $('site-cards');
     sites.replaceChildren();
-    for (const site of ['portfolio', 'lab', 'toolbox']) {
+    for (const site of state.site ? [state.site] : Object.keys(siteNames)) {
       const item = safeArray(insights.sites).find((entry) => entry.site === site);
       const card = create('section', 'site-card');
       const title = create('h3');
@@ -795,7 +828,7 @@
       count(coverage.sharedVisits) +
       ' visits with shared identifiers · ' +
       count(coverage.localVisits) +
-      ' site-local visits. Matching estimates connect only these subdomains. Destination clicks and observed arrivals are independent counts.';
+      ' site-local visits. Visit matching covers participating kristiansalmeron.com subdomains. Destination clicks and observed arrivals are independent counts.';
     detailRows(
       'content-list',
       safeArray(insights.engagement),
@@ -826,6 +859,9 @@
 
   function renderReport(report) {
     const totals = report.totals || {};
+    const measurement = $('site-measurement');
+    measurement.textContent = state.site === 'careiq-web' ? 'App entry pageviews only' : '';
+    measurement.hidden = !measurement.textContent;
     $('total-pageviews').textContent = count(totals.pageviews);
     renderInsights(report.insights);
     $('total-visitors').textContent = count(totals.visitors);
@@ -845,7 +881,7 @@
       safeArray(report.pages),
       (item) => (item.site ? pageLabel(item.site, item.path) : item.path || '/'),
       (item) => item.views,
-      'Pageviews will appear after someone explores your portfolio.',
+      'Pageviews will appear after someone visits the selected website.',
     );
     rows(
       $('device-list'),

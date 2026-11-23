@@ -152,7 +152,7 @@
             </nav>
           </div>
           <div class="sidebar-note">
-            <strong>Three connected sites.</strong><span>Portfolio · Lab · Toolbox</span>
+            <strong>Connected sites</strong><span>Portfolio · Lab · Toolbox · CareIQ</span>
             <p>First-party measurement.<br />Thoughtfully limited data.</p>
           </div>
         </aside>
@@ -161,7 +161,7 @@
           <section id="overview-view" class="workspace-view" aria-labelledby="overview-heading">
             <div class="page-heading">
               <div>
-                <p class="eyebrow">PORTFOLIO · LAB · TOOLBOX</p>
+                <p class="eyebrow">STUDIO INSIGHTS</p>
                 <h1 id="overview-heading">Small signals. A clearer picture.</h1>
                 <p>
                   Understand how visitors find your work, explore it, and move between your sites.
@@ -183,7 +183,22 @@
                 </button>
               </div>
             </div>
+            <div class="site-scope" role="group" aria-label="Website">
+              <button type="button" data-site-scope="" aria-pressed="true">All sites</button>
+              <button type="button" data-site-scope="portfolio" aria-pressed="false">
+                Portfolio
+              </button>
+              <button type="button" data-site-scope="lab" aria-pressed="false">Lab</button>
+              <button type="button" data-site-scope="toolbox" aria-pressed="false">Toolbox</button>
+              <button type="button" data-site-scope="careiq-web" aria-pressed="false">
+                CareIQ Web
+              </button>
+              <button type="button" data-site-scope="careiq-marketing" aria-pressed="false">
+                CareIQ Marketing
+              </button>
+            </div>
             <div class="notice" id="report-error" role="alert" hidden></div>
+            <p class="secondary scope-status" id="scope-status" role="status" hidden></p>
             <div class="first-visit" id="no-data-notice" hidden>
               <strong>Your studio is ready for its first visitor.</strong>
               <p>
@@ -199,6 +214,7 @@
             <div class="report-context">
               <span class="access-pill">First-party analytics</span
               ><span>Estimated activity · Pacific time</span>
+              <span id="site-measurement" hidden></span>
             </div>
             <div class="stats" aria-label="Traffic summary" aria-live="polite" aria-atomic="true">
               <section class="stat stat-featured">
@@ -209,7 +225,7 @@
               <section class="stat">
                 <h2>Pageviews</h2>
                 <div class="stat-value" id="total-pageviews">—</div>
-                <p>Across connected sites</p>
+                <p>For the selected website scope</p>
               </section>
               <section class="stat">
                 <h2>Observed visits</h2>
@@ -540,13 +556,25 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   >Read the privacy notice ↗</a
+                ><a
+                  class="text-link"
+                  href="https://app.careiqlabs.com/analytics-privacy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >CareIQ Web preferences ↗</a
+                ><a
+                  class="text-link"
+                  href="https://careiqlabs.com/privacy/#website-analytics"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >CareIQ Marketing preferences ↗</a
                 >
               </div>
               <p class="panel-note">
-                Opt-out purges identifiers and queued events when each site next runs. A page
-                blocked from loading the collector cannot save the preference. Check for its
-                confirmation before leaving. Owner requests are excluded when the browser sends the
-                host-only sign-in cookie.
+                CareIQ uses a separate preference on each site. Portfolio, Lab, and Toolbox purge
+                identifiers and queued events when each site next runs. A page blocked from loading
+                the collector cannot save the preference. Check for its confirmation before leaving.
+                Owner requests are excluded when the browser sends the host-only sign-in cookie.
               </p>
             </section>
             <section class="text-section">
@@ -569,7 +597,7 @@
         </main>
       </div>
       <footer class="workspace-footer">
-        <span>STUDIO INSIGHTS</span><span>PORTFOLIO / LAB / TOOLBOX</span>
+        <span>STUDIO INSIGHTS</span><span>PORTFOLIO / LAB / TOOLBOX / CAREIQ</span>
       </footer>
     </div>
     <noscript
