@@ -7,7 +7,7 @@ import type {
   AnalyticsStore,
   Owner,
 } from './types.js';
-import { emptyDaily, reportRange } from './types.js';
+import { emptyDaily, emptyHourly, overviewRange } from './types.js';
 import { buildInsights, INSIGHTS_EVENT_LIMIT } from './insights.js';
 import { summarizeEvents } from './summarize.js';
 
@@ -218,13 +218,13 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
     );
   }
 
-  async overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview> {
-    const range = reportRange(days);
+  async overview(days: number, site?: AnalyticsSite, day?: string): Promise<AnalyticsOverview> {
+    const range = overviewRange(days, day);
     const where = `WHERE occurred_at >= ($1::date::timestamp AT TIME ZONE 'America/Los_Angeles')
       AND occurred_at < (($2::date + 1)::timestamp AT TIME ZONE 'America/Los_Angeles')
       AND ($3::text IS NULL OR site = $3)`;
     const values = [range.start, range.end, site ?? null];
-    const [totals, daily, sources, projects, sections, pages, devices, campaigns, last] =
+    const [totals, daily, sources, projects, sections, pages, devices, campaigns, last, hourly] =
       await Promise.all([
         this.pool.query(
           `SELECT COUNT(DISTINCT visitor_hash) AS visitors,
@@ -276,7 +276,18 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
           'SELECT MAX(occurred_at) AS last_event_at FROM analytics_events WHERE ($1::text IS NULL OR site = $1)',
           [site ?? null],
         ),
+        day
+          ? this.pool.query(
+              `SELECT date_trunc('hour', occurred_at, 'UTC') AS hour,
+                COUNT(DISTINCT visitor_hash) AS visitors
+              FROM analytics_events ${where} GROUP BY 1`,
+              values,
+            )
+          : null,
       ]);
+    const hourlyCounts = new Map(
+      hourly?.rows.map((row) => [(row.hour as Date).toISOString(), Number(row.visitors)]),
+    );
     const dailyCounts = new Map(
       daily.rows.map((row) => [row.date as string, Number(row.visitors)]),
     );
@@ -340,6 +351,14 @@ export class PostgresAnalyticsStore implements AnalyticsStore {
         recentVisitors: Number(n.recent_visitors),
       },
       daily: emptyDaily(range).map((row) => ({ ...row, visitors: dailyCounts.get(row.date) ?? 0 })),
+      ...(day
+        ? {
+            hourly: emptyHourly(day).map((row) => ({
+              ...row,
+              visitors: hourlyCounts.get(row.hour) ?? 0,
+            })),
+          }
+        : {}),
       sources: sources.rows.map((row) => ({ source: row.source, visitors: Number(row.visitors) })),
       projects: projects.rows.map((row) => ({
         project: row.project,
@@ -451,8 +470,8 @@ export class MemoryAnalyticsStore implements AnalyticsStore {
     this.eventIds.add(event.eventId);
     this.events.push(event);
   }
-  async overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview> {
-    return summarizeEvents(this.events, days, new Date(), site);
+  async overview(days: number, site?: AnalyticsSite, day?: string): Promise<AnalyticsOverview> {
+    return summarizeEvents(this.events, days, new Date(), site, day);
   }
   async cleanup() {}
   async close() {}

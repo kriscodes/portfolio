@@ -8,7 +8,7 @@ import { createAnalytics, type AnalyticsOptions } from './router.js';
 import { MemoryAnalyticsStore, PostgresAnalyticsStore } from './store.js';
 import { hashPassword, verifyPassword } from './auth.js';
 import type { AnalyticsEvent } from './types.js';
-import { reportRange } from './types.js';
+import { emptyHourly, reportRange } from './types.js';
 
 const ownerEmail = 'owner@example.com';
 const setupToken = 'test-setup-token-which-is-long-enough-123';
@@ -99,6 +99,75 @@ const v2Event = {
   eventId: 'event_123456789abcdefghijklmn',
   occurredAt: new Date().toISOString(),
 };
+
+test('Pacific days honor the clock change, including both repeated hours', () => {
+  assert.equal(emptyHourly('2026-03-08').length, 23);
+  const fall = emptyHourly('2026-11-01');
+  assert.equal(fall.length, 25);
+  assert.equal(fall[1].hour, '2026-11-01T08:00:00.000Z');
+  assert.equal(fall[2].hour, '2026-11-01T09:00:00.000Z');
+});
+
+test('owner hourly reports count distinct visitors within each scoped hour', async () => {
+  await fixture(async ({ store, call }) => {
+    const stamp = new Date();
+    const date = reportRange(1, stamp).end;
+    const localNoon = new Date(date + 'T20:00:00Z');
+    const sample: AnalyticsEvent = {
+      eventId: 'hour-record-1',
+      event: 'pageview',
+      path: '/',
+      site: 'careiq-web',
+      referrer: '',
+      source: 'unknown',
+      medium: 'unknown',
+      campaign: '',
+      visitorHash: 'same-visitor',
+      sessionHash: 'same-visit',
+      project: '',
+      section: '',
+      mode: '',
+      target: '',
+      device: 'desktop',
+      occurredAt: localNoon,
+    };
+    await store.insertEvent(sample);
+    await store.insertEvent({ ...sample, eventId: 'hour-record-2' });
+    await store.insertEvent({
+      ...sample,
+      eventId: 'hour-record-3',
+      occurredAt: new Date(localNoon.getTime() + 3_600_000),
+    });
+    await store.insertEvent({
+      ...sample,
+      eventId: 'hour-record-4',
+      site: 'careiq-marketing',
+      visitorHash: 'other-visitor',
+    });
+    const url = 'overview?date=' + date + '&site=careiq-web';
+    assert.equal((await call(url)).status, 401);
+    await store.createOwner({ email: ownerEmail, passwordHash: await hashPassword(password) });
+    const login = await call('login', mutation({ email: ownerEmail, password }));
+    const cookie = login.headers.get('set-cookie')!.split(';', 1)[0];
+    const headers = { Cookie: cookie };
+    const response = await call(url, { headers });
+    assert.equal(response.status, 200);
+    const report = await response.json();
+    assert.equal(report.range.days, 1);
+    assert.equal(report.range.start, date);
+    assert.equal(report.hourly.length, emptyHourly(date).length);
+    assert.deepEqual(
+      report.hourly
+        .filter((item: { visitors: number }) => item.visitors)
+        .map((item: { visitors: number }) => item.visitors),
+      [1, 1],
+    );
+    assert.equal(report.totals.visitors, 1);
+    assert.equal((await call(url + '&days=7', { headers })).status, 400);
+    assert.equal((await call('overview?date=2026-11-99', { headers })).status, 400);
+    assert.equal((await call('overview?date=1900-01-01', { headers })).status, 400);
+  });
+});
 
 test('CareIQ origins collect only allowlisted measurements and report each app separately', async () => {
   await fixture(async ({ store, call }) => {
@@ -834,6 +903,15 @@ test(
       assert.equal(marketing.totals.pageviews, 1);
       assert.equal(marketing.totals.visitors, 1);
       assert.equal(marketing.insights.pages[0].path, '/research/');
+      const hourly = await second.overview(
+        1,
+        'careiq-marketing',
+        reportRange(1, event.occurredAt).end,
+      );
+      assert.equal(
+        hourly.hourly?.reduce((total, bucket) => total + bucket.visitors, 0),
+        1,
+      );
       assert.equal((await second.overview(7, 'portfolio')).totals.pageviews, 1);
       assert.equal((await second.overview(7, 'careiq-web')).totals.pageviews, 0);
       await second.deleteSession('hashed-session-only');

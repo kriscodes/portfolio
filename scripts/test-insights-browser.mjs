@@ -151,6 +151,21 @@ const server = createServer(async (req, res) => {
             insights: { coverage: {}, totals: { avgActiveSeconds: null }, sites: [], pages: [] },
           }),
         );
+      const selectedDate = new URL(req.url, 'http://localhost').searchParams.get('date');
+      if (selectedDate) {
+        const start = Date.parse(selectedDate + 'T08:00:00Z');
+        const hourly = Array.from({ length: 24 }, (_, hour) => ({
+          hour: new Date(start + hour * 3_600_000).toISOString(),
+          visitors: hour === 9 ? 4 : 0,
+        }));
+        return res.end(
+          JSON.stringify({
+            ...report,
+            range: { ...report.range, days: 1, start: selectedDate, end: selectedDate },
+            hourly,
+          }),
+        );
+      }
       return res.end(JSON.stringify(report));
     }
     return res.end('{}');
@@ -196,8 +211,22 @@ try {
   await tab.locator('#total-visitors').filter({ hasText: '148' }).waitFor();
   assert.equal(await tab.locator('#total-active').innerText(), '48s');
   assert.equal(await tab.locator('#site-cards .site-card').count(), 3);
-  assert.equal(await tab.locator('#engagement-pages tbody tr').count(), 4);
-  assert.match(await tab.locator('#movement-list').innerText(), /6 matched · 2 unmatched/);
+  assert.equal(await tab.locator('#exploration-plot .metric-rank').count(), 4);
+  await tab.locator('#exploration-metric').selectOption({ label: 'Common next pages' });
+  assert.equal(await tab.locator('#exploration-chart').inputValue(), 'flow');
+  await tab.locator('#exploration-chart').selectOption('dots');
+  assert.ok(await tab.locator('#exploration-plot .metric-dot').count());
+  await tab.locator('#continuity-metric').selectOption({ label: 'Devices' });
+  assert.equal(await tab.locator('#continuity-chart').inputValue(), 'donut');
+  assert.ok(await tab.locator('#continuity-plot .metric-ring').count());
+  await tab.getByRole('button', { name: 'Day', exact: true }).click();
+  await tab.getByText('Estimated visitors per hour', { exact: true }).waitFor();
+  assert.equal(await tab.locator('#visitor-chart .chart-bar').count(), 24);
+  const originalDay = await tab.locator('#report-day').inputValue();
+  await tab.getByRole('button', { name: 'Previous day' }).click();
+  assert.notEqual(await tab.locator('#report-day').inputValue(), originalDay);
+  await tab.getByRole('button', { name: '7 days', exact: true }).click();
+  await tab.getByText('Estimated visitors per day', { exact: true }).waitFor();
   for (const [name, width] of [
     ['desktop', 1440],
     ['tablet', 768],
@@ -208,7 +237,7 @@ try {
     await tab.screenshot({ path: resolve(output, `dashboard-${name}.png`), fullPage: true });
     if (name === 'mobile') {
       await tab.screenshot({ path: resolve(output, 'dashboard-mobile-top.png'), fullPage: false });
-      await tab.locator('#engagement-pages').scrollIntoViewIfNeeded();
+      await tab.locator('#exploration-plot').scrollIntoViewIfNeeded();
       await tab.screenshot({
         path: resolve(output, 'dashboard-mobile-engagement.png'),
         fullPage: false,
@@ -245,7 +274,7 @@ try {
   await tab.locator('#refresh-data').click();
   await tab.locator('#no-data-notice').waitFor({ state: 'visible' });
   assert.equal(await tab.locator('#total-active').innerText(), '—');
-  assert.match(await tab.locator('#path-list').innerText(), /will appear/);
+  assert.match(await tab.locator('#exploration-plot').innerText(), /No measurements/);
   await tab.screenshot({ path: resolve(output, 'dashboard-empty-mobile.png'), fullPage: true });
   mode = 'error';
   await tab.locator('#refresh-data').click();
@@ -253,7 +282,7 @@ try {
   await tab.locator('#logout').click();
   await tab.locator('#login-view').waitFor({ state: 'visible' });
   assert.equal(await tab.locator('#total-visitors').textContent(), '—');
-  assert.equal(await tab.locator('#engagement-pages').textContent(), '');
+  assert.equal(await tab.locator('#exploration-plot').textContent(), '');
   await tab.screenshot({ path: resolve(output, 'login-mobile.png'), fullPage: true });
   assert.deepEqual(errors, []);
   console.log(

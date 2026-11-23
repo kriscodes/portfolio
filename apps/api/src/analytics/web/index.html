@@ -173,6 +173,9 @@
               </div>
               <div class="report-controls">
                 <div class="period" role="group" aria-label="Reporting period">
+                  <!-- owner:start -->
+                  <button type="button" data-days="day" aria-pressed="false">Day</button>
+                  <!-- owner:end -->
                   <button type="button" data-days="7" aria-pressed="true">7 days</button
                   ><button type="button" data-days="30" aria-pressed="false">30 days</button
                   ><button type="button" data-days="90" aria-pressed="false">90 days</button>
@@ -230,11 +233,6 @@
               <!-- demo:context -->
             </div>
             <div class="stats" aria-label="Traffic summary" aria-live="polite" aria-atomic="true">
-              <section class="stat stat-featured">
-                <h2>Estimated visitors</h2>
-                <div class="stat-value" id="total-visitors">—</div>
-                <p>Daily rotating identifiers</p>
-              </section>
               <section class="stat">
                 <h2>Pageviews</h2>
                 <div class="stat-value" id="total-pageviews">—</div>
@@ -251,15 +249,38 @@
                 <p>Per measured pageview</p>
               </section>
             </div>
-            <div class="site-cards" id="site-cards" aria-label="Site collection status"></div>
+            <details class="site-collection">
+              <summary>Site collection status</summary>
+              <div class="site-cards" id="site-cards" aria-label="Site collection status"></div>
+            </details>
             <section class="panel chart-panel" aria-labelledby="chart-heading">
               <div class="panel-heading">
                 <h2 id="chart-heading">Visitors over time</h2>
                 <span class="secondary" id="chart-range">Loading visitor data…</span>
               </div>
+              <!-- owner:start -->
+              <div class="day-controls" id="day-controls" hidden>
+                <button
+                  type="button"
+                  class="secondary-button"
+                  id="previous-day"
+                  aria-label="Previous day"
+                >
+                  ‹
+                </button>
+                <input type="date" id="report-day" aria-label="Report date in Pacific time" />
+                <button type="button" class="secondary-button" id="next-day" aria-label="Next day">
+                  ›
+                </button>
+              </div>
+              <!-- owner:end -->
+              <p class="chart-visitor-total">
+                <strong id="total-visitors">—</strong>
+                <span class="secondary">Estimated visitors</span>
+              </p>
               <div class="visitor-chart" id="visitor-chart"></div>
               <div class="chart-footer">
-                <span class="secondary">Daily visitor estimates</span
+                <span class="secondary" id="visitor-granularity">Daily visitor estimates</span
                 ><span
                   class="secondary"
                   id="chart-selection"
@@ -268,96 +289,40 @@
                 ></span>
               </div>
               <details class="chart-details">
-                <summary>View daily numbers</summary>
+                <summary id="visitor-details-label">View daily numbers</summary>
                 <div id="daily-table"></div>
               </details>
             </section>
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">EXPLORATION</p>
-                <h2>Where attention goes</h2>
-              </div>
-              <p id="measurement-coverage" class="secondary">
-                New measurements appear after collection begins.
-              </p>
-            </div>
-            <section class="panel">
-              <div class="panel-heading">
-                <h2>Page engagement</h2>
-                <span class="secondary">Active time &amp; scroll milestones</span>
-              </div>
-              <div id="engagement-pages"></div>
-              <p class="panel-note">
-                Active time counts visible periods with recent activity, up to a 60-second idle
-                limit. Scroll columns count pageviews that reached each milestone; only scrollable
-                pages are measured after a scroll. Unmeasured duration is shown as —.
-              </p>
-            </section>
-            <div class="panel-grid">
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Entry pages &amp; sources</h2>
-                  <span class="secondary">Visits</span>
+            <div class="overview-charts">
+              <section class="panel report-chart" aria-labelledby="exploration-heading">
+                <header class="report-chart-title">
+                  <p class="eyebrow">Exploration</p>
+                  <h2 id="exploration-heading">Where attention goes</h2>
+                  <p id="measurement-coverage" class="secondary"></p>
+                </header>
+                <div class="report-chart-controls">
+                  <label>Metric<select id="exploration-metric"></select></label>
+                  <label>Chart<select id="exploration-chart"></select></label>
                 </div>
-                <div id="entry-list"></div>
-                <p class="panel-note">
-                  First observed page of a visit. Missing referrers are direct / unknown.
-                </p>
+                <p class="secondary report-chart-unit" id="exploration-unit"></p>
+                <div class="metric-plot" id="exploration-plot" aria-live="polite"></div>
+                <p class="panel-note" id="exploration-note" hidden></p>
               </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Last observed pages</h2>
-                  <span class="secondary">Estimated exits</span>
+              <section class="panel report-chart" aria-labelledby="continuity-heading">
+                <header class="report-chart-title">
+                  <p class="eyebrow">Continuity</p>
+                  <h2 id="continuity-heading">Traffic details</h2>
+                  <!-- owner:start -->
+                  <p class="secondary">Includes legacy collection</p>
+                  <!-- owner:end -->
+                </header>
+                <div class="report-chart-controls">
+                  <label>Metric<select id="continuity-metric"></select></label>
+                  <label>Chart<select id="continuity-chart"></select></label>
                 </div>
-                <div id="exit-list"></div>
-                <p class="panel-note">
-                  Last pageview in visits with no observed activity for 30 minutes. This does not
-                  prove a browser was closed. Late events may revise an exit.
-                </p>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Common next pages</h2>
-                  <span class="secondary">Linked pageviews</span>
-                </div>
-                <div id="path-list"></div>
-                <p class="panel-note">
-                  Observed navigation links within a visit. These are aggregate paths, not a
-                  verified conversion funnel.
-                </p>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Movement between sites</h2>
-                  <span class="secondary">Arrivals &amp; clicks</span>
-                </div>
-                <div id="movement-list"></div>
-                <p class="panel-note" id="movement-coverage">
-                  Short-lived first-party visit matching is limited to your participating
-                  subdomains. Blocked storage and missing referrers leave visits unmatched.
-                </p>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Projects, experiments &amp; tools</h2>
-                  <span class="secondary">Opens &amp; actions</span>
-                </div>
-                <div id="content-list"></div>
-                <p class="panel-note">
-                  Tool actions record an intentional interaction, never its inputs or output. The
-                  Lab experiment page currently contains a protocol to read.
-                </p>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Outbound interest</h2>
-                  <span class="secondary">Clicks</span>
-                </div>
-                <div id="outbound-list"></div>
-                <p class="panel-note">
-                  Link clicks are interest signals, not completed contacts, tool results, or
-                  conversions.
-                </p>
+                <p class="secondary report-chart-unit" id="continuity-unit"></p>
+                <div class="metric-plot" id="continuity-plot" aria-live="polite"></div>
+                <p class="panel-note" id="continuity-note" hidden></p>
               </section>
             </div>
             <details class="measurement-details">
@@ -386,56 +351,6 @@
                 </p>
               </div>
             </details>
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">CONTINUITY</p>
-                <h2>Traffic details</h2>
-              </div>
-              <!-- owner:start -->
-              <p class="secondary">Includes legacy collection</p>
-              <!-- owner:end -->
-            </div>
-            <div class="legacy-summary">
-              <span>Project opens <strong id="total-projects">—</strong></span
-              ><span>LinkedIn clicks <strong id="total-linkedin">—</strong></span>
-            </div>
-            <div class="panel-grid">
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Sources across all activity</h2>
-                  <span class="secondary">Visitors</span>
-                </div>
-                <div id="source-list"></div>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Project &amp; studio activity</h2>
-                  <span class="secondary">Actions</span>
-                </div>
-                <div id="project-list"></div>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Pages across all activity</h2>
-                  <span class="secondary">Pageviews</span>
-                </div>
-                <div id="page-list"></div>
-              </section>
-              <section class="panel">
-                <div class="panel-heading">
-                  <h2>Devices</h2>
-                  <span class="secondary">Visitors</span>
-                </div>
-                <div id="device-list"></div>
-              </section>
-            </div>
-            <section class="panel campaign-panel">
-              <div class="panel-heading">
-                <h2>Shared link activity</h2>
-                <span class="secondary">Visitors by source and campaign</span>
-              </div>
-              <div id="campaign-list"></div>
-            </section>
             <!-- owner:start -->
             <div class="report-footer">
               <span id="recent-visitors">Recent visitors: —</span
