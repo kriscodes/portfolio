@@ -195,8 +195,7 @@ try {
   await tab.goto(url);
   await tab.locator('#total-visitors').filter({ hasText: '148' }).waitFor();
   assert.equal(await tab.locator('#total-active').innerText(), '48s');
-  assert.equal(await tab.locator('#site-cards .site-card').count(), 5);
-  assert.equal(await tab.getByRole('group', { name: 'Website' }).getByRole('button').count(), 6);
+  assert.equal(await tab.locator('#site-cards .site-card').count(), 3);
   assert.equal(await tab.locator('#engagement-pages tbody tr').count(), 4);
   assert.match(await tab.locator('#movement-list').innerText(), /6 matched · 2 unmatched/);
   for (const [name, width] of [

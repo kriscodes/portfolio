@@ -724,11 +724,9 @@
         : 'No new measurements yet. Historical traffic remains available below.';
     const sites = $('site-cards');
     sites.replaceChildren();
-    const visibleSites = demoReports
-      ? safeArray(insights.sites).map(({ site }) => site)
-      : state.site
-        ? [state.site]
-        : Object.keys(siteNames);
+    const visibleSites = state.site
+      ? [state.site]
+      : safeArray(insights.sites).map(({ site }) => site);
     for (const site of visibleSites) {
       const item = safeArray(insights.sites).find((entry) => entry.site === site);
       const card = create('section', 'site-card');
