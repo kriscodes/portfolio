@@ -442,7 +442,7 @@ select {
 }
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 15px;
   margin-bottom: 20px;
 }
@@ -1309,4 +1309,220 @@ select {
   grid-template-columns: minmax(0, 1fr);
   max-width: 1200px;
   margin-inline: auto;
+}
+
+/* Overview charts share the report theme and keep labels readable on narrow layouts. */
+.overview-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+  align-items: stretch;
+}
+.report-chart {
+  min-width: 0;
+}
+.report-chart-title {
+  min-height: 80px;
+}
+.report-chart-title h2 {
+  margin: 3px 0 5px;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+.report-chart-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+.report-chart-controls label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  min-width: 0;
+}
+.report-chart-controls select,
+.day-controls input {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font: inherit;
+  min-height: 44px;
+  padding: 6px 8px;
+  width: 100%;
+  min-width: 0;
+}
+.day-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+.day-controls input {
+  width: min(170px, 100%);
+}
+.day-controls button {
+  min-width: 44px;
+}
+.site-collection {
+  margin-bottom: 13px;
+}
+.site-collection > summary {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.report-chart-unit {
+  margin-bottom: 7px;
+}
+.metric-plot {
+  --series-0: var(--accent);
+  --series-1: light-dark(#4669a8, #8faee4);
+  --series-2: light-dark(#a46923, #d7af70);
+  --series-3: light-dark(#72559b, #bd9cdd);
+  --series-4: light-dark(#657c79, #9aaca8);
+  min-height: 105px;
+}
+.metric-plot > svg {
+  display: block;
+  width: 100%;
+}
+.metric-ranking,
+.metric-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.metric-ranking {
+  display: grid;
+  gap: 6px;
+}
+.metric-rank {
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr) minmax(30px, max-content);
+  align-items: center;
+  gap: 8px;
+  min-height: 25px;
+  font-size: 12px;
+}
+.metric-label {
+  overflow-wrap: anywhere;
+}
+.metric-value {
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
+}
+.metric-rank svg {
+  display: block;
+  width: 100%;
+  height: 12px;
+}
+.metric-track {
+  fill: var(--subtle);
+}
+.metric-dots .metric-track {
+  display: none;
+}
+.metric-mark {
+  fill: var(--accent);
+}
+.metric-stem,
+.metric-dot {
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+.metric-dot {
+  stroke-width: 7;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.metric-flow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-opacity: 0.46;
+}
+.metric-flow:hover {
+  stroke-opacity: 0.77;
+}
+.metric-donut {
+  display: grid;
+  grid-template-columns: minmax(80px, 32%) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.metric-donut svg {
+  width: 100%;
+}
+.metric-ring {
+  fill: none;
+  stroke: var(--series);
+  stroke-width: 15;
+}
+.metric-series-0 {
+  --series: var(--series-0);
+}
+.metric-series-1 {
+  --series: var(--series-1);
+}
+.metric-series-2 {
+  --series: var(--series-2);
+}
+.metric-series-3 {
+  --series: var(--series-3);
+}
+.metric-series-4 {
+  --series: var(--series-4);
+}
+.metric-legend li {
+  display: grid;
+  grid-template-columns: 9px minmax(0, 1fr) max-content;
+  gap: 6px;
+  align-items: center;
+  margin: 5px 0;
+  font-size: 12px;
+}
+.metric-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--series);
+}
+.visitor-area {
+  fill: var(--soft);
+}
+.visitor-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.visitor-chart .chart-hit {
+  fill: transparent;
+}
+.visitor-chart .chart-hit:hover,
+.visitor-chart .chart-hit:focus-visible {
+  fill: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.chart-visitor-total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 2px 0 12px;
+}
+.chart-visitor-total strong {
+  font-size: clamp(26px, 3.8vw, 38px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 960px) {
+  .overview-charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .report-chart-title {
+    min-height: auto;
+  }
 }

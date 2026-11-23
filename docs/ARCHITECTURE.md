@@ -16,6 +16,10 @@ Case-study outcomes describe professional work, not measurements performed by th
 
 ## Analytics data flow
 
+The owner dashboard filters reports by website. The 7-, 30-, and 90-day ranges show daily visitor estimates. **Day** shows visitors observed in each hour of a selected Pacific date within the last 180 days. An estimate counts a browser once within each hour. The daily total counts it once across the day. The repeated time at the fall clock change is labeled separately for PDT and PST.
+
+Exploration and Continuity each display one metric at a time. The dashboard defaults to horizontal rankings for most metrics, a flow diagram for navigation, vertical bars for scroll milestones, and a donut for device share. Each metric offers compatible chart alternatives. The public demo uses the same graph controls with its own fixed synthetic data.
+
 Portfolio, Lab, and Toolbox use one dependency-free collector. The API accepts an explicit origin allowlist, validates event/site agreement, and reduces routes, sources, campaigns, and actions to fixed catalogs in `apps/api/src/analytics/catalog.ts`. Query strings, fragments, arbitrary URLs, prompt inputs, generated output, and form values are not stored in events. Temporary hashed IP keys support rate limiting; raw IP addresses and user-agent strings are not event fields.
 
 Daily random browser identifiers and short visit identifiers can be shared across participating subdomains using Secure, SameSite=Lax cookies. Visits expire after 30 minutes of inactivity or the Pacific date boundary. If shared cookies are unavailable, site-local storage provides a narrower fallback. The server hashes identifiers with `ANALYTICS_HASH_SECRET` and day-scopes v2 identities. Counts estimate observed browsers; they cannot establish distinct people or returning visitors.
