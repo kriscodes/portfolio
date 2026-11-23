@@ -160,13 +160,15 @@ export interface AnalyticsStore {
   close(): Promise<void>;
 }
 
+const reportDate = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/Los_Angeles',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 export function reportRange(days: number, now = new Date()): AnalyticsOverview['range'] {
-  const end = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(now);
+  const end = reportDate.format(now);
   const first = new Date(`${end}T12:00:00Z`);
   first.setUTCDate(first.getUTCDate() - days + 1);
   return { days, start: first.toISOString().slice(0, 10), end, timezone: 'America/Los_Angeles' };

@@ -9,6 +9,7 @@ import type {
 } from './types.js';
 import { emptyDaily, reportRange } from './types.js';
 import { buildInsights, INSIGHTS_EVENT_LIMIT } from './insights.js';
+import { summarizeEvents } from './summarize.js';
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS analytics_owner (
@@ -451,104 +452,7 @@ export class MemoryAnalyticsStore implements AnalyticsStore {
     this.events.push(event);
   }
   async overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview> {
-    const range = reportRange(days);
-    const dateOf = (event: AnalyticsEvent) => reportRange(1, event.occurredAt).end;
-    const siteEvents = site
-      ? this.events.filter((event) => (event.site ?? 'portfolio') === site)
-      : this.events;
-    const events = siteEvents.filter(
-      (event) => dateOf(event) >= range.start && dateOf(event) <= range.end,
-    );
-    const unique = (rows: AnalyticsEvent[]) => new Set(rows.map((event) => event.visitorHash)).size;
-    const grouped = (key: 'source' | 'project' | 'section' | 'path' | 'device') => [
-      ...new Set(events.map((event) => event[key]).filter(Boolean)),
-    ];
-    const campaigns = [
-      ...new Set(
-        events
-          .filter((event) => event.campaign)
-          .map((event) => JSON.stringify([event.source, event.campaign])),
-      ),
-    ];
-    return {
-      insights: buildInsights(this.events, range, new Date(), { site }),
-      range,
-      totals: {
-        visitors: unique(events),
-        pageviews: events.filter((event) => event.event === 'pageview').length,
-        projectOpens: events.filter((event) => event.event === 'project_open').length,
-        linkedinClicks: events.filter(
-          (event) => event.event === 'outbound_click' && event.target === 'linkedin',
-        ).length,
-        recentVisitors: unique(
-          events.filter((event) => event.occurredAt.getTime() >= Date.now() - 300_000),
-        ),
-      },
-      daily: emptyDaily(range).map((row) => ({
-        ...row,
-        visitors: unique(events.filter((event) => dateOf(event) === row.date)),
-      })),
-      sources: grouped('source').map((source) => ({
-        source,
-        visitors: unique(events.filter((event) => event.source === source)),
-      })),
-      projects: grouped('project').map((project) => ({
-        project,
-        opens: events.filter((event) => event.project === project && event.event === 'project_open')
-          .length,
-        previews: events.filter(
-          (event) => event.project === project && event.event === 'project_preview_open',
-        ).length,
-      })),
-      sections: grouped('section').map((section) => ({
-        section,
-        opens: events.filter(
-          (event) => event.section === section && event.event === 'studio_section_open',
-        ).length,
-      })),
-      pages: [
-        ...new Set(
-          events
-            .filter((event) => event.event === 'pageview')
-            .map((event) => JSON.stringify([event.site ?? 'portfolio', event.path])),
-        ),
-      ]
-        .map((key) => {
-          const [site, path] = JSON.parse(key) as [AnalyticsEvent['site'], string];
-          return {
-            site,
-            path,
-            views: events.filter(
-              (event) =>
-                (event.site ?? 'portfolio') === site &&
-                event.path === path &&
-                event.event === 'pageview',
-            ).length,
-          };
-        })
-        .sort(
-          (a, b) =>
-            b.views - a.views || a.site!.localeCompare(b.site!) || a.path.localeCompare(b.path),
-        )
-        .slice(0, 30),
-      devices: grouped('device').map((device) => ({
-        device,
-        visitors: unique(events.filter((event) => event.device === device)),
-      })),
-      campaigns: campaigns.map((group) => {
-        const [source, campaign] = JSON.parse(group) as [string, string];
-        return {
-          source,
-          campaign,
-          visitors: unique(
-            events.filter((event) => event.source === source && event.campaign === campaign),
-          ),
-        };
-      }),
-      lastEventAt: siteEvents.length
-        ? new Date(Math.max(...siteEvents.map((event) => event.occurredAt.getTime()))).toISOString()
-        : null,
-    };
+    return summarizeEvents(this.events, days, new Date(), site);
   }
   async cleanup() {}
   async close() {}

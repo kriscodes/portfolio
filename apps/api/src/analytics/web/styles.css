@@ -1304,3 +1304,9 @@ select {
     font-size: 12px;
   }
 }
+
+.dashboard-shell.demo-dashboard {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1200px;
+  margin-inline: auto;
+}
