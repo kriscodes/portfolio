@@ -7,14 +7,17 @@ import { renderDemoPage } from './demo-page.js';
 import {
   CAMPAIGNS,
   contentFor,
+  isCareIqSite,
   safePath,
   safeReferrer,
   siteOfHost,
   SITE_HOSTS,
+  SITE_PATHS,
   STAGING_SITE_HOSTS,
 } from './catalog.js';
 import {
   EVENTS,
+  isAnalyticsSite,
   reportRange,
   type AnalyticsSite,
   type AnalyticsEvent,
@@ -412,7 +415,12 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
       responseError(response, 400, 'INVALID_RANGE', 'Choose 7, 30, or 90 days.');
       return;
     }
-    response.json(await store!.overview(days));
+    const site = request.query.site;
+    if (site !== undefined && !isAnalyticsSite(site)) {
+      responseError(response, 400, 'INVALID_SITE', 'Choose a connected website.');
+      return;
+    }
+    response.json(await store!.overview(days, site));
   });
 
   function collectorCORS(request: Request, response: Response, next: NextFunction) {
@@ -504,9 +512,8 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
       const isV2 = version === 2;
       const site =
         originSite ??
-        (isDevelopmentOrigin(request.get('origin')) &&
-        ['portfolio', 'lab', 'toolbox'].includes(String(body.site))
-          ? (body.site as AnalyticsSite)
+        (isDevelopmentOrigin(request.get('origin')) && isAnalyticsSite(body.site)
+          ? body.site
           : null);
       const newEvents = [
         'page_engagement',
@@ -531,6 +538,20 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
               body.previousPageId !== '' &&
               (typeof body.previousPageId !== 'string' || !VISITOR_ID.test(body.previousPageId))) ||
             !['shared', 'local'].includes(String(body.visitScope))))
+      ) {
+        responseError(response, 400, 'INVALID_EVENT_CONTEXT', 'This event context is invalid.');
+        return;
+      }
+      const careIq = isCareIqSite(site);
+      const staffApp = site === 'careiq-web';
+      if (
+        careIq &&
+        (body.visitScope !== 'local' ||
+          typeof body.path !== 'string' ||
+          !SITE_PATHS[site].has(body.path) ||
+          (staffApp
+            ? body.event !== 'pageview'
+            : !['pageview', 'page_engagement', 'scroll_depth'].includes(body.event)))
       ) {
         responseError(response, 400, 'INVALID_EVENT_CONTEXT', 'This event context is invalid.');
         return;
@@ -563,7 +584,9 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
           ? (body[name] as string)
           : fallback;
       const campaign =
-        typeof body.campaign === 'string' && CAMPAIGNS.has(body.campaign) ? body.campaign : '';
+        !staffApp && typeof body.campaign === 'string' && CAMPAIGNS.has(body.campaign)
+          ? body.campaign
+          : '';
       const content = isV2 ? contentFor(site!, path) : '';
       const validDepth =
         [25, 50, 75, 100].includes(Number(body.scrollDepth)) &&
@@ -601,16 +624,16 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         eventId: typeof body.eventId === 'string' ? body.eventId : randomUUID(),
         event: body.event as AnalyticsEventName,
         path,
-        referrer: safeReferrer(body.referrer, siteHosts),
-        source: valueFrom('source', SOURCES, isV2 ? 'unknown' : 'direct'),
-        medium: valueFrom('medium', MEDIA, isV2 ? 'unknown' : 'direct'),
+        referrer: staffApp ? '' : safeReferrer(body.referrer, siteHosts),
+        source: staffApp ? 'unknown' : valueFrom('source', SOURCES, isV2 ? 'unknown' : 'direct'),
+        medium: staffApp ? 'unknown' : valueFrom('medium', MEDIA, isV2 ? 'unknown' : 'direct'),
         campaign,
         visitorHash: hash(isV2 ? `visitor-v2:${day}${scope}` : 'visitor', body.visitorId),
         sessionHash: hash(isV2 ? `session-v2:${day}${scope}` : 'session', body.sessionId),
-        project: valueFrom('project', PROJECTS),
-        section: valueFrom('section', SECTIONS),
-        mode: valueFrom('mode', MODES),
-        target: valueFrom('target', TARGETS) || valueFrom('destination', TARGETS),
+        project: careIq ? '' : valueFrom('project', PROJECTS),
+        section: careIq ? '' : valueFrom('section', SECTIONS),
+        mode: careIq ? '' : valueFrom('mode', MODES),
+        target: careIq ? '' : valueFrom('target', TARGETS) || valueFrom('destination', TARGETS),
         device: classification(agent),
         occurredAt,
         receivedAt: new Date(now),
@@ -618,7 +641,9 @@ export function createAnalytics(options: AnalyticsOptions = {}) {
         site: site ?? 'portfolio',
         pageHash: isV2 ? hash('page', body.pageId as string) : '',
         previousPageHash:
-          isV2 && body.previousPageId ? hash('page', body.previousPageId as string) : '',
+          isV2 && !staffApp && body.previousPageId
+            ? hash('page', body.previousPageId as string)
+            : '',
         visitScope: isV2 && body.visitScope === 'shared' ? 'shared' : 'local',
         activeMs: isV2 && body.event === 'page_engagement' ? (body.activeMs as number) : null,
         scrollDepth:

@@ -25,6 +25,10 @@ Preserve existing secrets and the database when updating an installation. Changi
 
 For local analytics development, use the names in [`.env.example`](../.env.example), a local database, and a local collector origin. Load API values into the process environment before starting it. Production requires complete analytics configuration and a reachable database; a missing store prevents startup.
 
+## CareIQ traffic
+
+Deploy the Studio Insights API before enabling the CareIQ clients. CareIQ production and staging use separate origin allowlists and the matching collector environment. Reports remain owner-only. Use **All sites** for combined activity or choose **CareIQ Web** or **CareIQ Marketing** in Overview to filter the full report.
+
 ## Release workflow
 
 Use the same process as Lab and Toolbox: create a regular feature branch, review it through `staging`, then promote the tested changes to `main`. GitHub Actions runs `pnpm validate` on every pull request and push to `main` or `staging`, including PostgreSQL-backed tests. Render waits for the deployed commit's checks with `autoDeployTrigger: checksPass`; failing checks or zero detected checks block automatic deployment. Do not add workflow path filters that skip CI on deployable commits.

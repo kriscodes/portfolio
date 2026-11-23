@@ -14,7 +14,18 @@ export const EVENTS = [
 ] as const;
 
 export type AnalyticsEventName = (typeof EVENTS)[number];
-export type AnalyticsSite = 'portfolio' | 'lab' | 'toolbox';
+export const ANALYTICS_SITES = [
+  'portfolio',
+  'lab',
+  'toolbox',
+  'careiq-web',
+  'careiq-marketing',
+] as const;
+export type AnalyticsSite = (typeof ANALYTICS_SITES)[number];
+
+export function isAnalyticsSite(value: unknown): value is AnalyticsSite {
+  return typeof value === 'string' && ANALYTICS_SITES.some((site) => site === value);
+}
 
 export interface AnalyticsEvent {
   eventId: string;
@@ -144,7 +155,7 @@ export interface AnalyticsStore {
   deleteSession(tokenHash: string): Promise<void>;
   consumeRateLimit(key: string, limit: number, windowMs: number): Promise<boolean>;
   insertEvent(event: AnalyticsEvent): Promise<void>;
-  overview(days: number): Promise<AnalyticsOverview>;
+  overview(days: number, site?: AnalyticsSite): Promise<AnalyticsOverview>;
   cleanup(): Promise<void>;
   close(): Promise<void>;
 }

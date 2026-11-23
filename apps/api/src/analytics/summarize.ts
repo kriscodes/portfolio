@@ -1,15 +1,25 @@
 import { buildInsights } from './insights.js';
-import { emptyDaily, reportRange, type AnalyticsEvent, type AnalyticsOverview } from './types.js';
+import {
+  emptyDaily,
+  reportRange,
+  type AnalyticsEvent,
+  type AnalyticsOverview,
+  type AnalyticsSite,
+} from './types.js';
 
 export function summarizeEvents(
   history: AnalyticsEvent[],
   days: number,
   now = new Date(),
+  site?: AnalyticsSite,
 ): AnalyticsOverview {
   const range = reportRange(days, now);
-  const dates = new Map(history.map((event) => [event, reportRange(1, event.occurredAt).end]));
+  const siteEvents = site
+    ? history.filter((event) => (event.site ?? 'portfolio') === site)
+    : history;
+  const dates = new Map(siteEvents.map((event) => [event, reportRange(1, event.occurredAt).end]));
   const dateOf = (event: AnalyticsEvent) => dates.get(event)!;
-  const events = history.filter(
+  const events = siteEvents.filter(
     (event) => dateOf(event) >= range.start && dateOf(event) <= range.end,
   );
   const unique = (rows: AnalyticsEvent[]) => new Set(rows.map((event) => event.visitorHash)).size;
@@ -24,7 +34,7 @@ export function summarizeEvents(
     ),
   ];
   return {
-    insights: buildInsights(history, range, now),
+    insights: buildInsights(history, range, now, { site }),
     range,
     totals: {
       visitors: unique(events),
@@ -98,8 +108,8 @@ export function summarizeEvents(
         ),
       };
     }),
-    lastEventAt: history.length
-      ? new Date(Math.max(...history.map((event) => event.occurredAt.getTime()))).toISOString()
+    lastEventAt: siteEvents.length
+      ? new Date(Math.max(...siteEvents.map((event) => event.occurredAt.getTime()))).toISOString()
       : null,
   };
 }

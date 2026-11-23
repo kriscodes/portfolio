@@ -256,7 +256,7 @@ test('empty and historical reports distinguish missing measurement from zero dur
   const empty = report([]);
   assert.equal(empty.measurementStartedAt, null);
   assert.equal(empty.totals.avgActiveSeconds, null);
-  assert.equal(empty.sites.length, 3);
+  assert.equal(empty.sites.length, 5);
   assert.deepEqual(empty.pages, []);
   const legacy = report([event('old', 60, { schemaVersion: 1 })]);
   assert.equal(legacy.coverage.legacyPageviews, 1);

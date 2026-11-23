@@ -1,10 +1,11 @@
 import { contentFor } from './catalog.js';
 import { summarizeEvents } from './summarize.js';
-import type { AnalyticsEvent, AnalyticsSite } from './types.js';
+import type { AnalyticsEvent } from './types.js';
 
 const sampleEnd = new Date('2026-11-14T23:00:00Z');
 const dayMs = 86_400_000;
-type Step = [site: AnalyticsSite, path: string];
+type DemoSite = 'portfolio' | 'lab' | 'toolbox';
+type Step = [site: DemoSite, path: string];
 const home: Step = ['portfolio', '/'];
 const work: Step = ['portfolio', '/work/'];
 const viewer: Step = ['portfolio', '/work/gen-ui/'];
@@ -24,7 +25,7 @@ const journeys: Step[][] = [
   [experiment, home, work],
   [promptBuilder, toolbox],
 ];
-const hosts: Record<AnalyticsSite, string> = {
+const hosts: Record<DemoSite, string> = {
   portfolio: 'kristiansalmeron.com',
   lab: 'lab.kristiansalmeron.com',
   toolbox: 'toolbox.kristiansalmeron.com',
@@ -123,9 +124,12 @@ export function createDemoReports() {
       });
     }
   }
-  return {
-    7: summarizeEvents(events, 7, sampleEnd),
-    30: summarizeEvents(events, 30, sampleEnd),
-    90: summarizeEvents(events, 90, sampleEnd),
-  };
+  function report(days: number) {
+    const summary = summarizeEvents(events, days, sampleEnd);
+    summary.insights.sites = summary.insights.sites.filter(({ site }) =>
+      Object.hasOwn(hosts, site),
+    );
+    return summary;
+  }
+  return { 7: report(7), 30: report(30), 90: report(90) };
 }
