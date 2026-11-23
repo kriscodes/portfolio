@@ -924,7 +924,7 @@
     const measurement = $('site-measurement');
     measurement.textContent = state.site === 'careiq-web' ? 'App entry pageviews only' : '';
     measurement.hidden = !measurement.textContent;
-    const noData = Number(totals.pageviews) === 0 && Number(totals.visitors) === 0;
+    const noData = !(Number(totals.pageviews) > 0 || Number(totals.visitors) > 0);
     $('no-data-notice').hidden = !noData;
     if (noData) {
       $('no-data-heading').textContent = state.site
