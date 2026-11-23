@@ -1,5 +1,6 @@
-import { siteOfHost } from './catalog.js';
+import { isCareIqSite, siteOfHost } from './catalog.js';
 import {
+  ANALYTICS_SITES,
   type AnalyticsEvent,
   type AnalyticsInsights,
   type AnalyticsOverview,
@@ -27,6 +28,7 @@ export function buildInsights(
     legacyPageviews?: number;
     siteLastSeen?: Partial<Record<AnalyticsSite, string | null>>;
     limited?: boolean;
+    site?: AnalyticsSite;
   } = {},
 ): AnalyticsInsights {
   const dateFormatter = new Intl.DateTimeFormat('en-CA', {
@@ -37,6 +39,7 @@ export function buildInsights(
   });
   const dates = new Map<number, string>();
   const inRange = (event: AnalyticsEvent) => {
+    if (metadata.site && (event.site ?? 'portfolio') !== metadata.site) return false;
     const timestamp = event.occurredAt.getTime();
     let date = dates.get(timestamp);
     if (!date) {
@@ -68,6 +71,7 @@ export function buildInsights(
       : undefined;
     const matchedArrival =
       event.visitScope === 'shared' &&
+      !isCareIqSite(event.site ?? null) &&
       lastSourceActivity !== undefined &&
       event.occurredAt.getTime() > lastSourceActivity &&
       event.occurredAt.getTime() - lastSourceActivity <= IDLE_MS;
@@ -92,7 +96,11 @@ export function buildInsights(
   }
   const report: AnalyticsInsights = {
     measurementStartedAt:
-      metadata.measurementStartedAt ?? ordered[0]?.occurredAt.toISOString() ?? null,
+      metadata.measurementStartedAt ??
+      ordered
+        .find((event) => !metadata.site || event.site === metadata.site)
+        ?.occurredAt.toISOString() ??
+      null,
     coverage: {
       pageviews: 0,
       legacyPageviews:
@@ -104,7 +112,7 @@ export function buildInsights(
       limited: metadata.limited ?? false,
     },
     totals: { visits: 0, completedVisits: 0, activeSeconds: 0, avgActiveSeconds: null },
-    sites: (['portfolio', 'lab', 'toolbox'] as const).map((site) => ({
+    sites: (metadata.site ? [metadata.site] : ANALYTICS_SITES).map((site) => ({
       site,
       pageviews: 0,
       visits: 0,

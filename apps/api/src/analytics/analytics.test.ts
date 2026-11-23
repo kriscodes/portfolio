@@ -100,6 +100,83 @@ const v2Event = {
   occurredAt: new Date().toISOString(),
 };
 
+test('CareIQ origins collect only allowlisted measurements and report each app separately', async () => {
+  await fixture(async ({ store, call }) => {
+    await store.createOwner({ email: ownerEmail, passwordHash: await hashPassword(password) });
+    const login = await call('login', mutation({ email: ownerEmail, password }));
+    assert.equal(login.status, 200);
+    const cookie = login.headers.get('set-cookie')!.split(';', 1)[0];
+    const send = (host: string, body: Record<string, unknown>) => {
+      const request = collect(body);
+      request.headers = { ...request.headers, Origin: `https://${host}` };
+      return call('collect', request);
+    };
+    const web = {
+      ...v2Event,
+      site: 'careiq-web',
+      visitScope: 'local',
+      path: '/',
+      referrer: 'careiqlabs.com',
+      previousPageId: v2Event.pageId,
+    };
+    const marketing = {
+      ...web,
+      site: 'careiq-marketing',
+      path: '/research/',
+      eventId: 'careiq_marketing_pageview',
+    };
+    assert.equal((await send('app.careiqlabs.com', web)).status, 204);
+    assert.equal((await send('careiqlabs.com', marketing)).status, 204);
+    assert.equal((await send('staging.careiqlabs.com', web)).status, 403);
+    for (const payload of [
+      { ...web, site: 'careiq-marketing' },
+      { ...web, visitScope: 'shared' },
+      { ...web, path: '/patient-workflow/123' },
+      { ...web, path: '/?ticket=private' },
+      { ...web, event: 'page_engagement', activeMs: 1000 },
+    ]) {
+      assert.equal((await send('app.careiqlabs.com', payload)).status, 400);
+    }
+    assert.equal(
+      (
+        await send('careiqlabs.com', {
+          ...marketing,
+          event: 'scroll_depth',
+          scrollDepth: 50,
+          eventId: 'careiq_marketing_scroll50',
+        })
+      ).status,
+      204,
+    );
+    assert.equal(store.events.length, 3);
+    assert.equal(store.events[0].referrer, '');
+    assert.equal(store.events[0].previousPageHash, '');
+    assert.equal(store.events[0].campaign, '');
+    assert.notEqual(store.events[0].visitorHash, store.events[1].visitorHash);
+    assert.equal((await call('overview?site=careiq-web')).status, 401);
+    for (const site of ['careiq-web', 'careiq-marketing']) {
+      const response = await call(`overview?days=7&site=${site}`, { headers: { Cookie: cookie } });
+      assert.equal(response.status, 200);
+      const report = await response.json();
+      assert.equal(report.totals.visitors, 1);
+      assert.equal(report.totals.pageviews, 1);
+      assert.equal(report.daily.at(-1).visitors, 1);
+      assert.deepEqual(
+        report.insights.sites.map((row: { site: string }) => row.site),
+        [site],
+      );
+      assert.equal(report.insights.pages[0].scroll50, site === 'careiq-marketing' ? 1 : 0);
+      assert.equal(report.pages[0].site, site);
+    }
+    const all = await (await call('overview', { headers: { Cookie: cookie } })).json();
+    assert.equal(all.totals.visitors, 2);
+    assert.equal(
+      (await call('overview?site=any-other-site', { headers: { Cookie: cookie } })).status,
+      400,
+    );
+  });
+});
+
 test('v2 collector enforces site origins, measurement shape, and fixed sanitized catalogs', async () => {
   await fixture(async ({ store, call }) => {
     const send = (body: unknown, site = 'portfolio') => {
@@ -743,6 +820,22 @@ test(
         1,
       );
       assert.deepEqual(overview.sources, [{ source: 'facebook', visitors: 1 }]);
+      await store.insertEvent({
+        ...event,
+        schemaVersion: 2,
+        eventId: 'persisted-careiq-unique-id',
+        site: 'careiq-marketing',
+        pageHash: 'hashed-careiq-page',
+        visitorHash: 'hashed-careiq-visitor',
+        sessionHash: 'hashed-careiq-session',
+        path: '/research/',
+      });
+      const marketing = await second.overview(7, 'careiq-marketing');
+      assert.equal(marketing.totals.pageviews, 1);
+      assert.equal(marketing.totals.visitors, 1);
+      assert.equal(marketing.insights.pages[0].path, '/research/');
+      assert.equal((await second.overview(7, 'portfolio')).totals.pageviews, 1);
+      assert.equal((await second.overview(7, 'careiq-web')).totals.pageviews, 0);
       await second.deleteSession('hashed-session-only');
       assert.equal(await store.getSession('hashed-session-only'), null);
       // Hold the same owner row lock used by the recovery command, then attempt
@@ -829,7 +922,7 @@ test('public demo serves one synthetic dataset across all periods without an own
       assert.match(html, /All figures in this demo are synthetic/);
       assert.doesNotMatch(
         html,
-        /login-form|setup-form|analytics-assets\/tracker\.js|id="refresh-data"/,
+        /login-form|setup-form|analytics-assets\/tracker\.js|id="refresh-data"|data-site-scope/,
       );
 
       const json = html.match(
@@ -841,6 +934,10 @@ test('public demo serves one synthetic dataset across all periods without an own
         const report = reports[days];
         assert.equal(report.range.days, days);
         assert.equal(report.daily.length, days);
+        assert.deepEqual(
+          report.insights.sites.map((row: { site: string }) => row.site),
+          ['portfolio', 'lab', 'toolbox'],
+        );
         assert.equal(
           report.totals.visitors,
           report.daily.reduce(
